@@ -1,0 +1,38 @@
+{
+  "name": "nowakkamil-personal-website",
+  "version": "1.0.0",
+  "description": "Kamil Nowak personal website",
+  "scripts": {
+    "build": "webpack --config webpack/webpack.config.prod.js --colors",
+    "start": "webpack-dev-server --open --config webpack/webpack.config.dev.js"
+  },
+  "private": true,
+  "keywords": [
+    "frontend",
+    "javascript",
+    "es6",
+    "animation",
+    "responsive",
+    "webpack"
+  ],
+  "author": {
+    "name": "Kamil Nowak",
+    "email": "nowakkamil@yahoo.com",
+    "url": "https://github.com/nowakkamil"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.0.3",
+    "eslint": "^7.4.0",
+    "eslint-loader": "^4.0.2",
+    "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.0.9"
+  },
+  "dependencies": {}
+}
