@@ -14,5 +14,6 @@ matrix:
         github_token: $GITHUB_TOKEN
         keep_history: true
         local_dir: build
+        target_branch: master
         on:
           branch: dev/master
