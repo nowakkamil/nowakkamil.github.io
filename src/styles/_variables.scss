@@ -4,6 +4,8 @@
 
 // The fonts.
 @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700,900");
+@import url("https://fonts.googleapis.com/css2?family=Advent+Pro:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;600&display=swap");
 
 // The variables used in media queries.
 $mobile-undersized-width: 320px;
@@ -31,13 +33,13 @@ $base-line-height: 24px;
 $base-unit: "em";
 
 // The default font family.
-$base-font-family: "Lato", sans-serif;
+$base-font-family: "Raleway", "Advent Pro", "Lato", sans-serif;
 
 // The font sizes for h1-h6.
-$h1-font-size: 2    * $base-font-size;
-$h2-font-size: 1.5  * $base-font-size;
+$h1-font-size: 2 * $base-font-size;
+$h2-font-size: 1.5 * $base-font-size;
 $h3-font-size: 1.17 * $base-font-size;
-$h4-font-size: 1    * $base-font-size;
+$h4-font-size: 1 * $base-font-size;
 $h5-font-size: 0.83 * $base-font-size;
 $h6-font-size: 0.67 * $base-font-size;
 
@@ -52,5 +54,7 @@ $indent-amount: 40px;
 $normalize-vertical-rhythm: false;
 
 // The colors used throughout the application.
-$color-space-cadet: #313d5a;
-$color-mine-shaft-95-alfa: #212121f2;
+$color-charade: #2e3440;
+$color-cod-gray: #0c0c0c;
+$color-blue-chill: #118ab2;
+$color-concrete: #f2f2f2;

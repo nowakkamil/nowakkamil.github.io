@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
+    "@iconfu/svg-inject": "^1.2.3",
     "autoprefixer": "^9.8.5",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
