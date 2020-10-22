@@ -5,6 +5,7 @@ import { CSSPlugin } from "gsap/all";
 
 // Prevent the webpack from performing tree shaking
 const plugin = CSSPlugin;
+const ICONS_COUNT = 4;
 
 const getSvgNode = () => {
     let svg = document.createElement('img');
@@ -15,15 +16,20 @@ const getSvgNode = () => {
     });
 };
 
-let svgNodes = document.createDocumentFragment();
+const getSvgNodes = () => {
+    let svgNodes = document.createDocumentFragment();
 
-for (let i = 0; i < 30; i++) {
-    let svgNode = getSvgNode();
-    svgNodes.appendChild(svgNode);
-}
+    for (let i = 0; i < ICONS_COUNT; i++) {
+        let svgNode = getSvgNode();
+        svgNodes.appendChild(svgNode);
+    }
 
-document.querySelector(".landing-section__mark")
-    .appendChild(svgNodes);
+    return svgNodes;
+};
+
+var marks = document.querySelectorAll(".landing-section__mark");
+
+marks.forEach(mark => mark.appendChild(getSvgNodes()));
 
 window.mutationObserver = new MutationObserver(function (mutations, observer) {
     let i = 0;
@@ -35,7 +41,7 @@ window.mutationObserver = new MutationObserver(function (mutations, observer) {
 
     console.log(i);
 
-    if (i === 30) {
+    if (i === ICONS_COUNT) {
         animateMarks();
         delete window.mutationObserver;
         observer.disconnect();
