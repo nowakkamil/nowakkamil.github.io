@@ -7,11 +7,11 @@ import { CSSPlugin } from "gsap/all";
 const plugin = CSSPlugin;
 const ICONS_COUNT = 4;
 
-const getSvgNode = () => {
+const getSvgNode = (className, src) => {
     let svg = document.createElement('img');
     return Object.assign(svg, {
-        className: 'landing-section__mark-icon',
-        src: 'public/icon-code.svg',
+        className: className,
+        src: src,
         onload: () => SVGInject(svg)
     });
 };
@@ -20,7 +20,7 @@ const getSvgNodes = () => {
     let svgNodes = document.createDocumentFragment();
 
     for (let i = 0; i < ICONS_COUNT; i++) {
-        let svgNode = getSvgNode();
+        let svgNode = getSvgNode('landing-section__mark-icon', 'public/icon-code.svg');
         svgNodes.appendChild(svgNode);
     }
 
@@ -30,6 +30,10 @@ const getSvgNodes = () => {
 var marks = document.querySelectorAll(".landing-section__mark");
 
 marks.forEach(mark => mark.appendChild(getSvgNodes()));
+
+document
+    .querySelector(".experience-section__image--abb")
+    .appendChild(getSvgNode('experience-section__mark-icon experience-section__mark-icon--abb', 'public/abb-logo.svg'));
 
 window.mutationObserver = new MutationObserver(function (mutations, observer) {
     let i = 0;
