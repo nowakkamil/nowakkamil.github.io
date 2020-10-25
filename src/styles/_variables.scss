@@ -19,6 +19,7 @@ $laptop-undersized-width: 1000px;
 $laptop-min-width: 1024px;
 $laptop-mid-width: 1280px;
 $desktop-min-width: 1440px;
+$desktop-min-width-inclusive: $desktop-min-width + 1px;
 $desktop-mid-width: 1920px;
 $desktop-max-width: 2560px;
 

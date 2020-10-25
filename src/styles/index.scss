@@ -129,6 +129,10 @@ form {
         height: 50vh;
         border-radius: 100%;
 
+        @media screen and (max-width: $desktop-min-width) {
+            @include interpolate(max-height, 300px, 1000px);
+        }
+
         &-wrapper {
             position: relative;
 
@@ -142,6 +146,12 @@ form {
                 left: 22%;
                 transform: translate(-22%, -50%);
                 height: 50%;
+
+                @media screen and (max-width: $desktop-min-width) {
+                    top: 28%;
+                    left: 50%;
+                    transform: translate(-50%, -28%);
+                }
             }
 
             &-backdrop {
@@ -207,18 +217,53 @@ form {
         font-size: 80px;
         position: absolute;
         top: 50%;
-        right: 10%;
-        transform: translate(-10%, -50%);
+        left: 50%;
+        transform: translate(15%, -50%);
+        text-align: center;
 
-        @include interpolate(font-size, $h3-font-size, $h1-font-size * 2);
+        @include interpolate(
+            font-size,
+            $h3-font-size,
+            $h1-font-size * 1.8,
+            $mobile-undersized-width,
+            $laptop-mid-width
+        );
+
+        @media screen and (max-width: $desktop-min-width) {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 60%);
+        }
+
+        @media screen and (min-width: $desktop-min-width-inclusive) and (max-width: $desktop-mid-width) {
+            left: 54%;
+            transform: translate(15%, -50%);
+            @include interpolate(font-size, $h3-font-size, $h1-font-size * 1.5);
+        }
+
+        @media screen and (max-width: $desktop-mid-width) {
+            @include interpolate(font-size, $h3-font-size, $h1-font-size * 1.8);
+        }
 
         &-name {
             font-weight: 300;
+
+            @include interpolate(
+                font-size,
+                $h3-font-size,
+                $h1-font-size * 2.2,
+                $mobile-undersized-width,
+                $laptop-mid-width
+            );
+
+            @media screen and (max-width: $desktop-mid-width) {
+                @include interpolate(font-size, $h3-font-size, $h1-font-size * 1.8);
+            }
         }
 
         & > p {
-            margin-top: 50px;
-            margin-bottom: 50px;
+            margin-top: 0;
+            @include interpolate(margin-bottom, 4px, 8px);
         }
     }
 }
