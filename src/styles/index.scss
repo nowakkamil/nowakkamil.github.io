@@ -271,6 +271,7 @@ form {
 .experience-section {
     position: relative;
     background-color: $color-mine-shaft;
+    overflow-y: auto;
 
     &__image {
         display: inline-block;
@@ -300,11 +301,18 @@ form {
         position: relative;
         padding: 1%;
         background: white;
-        margin: 1vw;
+        @include interpolate(margin, 20px, 30px);
         width: 25vw;
         transition: transform 0.8s;
         background-color: transparent;
         perspective: 1000px;
+
+        @media screen and (max-width: $laptop-min-width) {
+            width: 32vw;
+            height: 32vw;
+            min-width: 200px;
+            min-height: 200px;
+        }
 
         &-inner {
             position: relative;
@@ -338,23 +346,19 @@ form {
             color: white;
             transform: rotateY(180deg);
 
-            &-title {
+            @include interpolate(font-size, $h5-font-size, $h2-font-size);
+
+            &-text {
                 position: absolute;
-                top: 30%;
+                top: 50%;
                 left: 50%;
-                transform: translate(-50%, -30%);
+                transform: translate(-50%, -50%);
                 margin: 0;
                 width: 100%;
-                font-weight: 900;
-            }
 
-            &-description {
-                position: absolute;
-                top: 60%;
-                left: 50%;
-                transform: translate(-50%, -60%);
-                margin: 0;
-                width: 80%;
+                & span {
+                    font-weight: 900;
+                }
             }
         }
 
@@ -369,6 +373,13 @@ form {
             display: flex;
             justify-content: space-evenly;
             align-content: center;
+
+            @media screen and (max-width: $laptop-min-width) {
+                display: inline-block;
+                flex-direction: column;
+                width: unset;
+                height: unset;
+            }
         }
     }
 }
