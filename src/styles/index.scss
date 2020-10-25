@@ -86,11 +86,38 @@ form {
 
     & input[type="submit"] {
         border: 2px solid dodgerblue;
+        transition: background 350ms ease-in-out;
     }
 
     & input[type="submit"]:hover {
         background: dodgerblue;
         cursor: pointer;
+    }
+}
+
+.social-bar {
+    &__container {
+        position: fixed;
+        top: 50%;
+        left: -7px;
+        transform: translate(7px, -50%);
+        display: flex;
+        flex-direction: column;
+        z-index: 10000;
+    }
+
+    &__logo {
+        transform: scale(1.24);
+        padding: 8px 0 8px 0;
+        fill: grey;
+        transition: transform 250ms ease-in-out;
+
+        &:hover {
+            fill: dodgerblue;
+            left: 10px;
+            transform: scale(1.24) translateX(10px);
+            cursor: pointer;
+        }
     }
 }
 
@@ -224,7 +251,6 @@ form {
     }
 
     &__card {
-        overflow: hidden;
         position: relative;
         padding: 1%;
         background: white;

@@ -35,6 +35,22 @@ document
     .querySelector(".experience-section__image--abb")
     .appendChild(getSvgNode('experience-section__mark-icon experience-section__mark-icon--abb', 'public/abb-logo.svg'));
 
+document
+    .querySelector(".social-bar__logo--facebook")
+    .appendChild(getSvgNode(null, 'public/social-facebook.svg'));
+
+document
+    .querySelector(".social-bar__logo--instagram")
+    .appendChild(getSvgNode(null, 'public/social-instagram.svg'));
+
+document
+    .querySelector(".social-bar__logo--twitter")
+    .appendChild(getSvgNode(null, 'public/social-twitter.svg'));
+
+document
+    .querySelector(".social-bar__logo--whatsapp")
+    .appendChild(getSvgNode(null, 'public/social-whatsapp.svg'));
+
 window.mutationObserver = new MutationObserver(function (mutations, observer) {
     let i = 0;
 
