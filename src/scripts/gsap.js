@@ -54,14 +54,26 @@ sections.forEach((section, i) => {
 		// markers: true,
 		onLeave: () => {
 			if (navLinks[i + 1]) {
-				gsap.to(navLinks[i + 1], { scale: 1.3, color: "grey" });
-				gsap.to(navLinks[i], { scale: 1, color: "white" });
+				gsap.set(navLinks[i + 1], {
+					color: "dodgerblue",
+					fontWeight: 900
+				});
+				gsap.set(navLinks[i], {
+					color: "white",
+					fontWeight: 100
+				});
 			}
 		},
 		onEnterBack: () => {
-			gsap.to(navLinks[i], { scale: 1.3, color: "grey" });
+			gsap.set(navLinks[i], {
+				color: "dodgerblue",
+				fontWeight: 900
+			});
 			if (navLinks[i + 1]) {
-				gsap.to(navLinks[i + 1], { scale: 1, color: "white" });
+				gsap.set(navLinks[i + 1], {
+					color: "white",
+					fontWeight: 100
+				});
 			}
 		},
 	});

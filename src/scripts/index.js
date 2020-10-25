@@ -61,3 +61,15 @@ setTimeout(() => {
     mutationObserver.disconnect();
     console.log(mutationObserver);
 }, 4000);
+
+const handleSubmit = e => {
+    e.preventDefault();
+    navigator.clipboard.writeText("nowakkamil@yahoo.com");
+    alert("Please send an e-mail to: nowakkamil@yahoo.com. E-mail address copied to clipboard");
+};
+
+const form = document.getElementsByTagName("form")[0];
+
+if (form) {
+    form.addEventListener("submit", handleSubmit);
+}
