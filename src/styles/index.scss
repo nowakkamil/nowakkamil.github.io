@@ -43,7 +43,7 @@ nav {
 
     & li {
         list-style-type: none;
-        margin: 6% 0;
+        margin: 8% 0;
     }
 
     & a {
@@ -53,11 +53,12 @@ nav {
         letter-spacing: 4px;
 
         &:hover {
-            text-decoration: underline;
+            color: darkgrey !important;
         }
 
         &:active {
             font-weight: 900;
+            color: dodgerblue !important;
         }
     }
 }
@@ -110,7 +111,7 @@ form {
         transform: scale(1.24);
         padding: 8px 0 8px 0;
         fill: grey;
-        transition: transform 250ms ease-in-out;
+        transition: transform 250ms ease-in-out, fill 250ms ease-in-out;
 
         &:hover {
             fill: dodgerblue;
