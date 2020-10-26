@@ -31,7 +31,6 @@ const navLinks = gsap.utils.toArray(".nav__link-wrapper a");
 navLinks.forEach((link, i) => {
 	link.addEventListener("click", e => {
 		e.preventDefault();
-		console.log(i * innerHeight);
 		gsap.to(window, { scrollTo: i * innerHeight });
 	});
 });

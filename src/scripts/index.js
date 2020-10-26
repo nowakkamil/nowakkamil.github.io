@@ -61,7 +61,13 @@ mutationObserver.observe(document.querySelector(".landing-section__mark"), { sub
 
 const handleSubmit = e => {
     e.preventDefault();
-    navigator.clipboard.writeText("nowakkamil@yahoo.com");
+    try {
+        navigator.clipboard.writeText("nowakkamil@yahoo.com");
+    } catch (error) {
+        console.log(`An error occurred while trying to save to clipboard. Error: ${error}`);
+        alert("Please send an e-mail to: nowakkamil@yahoo.com");
+        return;
+    }
     alert("Please send an e-mail to: nowakkamil@yahoo.com. E-mail address copied to clipboard");
 };
 
