@@ -133,9 +133,11 @@ form {
         position: fixed;
         top: 50%;
         left: -7px;
+        height: 100%;
         transform: translate(7px, -50%);
         display: flex;
         flex-direction: column;
+        justify-content: center;
         z-index: 10000;
     }
 
@@ -150,6 +152,23 @@ form {
             left: 10px;
             transform: scale(1.24) translateX(10px);
             cursor: pointer;
+        }
+    }
+
+    @media screen and (max-width: $laptop-undersized-width) {
+        &__container {
+            left: 14px;
+            padding-bottom: 7px;
+            justify-content: flex-end;
+        }
+
+        &__logo {
+            padding: 7px 0 7px 0;
+            transform: scale(1.08);
+
+            &:hover {
+                transform: scale(1.24);
+            }
         }
     }
 }
