@@ -64,25 +64,37 @@ nav {
 }
 
 form {
+    height: 100%;
     padding: 16% 30% 20%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+
+    @media screen and (max-width: $laptop-mid-width) {
+        @include interpolate(padding, 30px, 300px, $mobile-undersized-width, $laptop-mid-width);
+    }
 
     & * {
         margin: 1% 0;
     }
 
     & label {
-        font-size: 1.1em;
+        @include interpolate(padding-left, 3px, 6px);
+        @include interpolate(font-size, $h4-font-size, $h3-font-size);
     }
 
     & input,
     & textarea {
-        padding: 1.5%;
+        @include interpolate(padding, 6px, 14px);
         background: transparent;
         color: white;
         border: 1px solid #242424;
         border-radius: 4px;
+    }
+
+    & textarea {
+        resize: vertical;
+        min-height: 52%;
     }
 
     & input[type="submit"] {
