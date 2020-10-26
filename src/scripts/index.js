@@ -27,9 +27,9 @@ const getSvgNodes = () => {
     return svgNodes;
 };
 
-var marks = document.querySelectorAll(".landing-section__mark");
-
-marks.forEach(mark => mark.appendChild(getSvgNodes()));
+document
+    .querySelectorAll(".landing-section__mark")
+    .forEach(mark => mark.appendChild(getSvgNodes()));
 
 document
     .querySelector(".experience-section__image--abb")
@@ -51,32 +51,13 @@ document
     .querySelector(".social-bar__logo--whatsapp")
     .appendChild(getSvgNode(null, 'public/social-whatsapp.svg'));
 
-window.mutationObserver = new MutationObserver(function (mutations, observer) {
-    let i = 0;
-
-    mutations.forEach(function (mutation) {
-        console.log(mutation);
-        i++;
-    });
-
-    console.log(i);
-
-    if (i === ICONS_COUNT) {
-        animateMarks();
-        delete window.mutationObserver;
-        observer.disconnect();
-        stop(); // TODO: Verify if needed
-    }
+window.mutationObserver = new MutationObserver((_mutations, observer) => {
+    animateMarks();
+    observer.disconnect();
+    delete window.mutationObserver;
 });
 
 mutationObserver.observe(document.querySelector(".landing-section__mark"), { subtree: true, childList: true });
-
-const stop = () => mutationObserver.disconnect();
-
-setTimeout(() => {
-    mutationObserver.disconnect();
-    console.log(mutationObserver);
-}, 4000);
 
 const handleSubmit = e => {
     e.preventDefault();
