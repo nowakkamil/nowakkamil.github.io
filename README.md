@@ -1,1 +1,3 @@
-# nowakkamil.github.io
+# Kamil Nowak
+
+Personal website as a portfolio.
