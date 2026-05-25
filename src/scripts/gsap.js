@@ -1,7 +1,7 @@
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all";
 
 const animateMarks = () => gsap.to(".landing-section__mark-icon", {
-	duration: 0.5,
+	duration: 1.64,
 	ease: "none",
 	x: "+=100%",
 	modifiers: {
@@ -20,6 +20,26 @@ gsap.to("section:not(:last-of-type)", {
 		end: "top bottom",
 		pin: true
 	}
+});
+
+gsap.from(".experience-section__image", {
+	yPercent: 0,
+	left: "50px",
+	ease: "none",
+	autoAlpha: 0,
+	scrollTrigger: {
+		trigger: ".experience-section__card",
+		scrub: true
+	},
+});
+
+gsap.to(".experience-section__card-text", {
+	yPercent: 50,
+	ease: "none",
+	scrollTrigger: {
+		trigger: ".experience-section__card",
+		scrub: true
+	},
 });
 
 const initialScrollTo = window.location.hash;

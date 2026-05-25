@@ -3,6 +3,8 @@ import { animateMarks } from '../scripts/gsap';
 import '@iconfu/svg-inject';
 import { CSSPlugin } from "gsap/all";
 
+// TODO: Implement ScrollTrigger bounce animation for the bubbles around image
+
 // Prevent the webpack from performing tree shaking
 const plugin = CSSPlugin;
 const ICONS_COUNT = 4;
@@ -30,10 +32,6 @@ const getSvgNodes = () => {
 document
     .querySelectorAll(".landing-section__mark")
     .forEach(mark => mark.appendChild(getSvgNodes()));
-
-document
-    .querySelector(".experience-section__image--abb")
-    .appendChild(getSvgNode('experience-section__mark-icon experience-section__mark-icon--abb', 'public/abb-logo.svg'));
 
 document
     .querySelector(".social-bar__logo--facebook")

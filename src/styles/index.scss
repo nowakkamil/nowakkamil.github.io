@@ -136,7 +136,9 @@ form {
         transform: scale(1.24);
         padding: 8px 0 8px 0;
         fill: grey;
-        transition: transform 250ms ease-in-out, fill 250ms ease-in-out;
+        transition:
+            transform 250ms ease-in-out,
+            fill 250ms ease-in-out;
 
         &:hover {
             fill: dodgerblue;
@@ -312,7 +314,6 @@ form {
 
 .experience-section {
     position: relative;
-    background-color: $color-mine-shaft;
     overflow-y: auto;
 
     &__image {
@@ -347,7 +348,6 @@ form {
         width: 25vw;
         transition: transform 0.8s;
         background-color: transparent;
-        perspective: 1000px;
 
         @media screen and (max-width: $laptop-min-width) {
             width: 32vw;
@@ -356,21 +356,8 @@ form {
             min-height: 200px;
         }
 
-        &-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-        }
-
-        &:hover &-inner {
-            transform: rotateY(180deg);
-        }
-
         &-front,
-        &-back {
+        &-text {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -382,25 +369,18 @@ form {
             color: black;
         }
 
-        &-back {
-            background-color: dodgerblue;
-            border: none;
-            color: white;
-            transform: rotateY(180deg);
-
+        &-text {
             @include interpolate(font-size, $h5-font-size, $h2-font-size);
 
-            &-text {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                margin: 0;
-                width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            width: 100%;
 
-                & span {
-                    font-weight: 900;
-                }
+            & span {
+                font-weight: 900;
             }
         }
 
@@ -413,8 +393,10 @@ form {
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
+            flex-direction: column;
             justify-content: space-evenly;
             align-content: center;
+            align-items: center;
 
             @media screen and (max-width: $laptop-min-width) {
                 display: inline-block;
