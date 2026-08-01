@@ -1,0 +1,189 @@
+@use './responsive';
+
+.experience {
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+    padding: 6rem 0;
+
+    &__row {
+        padding: 0 var(--experience-row-inline-padding, clamp(10px, calc(18vw + 10px), 23vw));
+        display: grid;
+        grid-template-columns: clamp(9rem, 10vw, 12rem) minmax(0, 1fr);
+        gap: clamp(1.5rem, 2vw, 2rem);
+        align-items: start;
+
+        &--certification {
+            row-gap: clamp(1.25rem, 2.5vh, 2rem);
+        }
+    }
+
+    &__category {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: rgb(178 240 255 / 68%);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-shadow:
+            0 0 0.25rem rgb(157 232 255 / 30%),
+            0 0 0.75rem rgb(72 153 255 / 14%);
+        text-transform: uppercase;
+
+        &::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgb(158 239 255 / 42%), transparent);
+            box-shadow: 0 0 0.55rem rgb(91 194 255 / 20%);
+        }
+    }
+
+    &__meta {
+        min-width: 0;
+    }
+
+    &__period {
+        padding-top: 0.2rem;
+        color: rgb(205 235 255 / 78%);
+        opacity: 0.72;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.025em;
+        text-shadow:
+            0 0 0.25rem rgb(157 222 255 / 28%),
+            0 0 0.7rem rgb(70 139 255 / 12%);
+    }
+
+    &__organization {
+        margin-top: 0.55rem;
+        color: rgb(205 235 255 / 72%);
+        font-size: 0.78rem;
+        font-weight: 500;
+        line-height: 1.35;
+        opacity: 0.76;
+    }
+
+    &__role {
+        margin: 0 0 0.5rem;
+        color: rgb(234 247 255 / 97%);
+        font-size: 1.4rem;
+        font-weight: 600;
+        text-shadow:
+            0 0 0.3rem rgb(172 229 255 / 42%),
+            0 0 0.9rem rgb(77 151 255 / 22%);
+    }
+
+    &__desc {
+        max-width: 72rem;
+        margin-inline: 0;
+        color: rgb(224 240 252 / 88%);
+        opacity: 0.82;
+        font-weight: 300;
+        line-height: 1.6;
+        padding: 0;
+
+        &--technologies {
+            margin-top: 0.75rem;
+            color: rgb(195 222 240 / 82%);
+            font-size: 0.82em;
+            font-weight: 360;
+            line-height: 1.4;
+            opacity: 0.76;
+
+            .experience__label {
+                color: rgb(224 240 252 / 96%);
+            }
+        }
+    }
+
+    &__label {
+        margin-right: 0.5rem;
+        font-weight: 600;
+    }
+
+    &__line {
+        will-change: opacity, filter;
+    }
+
+    &__section-spacer {
+        flex: 0 0 clamp(20rem, 48vh, 44rem);
+        height: clamp(20rem, 48vh, 44rem);
+    }
+}
+
+@include responsive.down('tablet') {
+    .experience {
+        gap: clamp(2.75rem, 5vw, 3.25rem);
+    }
+
+    .experience__row {
+        grid-template-columns: minmax(8rem, 0.32fr) minmax(0, 1fr);
+        gap: clamp(1.25rem, 3vw, 2rem);
+        padding-inline: clamp(1.5rem, 6vw, 5rem);
+    }
+}
+
+@include responsive.down('mobile') {
+    .experience {
+        gap: clamp(2.5rem, 6.5svh, 3.25rem);
+        padding-block: clamp(4rem, 10svh, 6rem);
+    }
+
+    .experience__section-spacer {
+        flex-basis: clamp(28rem, 64svh, 52rem);
+        height: clamp(28rem, 64svh, 52rem);
+    }
+
+    .experience__row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.55rem;
+        padding-right: max(0.875rem, env(safe-area-inset-right));
+        padding-left: max(0.875rem, env(safe-area-inset-left));
+    }
+
+    .experience__category {
+        gap: 0.75rem;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        letter-spacing: 0.13em;
+    }
+
+    .experience__period {
+        padding-top: 0;
+        font-size: 0.78rem;
+        line-height: 1.35;
+        letter-spacing: 0.035em;
+    }
+
+    .experience__organization {
+        margin-top: 0.3rem;
+        font-size: 0.8rem;
+    }
+
+    .experience__role {
+        margin-bottom: 0.4rem;
+        font-size: clamp(1.15rem, 4vw, 1.35rem);
+        line-height: 1.2;
+    }
+
+    .experience__desc {
+        font-size: 1rem;
+        line-height: 1.65;
+        overflow-wrap: anywhere;
+    }
+
+    .experience__desc--technologies {
+        margin-top: 0.65rem;
+        font-size: 0.84rem;
+        line-height: 1.45;
+    }
+}
+
+@include responsive.reduced-motion {
+    .experience__line {
+        will-change: auto;
+    }
+}

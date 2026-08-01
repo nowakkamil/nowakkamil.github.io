@@ -1,0 +1,190 @@
+.cursor-sound-label {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    user-select: none;
+    visibility: hidden;
+    opacity: 0;
+    will-change: transform, opacity;
+
+    &__content {
+        display: block;
+        padding: 0.28rem 0.44rem;
+        border: 0;
+        border-radius: 999px;
+        background: rgb(0 0 0 / 88%);
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: 0.075em;
+        text-shadow:
+            0 0 0.35rem rgb(255 255 255 / 18%),
+            0 0 0.8rem rgb(158 239 255 / 12%);
+        white-space: nowrap;
+        will-change: transform;
+        backdrop-filter: blur(0.35rem);
+    }
+}
+
+.sound-toggle {
+    position: fixed;
+    right: calc(0.9rem + env(safe-area-inset-right, 0px));
+    bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    z-index: 90;
+    display: grid;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 50%;
+    background: rgb(0 0 0 / 38%);
+    color: rgb(255 255 255 / 70%);
+    box-shadow:
+        0 0 0.8rem rgb(255 255 255 / 6%),
+        inset 0 0 0.8rem rgb(255 255 255 / 2.5%);
+    cursor: pointer;
+    transition:
+        bottom 240ms ease,
+        color 180ms ease,
+        border-color 180ms ease,
+        background-color 180ms ease,
+        opacity 180ms ease;
+    backdrop-filter: blur(0.4rem);
+    -webkit-tap-highlight-color: transparent;
+
+    &::after {
+        position: absolute;
+        width: 0.06rem;
+        height: 0.9rem;
+        border-radius: 999px;
+        background: currentcolor;
+        content: '';
+        opacity: 0.68;
+        transform: rotate(-42deg);
+        transition: opacity 160ms ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgb(255 255 255 / 42%);
+        background: rgb(255 255 255 / 4%);
+        color: #fff;
+        box-shadow:
+            0 0 0.7rem rgb(255 255 255 / 12%),
+            0 0 1.25rem rgb(255 255 255 / 8%);
+    }
+
+    &:focus-visible {
+        outline: 1px solid rgb(255 255 255 / 58%);
+        outline-offset: 0.2rem;
+    }
+
+    &[data-sound-state='playing'] {
+        border-color: rgb(255 255 255 / 30%);
+        color: #fff;
+        box-shadow:
+            0 0 0.55rem rgb(255 255 255 / 10%),
+            0 0 1.15rem rgb(255 255 255 / 7%);
+
+        &::after {
+            opacity: 0;
+        }
+    }
+
+    &[data-sound-state='unavailable'] {
+        cursor: not-allowed;
+        opacity: 0.36;
+    }
+
+    &__indicator,
+    &__indicator::before,
+    &__indicator::after {
+        width: 0.09rem;
+        border-radius: 999px;
+        background: currentcolor;
+    }
+
+    &__indicator {
+        position: relative;
+        height: 0.72rem;
+        opacity: 0.8;
+        transform: scaleY(0.52);
+        transition:
+            opacity 160ms ease,
+            transform 160ms ease;
+
+        &::before,
+        &::after {
+            position: absolute;
+            bottom: 0;
+            height: 100%;
+            content: '';
+        }
+
+        &::before {
+            left: -0.3rem;
+            transform: scaleY(0.58);
+        }
+
+        &::after {
+            right: -0.3rem;
+            transform: scaleY(0.78);
+        }
+    }
+
+    &[data-sound-state='playing'] &__indicator {
+        opacity: 1;
+        animation: sound-level-center 900ms ease-in-out infinite alternate;
+        transform: scaleY(1);
+
+        &::before {
+            animation: sound-level-outer 720ms ease-in-out -260ms infinite alternate;
+        }
+
+        &::after {
+            animation: sound-level-outer 820ms ease-in-out -520ms infinite alternate-reverse;
+        }
+    }
+}
+
+@media (width <= 640px) {
+    body:has(.contact-tabs:not([aria-hidden='true'])) .sound-toggle {
+        bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+        z-index: 1002;
+        background: rgb(3 7 12 / 82%);
+        backdrop-filter: none;
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .cursor-sound-label {
+        display: none;
+    }
+
+    .sound-toggle {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sound-toggle,
+    .sound-toggle::after,
+    .sound-toggle__indicator {
+        transition: none;
+    }
+
+    .sound-toggle[data-sound-state='playing'] .sound-toggle__indicator,
+    .sound-toggle[data-sound-state='playing'] .sound-toggle__indicator::before,
+    .sound-toggle[data-sound-state='playing'] .sound-toggle__indicator::after {
+        animation: none;
+    }
+
+    .sound-toggle[data-sound-state='playing'] .sound-toggle__indicator {
+        transform: scaleY(0.88);
+    }
+}

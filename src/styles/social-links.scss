@@ -1,0 +1,101 @@
+.social-links {
+    width: min(100%, 28rem);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
+    pointer-events: auto;
+
+    &__link {
+        position: relative;
+        isolation: isolate;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.42rem;
+        font-family: Urbanist, sans-serif;
+        font-size: clamp(0.58rem, 1.5vw, 0.68rem);
+        font-weight: 560;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: rgb(255 255 255 / 70%);
+        opacity: 0;
+        transition:
+            opacity 200ms ease,
+            scale 300ms ease-in-out;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 20% 8%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, rgb(158 239 255 / 12%), transparent 72%);
+            filter: blur(0.45rem);
+            opacity: 0;
+            transition: opacity 200ms ease;
+        }
+
+        &:hover,
+        &:focus-visible {
+            &::before {
+                opacity: 1;
+            }
+
+            .social-links__icon {
+                filter: drop-shadow(0 0 0.4rem rgb(158 239 255 / 42%));
+            }
+        }
+
+        &:focus-visible {
+            outline: 1px solid rgb(255 255 255 / 58%);
+            outline-offset: 0.1rem;
+        }
+
+        &:active {
+            scale: 1;
+        }
+
+        @media (pointer: coarse) {
+            touch-action: manipulation;
+        }
+    }
+
+    &__icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex: 0 0 auto;
+        display: block;
+        background: rgb(255 255 255 / 70%);
+        mask: var(--social-icon) center / contain no-repeat;
+        filter: drop-shadow(0 0 0.4rem rgb(158 239 255 / 0%));
+        transition: filter 200ms ease;
+    }
+}
+
+@media (width <= 640px) {
+    .social-links {
+        width: 100%;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.1rem;
+
+        &__link {
+            min-height: 36px;
+            padding-inline: 0.1rem;
+            gap: 0.25rem;
+            font-size: clamp(0.6rem, 2.5vw, 0.74rem);
+            letter-spacing: 0.04em;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .social-links {
+        &__link::before,
+        &__icon {
+            transition: none;
+        }
+    }
+}

@@ -1,0 +1,94 @@
+.constellation-keyboard-nav {
+    position: fixed;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip-path: inset(50%);
+    white-space: nowrap;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &:focus-within {
+        left: max(1rem, env(safe-area-inset-left));
+        bottom: max(1rem, env(safe-area-inset-bottom));
+        z-index: 1150;
+        width: min(26rem, calc(100vw - 2rem));
+        height: auto;
+        max-height: min(70svh, 36rem);
+        margin: 0;
+        padding: 1rem;
+        overflow: hidden auto;
+        border: 1px solid rgb(158 239 255 / 24%);
+        border-radius: 0.65rem;
+        background: rgb(3 7 18 / 94%);
+        box-shadow:
+            0 1.4rem 3rem rgb(0 0 0 / 48%),
+            0 0 2rem rgb(146 186 255 / 10%);
+        clip-path: none;
+        white-space: normal;
+        backdrop-filter: blur(14px);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 560;
+        color: rgb(255 255 255 / 94%);
+    }
+
+    &__instructions {
+        margin: 0.35rem 0 0.9rem;
+        font-size: 0.72rem;
+        line-height: 1.45;
+        color: rgb(226 242 255 / 64%);
+    }
+
+    &__group + &__group {
+        margin-top: 0.8rem;
+    }
+
+    &__group-title {
+        margin: 0 0 0.35rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: rgb(158 239 255 / 68%);
+    }
+
+    &__projects {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    &__project {
+        width: 100%;
+        border: 1px solid transparent;
+        border-radius: 0.35rem;
+        padding: 0.45rem 0.55rem;
+        background: transparent;
+        font: inherit;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        text-align: left;
+        color: rgb(255 255 255 / 72%);
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            border-color: rgb(158 239 255 / 30%);
+            background: rgb(158 239 255 / 7%);
+            color: rgb(255 255 255 / 96%);
+        }
+
+        &:focus-visible {
+            outline: 2px solid rgb(158 239 255 / 68%);
+            outline-offset: 2px;
+        }
+    }
+}

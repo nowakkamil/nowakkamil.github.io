@@ -1,0 +1,50 @@
+html {
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+    scrollbar-color: rgb(255 255 255 / 28%) rgb(255 255 255 / 2.5%);
+    background: #000;
+
+    &:not(.scrollbar-ready) {
+        scrollbar-color: transparent transparent;
+
+        &::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+    }
+
+    &.scrollbar-ready {
+        scrollbar-color: rgb(255 255 255 / 28%) rgb(255 255 255 / 2.5%);
+
+        &::-webkit-scrollbar-thumb {
+            background: rgb(255 255 255 / 28%);
+            border-radius: 999px;
+        }
+    }
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+
+    &-track {
+        background: rgb(255 255 255 / 2.5%);
+    }
+
+    &-thumb {
+        border-radius: 999px;
+        box-shadow: 0 0 0.45rem rgb(255 255 255 / 10%);
+
+        &:hover {
+            background: rgb(255 255 255 / 56%);
+        }
+
+        &:active {
+            background: rgb(255 255 255 / 82%);
+            box-shadow: 0 0 0.6rem rgb(255 255 255 / 22%);
+        }
+    }
+}
