@@ -1,0 +1,59 @@
+@use './responsive';
+
+@font-face {
+    font-family: Urbanist;
+    src: url('../assets/fonts/Urbanist-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: Urbanist;
+    src: url('../assets/fonts/Urbanist-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: rgb(226 242 255 / 92%);
+    font-family: Urbanist, sans-serif;
+    font-size: clamp(12px, 1.4vw + 10px, 20px);
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 34%,
+        rgb(0 0 0 / 1%) 55%,
+        rgb(0 0 0 / 6%) 78%,
+        rgb(0 0 0 / 12%) 100%
+    );
+    pointer-events: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
+@include responsive.down('tablet') {
+    html,
+    body {
+        font-size: clamp(16px, calc(0.62vw + 13.7px), 20px);
+    }
+}

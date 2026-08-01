@@ -1,0 +1,35 @@
+.skip-link {
+    position: fixed;
+    top: max(1rem, env(safe-area-inset-top));
+    left: max(1rem, env(safe-area-inset-left));
+    z-index: 2000;
+    padding: 0.7rem 1rem;
+    border: 1px solid rgb(158 239 255 / 55%);
+    border-radius: 0.45rem;
+    background: #030712;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease;
+
+    &:focus-visible {
+        outline: 2px solid #9eefff;
+        outline-offset: 3px;
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+#smooth-content:focus,
+#experience:focus {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skip-link {
+        transition: none;
+    }
+}
