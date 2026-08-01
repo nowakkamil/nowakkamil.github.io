@@ -4,10 +4,10 @@ import githubIcon from '../../assets/icons/github.svg';
 import linkedInIcon from '../../assets/icons/linkedin.svg';
 
 const SOCIAL_LINK_PLACEHOLDERS = {
-    emailAddress: 'YOUR_EMAIL_ADDRESS',
+    emailAddress: 'contact@nowakkamil.com',
     githubProfileUrl: 'https://github.com/nowakkamil',
     linkedInProfileUrl: 'https://www.linkedin.com/in/nowakkamil',
-    cvFilePath: '/assets/YOUR_CV_FILE.pdf',
+    cvFilePath: '',
 } as const;
 
 export type SocialLinksOptions = {
