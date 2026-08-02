@@ -44,6 +44,7 @@ export const initDebugGui = ({
     mainCloudMaterial,
     coloredLightMaterial,
     shaderUniformComponents,
+    selectiveBloom,
     bloomPass,
     afterimagePass,
 }: DebugTargets): GUI => {
@@ -57,17 +58,15 @@ export const initDebugGui = ({
     const particles = gui.addFolder('1. Particles');
     const mainCloud = particles.addFolder('Main cloud');
     mainCloud.add(mainCloudMaterial, 'visible');
-    mainCloud.add(mainCloudMaterial.uniforms.uSizeBase, 'value', 50, 400, 1).name('base size');
+    mainCloud.add(mainCloudMaterial.uniforms.uSizeBase, 'value', 10, 1000, 1).name('base size');
     mainCloud
-        .add(mainCloudMaterial.uniforms.uCloudPointSizeScale, 'value', 0.25, 2, 0.01)
+        .add(mainCloudMaterial.uniforms.uCloudPointSizeScale, 'value', 0.1, 10, 0.01)
         .name('point scale');
     mainCloud
-        .add(mainCloudMaterial.uniforms.uCloudBrightness, 'value', 0, 2, 0.01)
+        .add(mainCloudMaterial.uniforms.uCloudBrightness, 'value', 0, 10, 0.01)
         .name('brightness');
     mainCloud.add(mainCloudMaterial.uniforms.uParticleDensity, 'value', 0, 1, 0.01).name('density');
-    mainCloud
-        .add(mainCloudMaterial.uniforms.uSparkleStrength, 'value', 0, 1.25, 0.01)
-        .name('sparkle');
+    mainCloud.add(mainCloudMaterial.uniforms.uSparkleStrength, 'value', 0, 2, 0.01).name('sparkle');
 
     if (ambientShader) {
         const ambient = particles.addFolder('Ambient particles');
@@ -82,12 +81,12 @@ export const initDebugGui = ({
             material: { uniforms },
         } = floatingTextShader;
         floatingText.add(material, 'visible');
-        floatingText.add(uniforms.uAmplitude, 'value', 0, 0.5, 0.01).name('orbit amplitude');
-        floatingText.add(uniforms.uSpeed, 'value', 0, 3, 0.01).name('orbit speed');
-        floatingText.add(uniforms.uSize, 'value', 0.1, 1, 0.01).name('point size');
-        floatingText.add(uniforms.uRevealDelay, 'value', 0, 4, 0.05).name('reveal delay');
-        floatingText.add(uniforms.uBloomStrength, 'value', 0, 2, 0.01).name('bloom');
-        floatingText.add(uniforms.uHazeStrength, 'value', 0, 1, 0.01).name('haze');
+        floatingText.add(uniforms.uAmplitude, 'value', 0, 1, 0.01).name('orbit amplitude');
+        floatingText.add(uniforms.uSpeed, 'value', 0, 6, 0.01).name('orbit speed');
+        floatingText.add(uniforms.uSize, 'value', 0.1, 3, 0.01).name('point size');
+        floatingText.add(uniforms.uRevealDelay, 'value', 0, 10, 0.05).name('reveal delay');
+        floatingText.add(uniforms.uBloomStrength, 'value', 0, 6, 0.1).name('bloom');
+        floatingText.add(uniforms.uHazeStrength, 'value', 0, 6, 0.1).name('haze');
     }
 
     if (ellipsisShader) {
@@ -187,6 +186,7 @@ export const initDebugGui = ({
 
     const postProcessing = cameraAndEffects.addFolder('Post-processing');
     postProcessing.add(bloomPass, 'enabled').name('bloom enabled');
+    postProcessing.add(selectiveBloom, 'strengthScale', 0, 3, 0.01).name('bloom strength');
     postProcessing.add(bloomPass, 'threshold', 0, 1, 0.01);
     postProcessing.add(bloomPass, 'radius', 0, 1, 0.01);
     postProcessing.add(afterimagePass, 'enabled').name('afterimage enabled');

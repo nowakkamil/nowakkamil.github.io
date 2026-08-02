@@ -3,7 +3,7 @@ export const TABLET_MAX_WIDTH = 1024;
 export const DESKTOP_SCALE_REFERENCE_WIDTH = 3840;
 const DESKTOP_PIXEL_RATIO_CAP = 2;
 const DESKTOP_BLOOM_PIXEL_RATIO_CAP = 2;
-const MOBILE_BLOOM_STRENGTH_SCALE = 0.5;
+const MOBILE_BLOOM_STRENGTH_SCALE = 0.66;
 const TABLET_TEXT_CURVE_STRENGTH = 0.2;
 const DESKTOP_TEXT_CURVE_STRENGTH = 1;
 const TABLET_TEXT_CURVE_BOW = 0.2;
@@ -222,15 +222,15 @@ const getResponsiveConfig = (
                 pixelRatioCap: DESKTOP_PIXEL_RATIO_CAP,
                 bloomPixelRatioCap: DESKTOP_BLOOM_PIXEL_RATIO_CAP,
                 bloomStrengthScale: 1,
-                textBloomScale: 1.45,
+                textBloomScale: 1.6,
             },
             coloredLight: {
                 horizontalScale: 200,
                 horizonY: -120,
                 speed: 100,
-                intensity: 0.22,
+                intensity: 0.3,
                 width: 400,
-                height: 30,
+                height: 32,
                 waveAmplitudeScale: 1,
                 colorWindowSize: 5,
             },
@@ -255,7 +255,7 @@ const getResponsiveConfig = (
                 fov: 50,
                 introMinZ: -10,
                 introMaxZ: 120,
-                projectsMinZ: 6,
+                projectsMinZ: 5.5,
                 projectsMaxZ: 120,
                 ...DESKTOP_CONTACT_CAMERA_CONFIG,
             },
@@ -292,13 +292,13 @@ const getResponsiveConfig = (
                 textBloomScale: 1.38,
             },
             coloredLight: {
-                horizontalScale: isPortrait ? 155 : 185,
+                horizontalScale: isPortrait ? 90 : 110,
                 horizonY: -110,
                 speed: 85,
-                intensity: 0.24,
+                intensity: 0.3,
                 width: isPortrait ? 205 : 240,
                 height: isPortrait ? 38 : 34,
-                waveAmplitudeScale: 0.82,
+                waveAmplitudeScale: 0.9,
                 colorWindowSize: 5,
             },
             particles: {
@@ -346,16 +346,16 @@ const getResponsiveConfig = (
             pixelRatioCap: DESKTOP_PIXEL_RATIO_CAP,
             bloomPixelRatioCap: DESKTOP_BLOOM_PIXEL_RATIO_CAP,
             bloomStrengthScale: MOBILE_BLOOM_STRENGTH_SCALE,
-            textBloomScale: 0.75,
+            textBloomScale: 1.5,
         },
         coloredLight: {
-            horizontalScale: isPortrait ? 115 : 150,
+            horizontalScale: isPortrait ? 80 : 100,
             horizonY: -106,
             speed: 75,
-            intensity: 0.15,
-            width: 150,
-            height: 90,
-            waveAmplitudeScale: 0.72,
+            intensity: 0.14,
+            width: 180,
+            height: 80,
+            waveAmplitudeScale: 0.9,
             colorWindowSize: 2,
         },
         particles: {

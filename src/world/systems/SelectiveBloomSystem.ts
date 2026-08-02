@@ -20,7 +20,7 @@ export class SelectiveBloomSystem {
     private readonly composer: EffectComposer;
     private readonly bloomPass: UnrealBloomPass;
     private pixelRatio = 0;
-    private strengthScale = 1;
+    private strengthScaleValue = 1;
 
     constructor(
         renderer: THREE.WebGLRenderer,
@@ -33,7 +33,7 @@ export class SelectiveBloomSystem {
         this.composer = new EffectComposer(renderer);
         this.composer.renderToScreen = false;
         this.composer.addPass(new RenderPass(scene, camera));
-        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.5, 0.48, 0.08);
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.5, 0.5, 0.4);
         this.composer.addPass(this.bloomPass);
     }
 
@@ -43,6 +43,14 @@ export class SelectiveBloomSystem {
 
     public get pass(): UnrealBloomPass {
         return this.bloomPass;
+    }
+
+    public get strengthScale(): number {
+        return this.strengthScaleValue;
+    }
+
+    public set strengthScale(value: number) {
+        this.strengthScaleValue = Math.max(value, 0);
     }
 
     public render(state: TextBloomState): void {
@@ -72,12 +80,12 @@ export class SelectiveBloomSystem {
             material.uniforms.uHazeStrength.value = 0.065 * strengthScale;
         }
 
-        this.bloomPass.strength = bloomStrength * this.strengthScale;
+        this.bloomPass.strength = bloomStrength * this.strengthScaleValue;
         this.renderBloomLayer(material, textPassOpacity);
     }
 
     public setStrengthScale(value: number): void {
-        this.strengthScale = Math.max(value, 0);
+        this.strengthScale = value;
     }
 
     public setSize(width: number, height: number, pixelRatio: number): void {

@@ -745,6 +745,7 @@ export class World {
                 this.shaderUniforms.all(),
                 ([, component]) => component,
             ),
+            selectiveBloom: this.selectiveBloomSystem,
             bloomPass: this.selectiveBloomSystem.pass,
             afterimagePass: this.afterimagePass,
         };
@@ -869,8 +870,9 @@ export class World {
     private updateMainCloudResponsiveStyle(): void {
         const isMobile = this.responsiveConfig.isMobile;
 
-        this.mainCloudMaterial.uniforms.uCloudPointSizeScale.value = isMobile ? 0.85 : 1;
-        this.mainCloudMaterial.uniforms.uCloudBrightness.value = isMobile ? 1.1 : 1;
+        this.mainCloudMaterial.uniforms.uSizeBase.value = isMobile ? 150 : 200;
+        this.mainCloudMaterial.uniforms.uCloudPointSizeScale.value = isMobile ? 0.6 : 1;
+        this.mainCloudMaterial.uniforms.uCloudBrightness.value = 1;
         this.mainCloudMaterial.uniforms.uMobileIntroParticleControl.value = isMobile ? 1 : 0;
     }
 
