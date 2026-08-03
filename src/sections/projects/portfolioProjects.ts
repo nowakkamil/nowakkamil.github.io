@@ -327,7 +327,7 @@ const fullStackProjects: PortfolioProject[] = [
         description:
             'A fintech platform for managing shareholder accounts, transactions, and dividend reinvestment workflows. Delivered business-critical features and strengthened maintainability through component testing, production monitoring, and developer documentation.',
 
-        period: 'June 2024 – Present',
+        period: 'June 2024 – September 2025',
         role: 'Senior Full-Stack Developer',
 
         skills: [
