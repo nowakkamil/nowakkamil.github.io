@@ -473,7 +473,7 @@
     &__meta {
         display: grid;
         grid-template-columns: minmax(5.75rem, 0.26fr) minmax(0, 1fr);
-        align-items: start;
+        align-items: baseline;
         gap: 0.5rem clamp(1.15rem, 3vw, 2rem);
         margin: 0;
         padding: 1.2rem 0 0.15rem;
