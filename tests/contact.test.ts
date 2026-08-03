@@ -170,5 +170,38 @@ describe('contact Pages Function', () => {
 
         await assertGenericNoStoreResponse(response, 204);
         assert.equal(Array.isArray(resendBody) ? resendBody.length : 0, 2);
+        assert.ok(Array.isArray(resendBody));
+        const visitorEmail = resendBody[1] as Record<string, unknown>;
+        assert.equal((visitorEmail.to as string[])[0], validBody.email);
+        assert.equal(typeof visitorEmail.text, 'string');
+        assert.equal(typeof visitorEmail.html, 'string');
+        assert.match(String(visitorEmail.html), /Hi Test Visitor,/);
+        assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
+        assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:name|message|ctaText|ctaUrl)\s*}}/);
+    });
+
+    it('HTML-escapes the visitor name before rendering the customer template', async () => {
+        let fetchCount = 0;
+        let resendBody: unknown;
+        globalThis.fetch = (async (_input, init) => {
+            fetchCount += 1;
+            if (fetchCount === 1) {
+                return jsonResponse({ success: true });
+            }
+
+            resendBody = JSON.parse(String(init?.body));
+            return jsonResponse({ data: [{ id: 'owner-email' }, { id: 'visitor-email' }] });
+        }) as typeof fetch;
+
+        const response = await onRequestPost({
+            request: createRequest({ ...validBody, name: 'Test <Visitor> & Co' }),
+            env: { ...validEnv, SEND_VISITOR_CONFIRMATION: 'true' },
+        });
+
+        await assertGenericNoStoreResponse(response, 204);
+        assert.ok(Array.isArray(resendBody));
+        const visitorHtml = String((resendBody[1] as Record<string, unknown>).html);
+        assert.match(visitorHtml, /Hi Test &lt;Visitor&gt; &amp; Co,/);
+        assert.doesNotMatch(visitorHtml, /Hi Test <Visitor>/);
     });
 });

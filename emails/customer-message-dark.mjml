@@ -29,7 +29,8 @@
 
             .dark-surface {
                 background-color: #050b18 !important;
-                background-image: radial-gradient(
+                background-image:
+                    radial-gradient(
                         circle at 112% 36%,
                         rgba(77, 226, 255, 0.24) 0%,
                         rgba(13, 92, 149, 0.16) 27%,
@@ -108,8 +109,8 @@
         </mj-style>
 
         <mj-raw>
-            <meta name="color-scheme" content="dark" />
-            <meta name="supported-color-schemes" content="dark" />
+            <meta name="color-scheme" content="dark" /> <meta name="supported-color-schemes"
+            content="dark" />
         </mj-raw>
     </mj-head>
 
@@ -165,11 +166,7 @@
                             >
                                 &nbsp;
                             </td>
-                            <td
-                                bgcolor="#29364a"
-                                height="1"
-                                style="font-size: 0; line-height: 0"
-                            >
+                            <td bgcolor="#29364a" height="1" style="font-size: 0; line-height: 0">
                                 &nbsp;
                             </td>
                         </tr>
@@ -184,7 +181,7 @@
                         line-height="1.25"
                         padding="20px 40px 20px"
                     >
-                        Hi {{name}},
+                        Hi {{ name }},
                     </mj-text>
 
                     <mj-text
@@ -195,7 +192,7 @@
                         line-height="1.72"
                         padding="0 40px 26px"
                     >
-                        {{message}}
+                        {{ message }}
                     </mj-text>
 
                     <!-- Optional CTA: remove this entire mj-button block when it is not needed. -->
@@ -207,7 +204,7 @@
                         padding="0 40px 34px"
                         target="_blank"
                     >
-                        {{ctaText}}&nbsp;&nbsp;&nbsp;→
+                        {{ ctaText }}&nbsp;&nbsp;&nbsp;→
                     </mj-button>
 
                     <mj-divider
