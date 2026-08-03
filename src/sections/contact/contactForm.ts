@@ -181,7 +181,6 @@ export const initContactForm = (): void => {
         if (result.kind === 'success') {
             resetFormState();
             setFormStatus('success');
-            statusRegion.focus();
             return;
         }
 

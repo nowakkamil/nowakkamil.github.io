@@ -370,30 +370,6 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     padding: clamp(0.55rem, 1.2vh, 0.75rem) 0;
     text-align: left;
 
-    &:has(textarea) {
-        &::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            bottom: clamp(0.5rem, 1.2vh, 0.75rem);
-            left: 0;
-            height: 1px;
-            pointer-events: none;
-            opacity: 0;
-            box-shadow: none;
-            transition:
-                opacity 220ms ease,
-                box-shadow 220ms ease;
-        }
-    }
-
-    &:has(textarea:focus)::after {
-        opacity: 1;
-        box-shadow:
-            0 1px 0 rgb(255 255 255 / 18%),
-            0 0.7rem 1.5rem -1.1rem rgb(158 239 255 / 60%);
-    }
-
     &:focus-within label {
         color: rgb(255 255 255 / 68%);
         text-shadow: 0 0 1rem rgb(158 239 255 / 14%);
@@ -419,11 +395,6 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     margin-top: 0.4rem;
     text-align: center;
     color: rgb(255 255 255 / 72%);
-
-    &:focus {
-        outline: 1px solid rgb(255 255 255 / 50%);
-        outline-offset: 0.3rem;
-    }
 }
 
 .contact-action {
