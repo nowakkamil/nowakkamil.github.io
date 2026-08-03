@@ -674,9 +674,6 @@ export class ConstellationInteraction {
             return true;
         }
 
-        // A project star is already a precise interaction target. Requiring its ray to
-        // also intersect the cluster's broad polygon can reject stars close to the
-        // polygon edge as the constellation scales and drifts.
         if (this.isProjectStarHitObject(hit.object)) {
             return true;
         }

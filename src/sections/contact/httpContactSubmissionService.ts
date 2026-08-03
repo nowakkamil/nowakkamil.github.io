@@ -1,5 +1,9 @@
 import type { ContactMessage } from './contactModel';
-import type { ContactSubmissionResult, ContactSubmissionService } from './contactSubmissionService';
+import type {
+    ContactSubmissionProtection,
+    ContactSubmissionResult,
+    ContactSubmissionService,
+} from './contactSubmissionService';
 
 const DEFAULT_CONTACT_ENDPOINT = '/api/contact';
 
@@ -47,7 +51,10 @@ const mapResponse = (response: Response): ContactSubmissionResult => {
 export const createHttpContactSubmissionService = (
     endpoint = DEFAULT_CONTACT_ENDPOINT,
 ): ContactSubmissionService => ({
-    async submit(message: ContactMessage): Promise<ContactSubmissionResult> {
+    async submit(
+        message: ContactMessage,
+        protection: ContactSubmissionProtection,
+    ): Promise<ContactSubmissionResult> {
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -55,7 +62,7 @@ export const createHttpContactSubmissionService = (
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(message),
+                body: JSON.stringify({ ...message, ...protection }),
             });
 
             return mapResponse(response);

@@ -397,6 +397,11 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     color: rgb(255 255 255 / 72%);
 }
 
+.contact-form__turnstile {
+    width: 100%;
+    min-height: 0;
+}
+
 .contact-action {
     position: relative;
     width: fit-content;

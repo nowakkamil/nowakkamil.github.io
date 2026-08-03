@@ -2,6 +2,98 @@ import { contactSchema, type ContactMessage } from './contactModel';
 import type { ContactSubmissionResult } from './contactSubmissionService';
 import { createHttpContactSubmissionService } from './httpContactSubmissionService';
 
+const TURNSTILE_SCRIPT_URL =
+    'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+
+interface TurnstileApi {
+    render(
+        container: HTMLElement,
+        options: {
+            sitekey: string;
+            action: string;
+            appearance: 'interaction-only';
+            theme: 'dark';
+            size: 'flexible';
+            callback: (token: string) => void;
+            'error-callback': () => void;
+            'expired-callback': () => void;
+            'timeout-callback': () => void;
+        },
+    ): string;
+    reset(widgetId: string): void;
+}
+
+declare global {
+    interface Window {
+        turnstile?: TurnstileApi;
+    }
+}
+
+let turnstileApiPromise: Promise<TurnstileApi> | undefined;
+
+const loadTurnstileApi = (): Promise<TurnstileApi> => {
+    if (window.turnstile) {
+        return Promise.resolve(window.turnstile);
+    }
+
+    turnstileApiPromise ??= new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = TURNSTILE_SCRIPT_URL;
+        script.async = true;
+        script.defer = true;
+        script.addEventListener('load', () => {
+            if (window.turnstile) {
+                resolve(window.turnstile);
+            } else {
+                reject(new Error('Turnstile API unavailable'));
+            }
+        });
+        script.addEventListener('error', () => reject(new Error('Turnstile API unavailable')));
+        document.head.append(script);
+    });
+
+    return turnstileApiPromise;
+};
+
+const createTurnstileController = (container: HTMLElement) => {
+    let token = '';
+    let widgetId: string | undefined;
+    const sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
+    const clearToken = (): void => {
+        token = '';
+    };
+
+    if (sitekey) {
+        void loadTurnstileApi()
+            .then((turnstile) => {
+                widgetId = turnstile.render(container, {
+                    sitekey,
+                    action: 'contact',
+                    appearance: 'interaction-only',
+                    theme: 'dark',
+                    size: 'flexible',
+                    callback: (responseToken) => {
+                        token = responseToken;
+                    },
+                    'error-callback': clearToken,
+                    'expired-callback': clearToken,
+                    'timeout-callback': clearToken,
+                });
+            })
+            .catch(clearToken);
+    }
+
+    return {
+        getToken: (): string => token,
+        reset: (): void => {
+            clearToken();
+            if (widgetId && window.turnstile) {
+                window.turnstile.reset(widgetId);
+            }
+        },
+    };
+};
+
 const contactFields = ['name', 'email', 'message'] as const satisfies ReadonlyArray<
     keyof ContactMessage
 >;
@@ -40,6 +132,8 @@ export const initContactForm = (): void => {
     const nameControl = form?.elements.namedItem('name');
     const emailControl = form?.elements.namedItem('email');
     const messageControl = form?.elements.namedItem('message');
+    const honeypotControl = form?.elements.namedItem('website');
+    const turnstileContainer = form?.querySelector<HTMLElement>('[data-turnstile]');
     const nameError = form?.querySelector<HTMLElement>('[data-field-error="name"]');
     const emailError = form?.querySelector<HTMLElement>('[data-field-error="email"]');
     const messageError = form?.querySelector<HTMLElement>('[data-field-error="message"]');
@@ -55,6 +149,8 @@ export const initContactForm = (): void => {
         !(nameControl instanceof HTMLInputElement) ||
         !(emailControl instanceof HTMLInputElement) ||
         !(messageControl instanceof HTMLTextAreaElement) ||
+        !(honeypotControl instanceof HTMLInputElement) ||
+        !turnstileContainer ||
         !nameError ||
         !emailError ||
         !messageError ||
@@ -92,6 +188,7 @@ export const initContactForm = (): void => {
     const submissionService = createHttpContactSubmissionService(
         form.dataset.contactEndpoint || undefined,
     );
+    const turnstile = createTurnstileController(turnstileContainer);
 
     const setSubmitting = (submitting: boolean): void => {
         submitButton.disabled = submitting;
@@ -248,8 +345,14 @@ export const initContactForm = (): void => {
         setFormStatus('submitting');
 
         try {
-            handleSubmissionResult(await submissionService.submit(message));
+            const result = await submissionService.submit(message, {
+                turnstileToken: turnstile.getToken(),
+                website: honeypotControl.value,
+            });
+            turnstile.reset();
+            handleSubmissionResult(result);
         } catch {
+            turnstile.reset();
             setFormStatus('server-failure');
         }
     });

@@ -7,6 +7,14 @@ export type ContactSubmissionResult =
     | { kind: 'network-failure' }
     | { kind: 'server-failure' };
 
+export interface ContactSubmissionProtection {
+    turnstileToken: string;
+    website: string;
+}
+
 export interface ContactSubmissionService {
-    submit(message: ContactMessage): Promise<ContactSubmissionResult>;
+    submit(
+        message: ContactMessage,
+        protection: ContactSubmissionProtection,
+    ): Promise<ContactSubmissionResult>;
 }

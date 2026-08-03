@@ -9,6 +9,7 @@
         "preview": "vite preview",
         "typecheck": "tsc --noEmit",
         "typecheck:watch": "tsc --noEmit --watch",
+        "test": "node --test tests/contact.test.ts",
         "lint": "npm run lint:code && npm run lint:styles",
         "lint:fix": "npm run lint:code:fix && npm run lint:styles:fix",
         "lint:code": "oxlint",
