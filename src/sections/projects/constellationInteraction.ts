@@ -51,11 +51,13 @@ export class ConstellationInteraction {
     private readonly combinedInteractionObjects: THREE.Object3D[] = [];
     private readonly intersections: THREE.Intersection<THREE.Object3D>[] = [];
     private readonly boundaryHitSkillIds = new Set<string>();
+    private readonly projectStarScreenPosition = new THREE.Vector3();
 
     private tapCandidate?: TapCandidate;
     private lastCoarseTapTime = -Infinity;
     private keyboardNavigationActive = false;
     private keyboardActiveSkillId?: string;
+    private pointerAspect = 1;
 
     constructor(
         camera: THREE.Camera,
@@ -593,6 +595,7 @@ export class ConstellationInteraction {
             }
 
             this.pointer.set(x * 2 - 1, -(y * 2 - 1));
+            this.pointerAspect = rect.width / rect.height;
             this.raycaster.setFromCamera(this.pointer, this.camera);
         }
 
@@ -611,6 +614,8 @@ export class ConstellationInteraction {
         const boundaryHitSkillIds = this.getBoundaryHitSkillIds(intersects);
 
         let firstEnabledHit: THREE.Intersection<THREE.Object3D> | undefined;
+        let closestProjectStarHit: THREE.Intersection<THREE.Object3D> | undefined;
+        let closestProjectStarDistanceSquared = Infinity;
         for (const hit of intersects) {
             if (!this.isHitInsideActiveBoundary(hit, boundaryHitSkillIds)) {
                 continue;
@@ -621,11 +626,21 @@ export class ConstellationInteraction {
 
             firstEnabledHit ??= hit;
             if (this.isProjectStarHitObject(hit.object)) {
-                return hit;
+                const screenPosition = hit.object
+                    .getWorldPosition(this.projectStarScreenPosition)
+                    .project(this.camera);
+                const deltaX = (screenPosition.x - this.pointer.x) * this.pointerAspect;
+                const deltaY = screenPosition.y - this.pointer.y;
+                const distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+                if (distanceSquared < closestProjectStarDistanceSquared) {
+                    closestProjectStarDistanceSquared = distanceSquared;
+                    closestProjectStarHit = hit;
+                }
             }
         }
 
-        return firstEnabledHit;
+        return closestProjectStarHit ?? firstEnabledHit;
     }
 
     private getBoundaryHitSkillIds(intersects: THREE.Intersection<THREE.Object3D>[]): Set<string> {
@@ -656,6 +671,13 @@ export class ConstellationInteraction {
         boundaryHitSkillIds: Set<string>,
     ): boolean {
         if (!this.callbacks.isProjectPanelBoundaryActive()) {
+            return true;
+        }
+
+        // A project star is already a precise interaction target. Requiring its ray to
+        // also intersect the cluster's broad polygon can reject stars close to the
+        // polygon edge as the constellation scales and drifts.
+        if (this.isProjectStarHitObject(hit.object)) {
             return true;
         }
 
