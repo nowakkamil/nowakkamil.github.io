@@ -1,0 +1,405 @@
+<mjml lang="en" dir="ltr">
+    <mj-head>
+        <mj-title>Kamil Nowak — Customer message</mj-title>
+        <mj-preview>A personal note from Kamil Nowak about your project.</mj-preview>
+
+        <mj-attributes>
+            <mj-all font-family="Arial, Helvetica, sans-serif" />
+            <mj-text color="#f4f8ff" font-size="16px" line-height="1.7" />
+            <mj-section padding="0" />
+            <mj-column padding="0" />
+            <mj-button
+                background-color="#071426"
+                border="1px solid #58eaff"
+                border-radius="2px"
+                color="#ffffff"
+                font-size="12px"
+                font-weight="700"
+                letter-spacing="2px"
+                line-height="18px"
+                padding="0"
+                text-transform="uppercase"
+            />
+        </mj-attributes>
+
+        <mj-style inline="inline">
+            body {
+                overflow-x: hidden !important;
+            }
+
+            .dark-surface {
+                background-color: #050b18 !important;
+                background-image: radial-gradient(
+                        circle at 112% 36%,
+                        rgba(77, 226, 255, 0.24) 0%,
+                        rgba(13, 92, 149, 0.16) 27%,
+                        rgba(5, 11, 24, 0) 60%
+                    ),
+                    linear-gradient(110deg, #050b18 0%, #050b18 66%, #07172c 100%) !important;
+                background-repeat: no-repeat !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+            }
+
+            .dark-surface > table {
+                background: transparent !important;
+                background-color: transparent !important;
+                table-layout: fixed !important;
+                width: 100% !important;
+            }
+
+            .message-copy p {
+                margin-top: 0;
+            }
+
+            .footer-link a {
+                color: #f4f8ff !important;
+                text-decoration: none !important;
+            }
+        </mj-style>
+
+        <mj-style>
+            @media only screen and (max-width: 480px) {
+                .mobile-gutter {
+                    padding-left: 28px !important;
+                    padding-right: 28px !important;
+                }
+
+                .header-name {
+                    padding-top: 30px !important;
+                }
+
+                .header-rule {
+                    padding-top: 14px !important;
+                }
+
+                .email-greeting {
+                    padding-top: 14px !important;
+                    font-size: 28px !important;
+                }
+
+                .footer-divider {
+                    padding-left: 28px !important;
+                    padding-right: 28px !important;
+                }
+
+                .footer-monogram {
+                    padding: 22px 0 12px !important;
+                }
+
+                .footer-identity {
+                    padding: 0 28px 20px !important;
+                    text-align: center !important;
+                }
+
+                .footer-identity div {
+                    text-align: center !important;
+                }
+
+                .footer-contact {
+                    padding: 0 28px 30px !important;
+                }
+
+                .footer-contact table {
+                    width: 250px !important;
+                    margin: 0 auto !important;
+                }
+            }
+        </mj-style>
+
+        <mj-raw>
+            <meta name="color-scheme" content="dark" />
+            <meta name="supported-color-schemes" content="dark" />
+        </mj-raw>
+    </mj-head>
+
+    <mj-body width="600px" background-color="#020611">
+        <!-- The solid background is the Outlook and no-gradient fallback. -->
+        <mj-wrapper
+            css-class="dark-surface"
+            background-color="#050b18"
+            border="1px solid #243248"
+            padding="0"
+        >
+            <mj-section background-color="transparent">
+                <mj-column background-color="transparent">
+                    <mj-text
+                        css-class="mobile-gutter header-name"
+                        color="#ffffff"
+                        font-size="18px"
+                        font-weight="700"
+                        letter-spacing="6px"
+                        line-height="22px"
+                        padding="40px 40px 0"
+                        text-transform="uppercase"
+                    >
+                        Kamil Nowak
+                    </mj-text>
+
+                    <mj-text
+                        css-class="mobile-gutter header-role"
+                        color="#58eaff"
+                        font-size="11px"
+                        font-weight="700"
+                        letter-spacing="2.2px"
+                        line-height="18px"
+                        padding="7px 40px 0"
+                        text-transform="uppercase"
+                    >
+                        Senior Full-stack Developer
+                    </mj-text>
+
+                    <mj-table
+                        css-class="mobile-gutter header-rule"
+                        cellpadding="0"
+                        cellspacing="0"
+                        padding="20px 40px 0"
+                        role="presentation"
+                        width="100%"
+                    >
+                        <tr>
+                            <td
+                                bgcolor="#58eaff"
+                                height="1"
+                                style="width: 38px; font-size: 0; line-height: 0"
+                            >
+                                &nbsp;
+                            </td>
+                            <td
+                                bgcolor="#29364a"
+                                height="1"
+                                style="font-size: 0; line-height: 0"
+                            >
+                                &nbsp;
+                            </td>
+                        </tr>
+                    </mj-table>
+
+                    <mj-text
+                        css-class="mobile-gutter email-greeting"
+                        color="#ffffff"
+                        font-size="32px"
+                        font-weight="400"
+                        letter-spacing="-0.7px"
+                        line-height="1.25"
+                        padding="20px 40px 20px"
+                    >
+                        Hi {{name}},
+                    </mj-text>
+
+                    <mj-text
+                        css-class="mobile-gutter message-copy"
+                        color="#f0f5fc"
+                        font-size="16px"
+                        font-weight="400"
+                        line-height="1.72"
+                        padding="0 40px 26px"
+                    >
+                        {{message}}
+                    </mj-text>
+
+                    <!-- Optional CTA: remove this entire mj-button block when it is not needed. -->
+                    <mj-button
+                        css-class="mobile-gutter"
+                        align="left"
+                        href="{{ctaUrl}}"
+                        inner-padding="14px 22px"
+                        padding="0 40px 34px"
+                        target="_blank"
+                    >
+                        {{ctaText}}&nbsp;&nbsp;&nbsp;→
+                    </mj-button>
+
+                    <mj-divider
+                        css-class="footer-divider"
+                        border-color="#2b394d"
+                        border-style="solid"
+                        border-width="1px"
+                        padding="0 40px"
+                    />
+                </mj-column>
+            </mj-section>
+
+            <mj-section background-color="transparent" padding="30px 40px 34px">
+                <mj-column width="90px" vertical-align="top">
+                    <mj-table
+                        css-class="footer-monogram"
+                        cellpadding="0"
+                        cellspacing="0"
+                        padding="0"
+                        role="presentation"
+                        width="88px"
+                    >
+                        <tr>
+                            <td
+                                align="center"
+                                valign="middle"
+                                width="88"
+                                style="color: #58eaff; font-family: Arial, Helvetica, sans-serif"
+                            >
+                                <div
+                                    style="
+                                        width: 72px;
+                                        height: 72px;
+                                        margin: 0 auto;
+                                        border: 1px solid #58eaff;
+                                        border-radius: 50%;
+                                        color: #58eaff;
+                                        font-size: 22px;
+                                        font-weight: 400;
+                                        letter-spacing: 5px;
+                                        line-height: 72px;
+                                        text-align: center;
+                                    "
+                                >
+                                    KN
+                                </div>
+                            </td>
+                        </tr>
+                    </mj-table>
+                </mj-column>
+
+                <mj-column width="180px" vertical-align="top">
+                    <mj-text
+                        css-class="footer-identity"
+                        color="#ffffff"
+                        font-size="15px"
+                        font-weight="700"
+                        line-height="21px"
+                        padding="4px 18px 0 10px"
+                    >
+                        Kamil Nowak
+                        <div
+                            style="
+                                margin-top: 4px;
+                                color: #58eaff;
+                                font-size: 12px;
+                                font-weight: 400;
+                                line-height: 18px;
+                            "
+                        >
+                            Senior Full-stack Developer
+                        </div>
+                        <div
+                            style="
+                                margin-top: 10px;
+                                color: #c6d0df;
+                                font-size: 11px;
+                                font-weight: 400;
+                                line-height: 17px;
+                            "
+                        >
+                            Building digital experiences that are fast, reliable and thoughtfully
+                            crafted.
+                        </div>
+                    </mj-text>
+                </mj-column>
+
+                <mj-column width="245px" vertical-align="top">
+                    <mj-table
+                        css-class="footer-contact"
+                        cellpadding="0"
+                        cellspacing="0"
+                        padding="2px 0 0 4px"
+                        role="presentation"
+                        width="100%"
+                    >
+                        <tr>
+                            <td
+                                valign="top"
+                                width="24"
+                                style="
+                                    padding: 0 0 12px;
+                                    color: #58eaff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 16px;
+                                    line-height: 20px;
+                                "
+                            >
+                                ⊕
+                            </td>
+                            <td
+                                class="footer-link"
+                                valign="top"
+                                style="
+                                    padding: 0 0 12px;
+                                    color: #f4f8ff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 12px;
+                                    line-height: 20px;
+                                "
+                            >
+                                <a
+                                    href="https://nowakkamil.com"
+                                    style="color: #f4f8ff; text-decoration: none"
+                                    target="_blank"
+                                >
+                                    nowakkamil.com
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                valign="top"
+                                width="24"
+                                style="
+                                    padding: 0 0 12px;
+                                    color: #58eaff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 16px;
+                                    line-height: 20px;
+                                "
+                            >
+                                ✉
+                            </td>
+                            <td
+                                class="footer-link"
+                                valign="top"
+                                style="
+                                    padding: 0 0 12px;
+                                    color: #f4f8ff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 12px;
+                                    line-height: 20px;
+                                "
+                            >
+                                <a
+                                    href="mailto:hello@nowakkamil.com"
+                                    style="color: #f4f8ff; text-decoration: none"
+                                >
+                                    hello@nowakkamil.com
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                valign="top"
+                                width="24"
+                                style="
+                                    color: #58eaff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 16px;
+                                    line-height: 20px;
+                                "
+                            >
+                                ⌂
+                            </td>
+                            <td
+                                valign="top"
+                                style="
+                                    color: #f4f8ff;
+                                    font-family: Arial, Helvetica, sans-serif;
+                                    font-size: 11px;
+                                    line-height: 20px;
+                                    white-space: nowrap;
+                                "
+                            >
+                                Based in Poland, working globally
+                            </td>
+                        </tr>
+                    </mj-table>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+    </mj-body>
+</mjml>
