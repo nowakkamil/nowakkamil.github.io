@@ -53,6 +53,11 @@
                 margin-top: 0;
             }
 
+            .email-margin {
+                height: 24px !important;
+                line-height: 24px !important;
+            }
+
             .footer-link a {
                 color: #f4f8ff !important;
                 text-decoration: none !important;
@@ -64,6 +69,11 @@
                 .mobile-gutter {
                     padding-left: 28px !important;
                     padding-right: 28px !important;
+                }
+
+                .email-margin {
+                    height: 16px !important;
+                    line-height: 16px !important;
                 }
 
                 .header-name {
@@ -115,6 +125,12 @@
     </mj-head>
 
     <mj-body width="600px" background-color="#020611">
+        <mj-section padding="0" background-color="#020611">
+            <mj-column>
+                <mj-spacer css-class="email-margin" height="24px" />
+            </mj-column>
+        </mj-section>
+
         <!-- The solid background is the Outlook and no-gradient fallback. -->
         <mj-wrapper
             css-class="dark-surface"
@@ -398,5 +414,11 @@
                 </mj-column>
             </mj-section>
         </mj-wrapper>
+
+        <mj-section padding="0" background-color="#020611">
+            <mj-column>
+                <mj-spacer css-class="email-margin" height="24px" />
+            </mj-column>
+        </mj-section>
     </mj-body>
 </mjml>

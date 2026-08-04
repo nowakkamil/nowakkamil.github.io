@@ -40,10 +40,6 @@ interface ResendEmail {
     reply_to?: string;
 }
 
-const CUSTOMER_CONFIRMATION_TEXT =
-    'Thank you for getting in touch. Your message has been received, and I will reply as soon as possible.';
-const CUSTOMER_CONFIRMATION_MESSAGE_HTML =
-    '<p style="margin: 0 0 18px 0;">Thank you for getting in touch and sharing the details of your project.</p><p style="margin: 0;">Your message has been received. I will review it and reply as soon as possible.</p>';
 const CUSTOMER_CONFIRMATION_CTA_TEXT = 'View selected work';
 const CUSTOMER_CONFIRMATION_CTA_URL = 'https://nowakkamil.com';
 
@@ -55,12 +51,22 @@ const escapeHtml = (value: string): string =>
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
 
-const renderCustomerConfirmationHtml = (customerName: string): string =>
-    customerMessageDarkHtml
-        .replace(/{{\s*name\s*}}/g, escapeHtml(customerName))
-        .replace(/{{\s*message\s*}}/g, CUSTOMER_CONFIRMATION_MESSAGE_HTML)
+const renderCustomerConfirmationHtml = (message: ContactMessage): string => {
+    const quotedMessage = escapeHtml(message.message).replace(/\r\n?|\n/g, '<br />');
+    const confirmationMessage =
+        '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
+        `<blockquote style="margin: 0 0 18px 0; padding: 2px 0 2px 18px; border-left: 2px solid #58eaff; color: #dce8f5;">${quotedMessage}</blockquote>` +
+        '<p style="margin: 0;">I will review it and reply as soon as possible.</p>';
+
+    return customerMessageDarkHtml
+        .replace(/{{\s*name\s*}}/g, escapeHtml(message.name))
+        .replace(/{{\s*message\s*}}/g, confirmationMessage)
         .replace(/{{\s*ctaText\s*}}/g, CUSTOMER_CONFIRMATION_CTA_TEXT)
         .replace(/{{\s*ctaUrl\s*}}/g, CUSTOMER_CONFIRMATION_CTA_URL);
+};
+
+const renderCustomerConfirmationText = (message: ContactMessage): string =>
+    `Your message has been received. Here is a copy for your records:\n\n${message.message}\n\nI will review it and reply as soon as possible.`;
 
 interface ContactServerConfig {
     apiKey: string;
@@ -168,8 +174,8 @@ const createEmailBatch = (
             to: [message.email],
             reply_to: recipient,
             subject: 'Your message has been received',
-            text: CUSTOMER_CONFIRMATION_TEXT,
-            html: renderCustomerConfirmationHtml(message.name),
+            text: renderCustomerConfirmationText(message),
+            html: renderCustomerConfirmationHtml(message),
         });
     }
 

@@ -176,6 +176,8 @@ describe('contact Pages Function', () => {
         assert.equal(typeof visitorEmail.text, 'string');
         assert.equal(typeof visitorEmail.html, 'string');
         assert.match(String(visitorEmail.html), /Hi Test Visitor,/);
+        assert.match(String(visitorEmail.html), /This is a valid contact message\./);
+        assert.match(String(visitorEmail.text), /This is a valid contact message\./);
         assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
         assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:name|message|ctaText|ctaUrl)\s*}}/);
     });
@@ -194,7 +196,11 @@ describe('contact Pages Function', () => {
         }) as typeof fetch;
 
         const response = await onRequestPost({
-            request: createRequest({ ...validBody, name: 'Test <Visitor> & Co' }),
+            request: createRequest({
+                ...validBody,
+                name: 'Test <Visitor> & Co',
+                message: 'Please review <script>alert("email")</script>.\nSecond line.',
+            }),
             env: { ...validEnv, SEND_VISITOR_CONFIRMATION: 'true' },
         });
 
@@ -203,5 +209,10 @@ describe('contact Pages Function', () => {
         const visitorHtml = String((resendBody[1] as Record<string, unknown>).html);
         assert.match(visitorHtml, /Hi Test &lt;Visitor&gt; &amp; Co,/);
         assert.doesNotMatch(visitorHtml, /Hi Test <Visitor>/);
+        assert.match(
+            visitorHtml,
+            /Please review &lt;script&gt;alert\(&quot;email&quot;\)&lt;\/script&gt;\.<br \/>Second line\./,
+        );
+        assert.doesNotMatch(visitorHtml, /<script>alert/);
     });
 });
