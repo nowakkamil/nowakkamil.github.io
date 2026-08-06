@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Resend } from 'resend';
 
 import { contactSchema, type ContactMessage } from '../../src/sections/contact/contactModel.ts';
 import {
@@ -14,9 +15,7 @@ import { EMAIL_ATTACHMENTS, EMAIL_CID, type EmailAttachment } from '../emailAsse
 const MAX_BODY_BYTES = 16_384;
 const TURNSTILE_TOKEN_MAX_LENGTH = 2_048;
 const TURNSTILE_TIMEOUT_MS = 5_000;
-const RESEND_TIMEOUT_MS = 10_000;
 const TURNSTILE_SITEVERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-const RESEND_BATCH_ENDPOINT = 'https://api.resend.com/emails/batch';
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' } as const;
 
 const contactRequestSchema = contactSchema.extend({
@@ -143,13 +142,13 @@ const readContactRequest = (value: unknown): ContactRequest | Response => {
     return result.success ? result.data : errorResponse(400);
 };
 
-const createEmailBatch = (
+const createEmails = (
     message: ContactMessage,
     sender: string,
     recipient: string,
     sendVisitorConfirmation: boolean,
-): ResendEmail[] => {
-    const emails: ResendEmail[] = [
+) => {
+    const internalEmails: ResendEmail[] = [
         {
             from: sender,
             to: [recipient],
@@ -159,29 +158,22 @@ const createEmailBatch = (
         },
     ];
 
-    if (sendVisitorConfirmation) {
-        emails.push({
-            from: sender,
-            to: [message.email],
-            reply_to: recipient,
-            subject: 'nowakkamil.com — Your message has been received',
-            text: renderCustomerConfirmationText(message.message),
-            html: renderCustomerConfirmationHtml(message),
-            attachments: [...EMAIL_ATTACHMENTS],
-        });
-    }
+    const visitorConfirmation = sendVisitorConfirmation
+        ? {
+              from: sender,
+              to: [message.email],
+              reply_to: recipient,
+              subject: 'nowakkamil.com — Your message has been received',
+              text: renderCustomerConfirmationText(message.message),
+              html: renderCustomerConfirmationHtml(message),
+              attachments: [...EMAIL_ATTACHMENTS],
+          }
+        : null;
 
-    return emails;
-};
-
-const hasAcceptedCompleteBatch = (value: unknown, expectedCount: number): boolean => {
-    if (!isRecord(value) || !Array.isArray(value.data) || value.data.length !== expectedCount) {
-        return false;
-    }
-
-    return value.data.every(
-        (item) => isRecord(item) && typeof item.id === 'string' && item.id.length > 0,
-    );
+    return {
+        internalEmails,
+        visitorConfirmation,
+    };
 };
 
 type TurnstileVerificationResult = 'passed' | 'rejected' | 'unavailable';
@@ -189,11 +181,10 @@ type TurnstileVerificationResult = 'passed' | 'rejected' | 'unavailable';
 const verifyTurnstile = async (
     token: string,
     secretKey: string,
-    remoteIp: string | undefined,
+    remoteIp?: string,
 ): Promise<TurnstileVerificationResult> => {
-    let response: Response;
     try {
-        response = await fetch(TURNSTILE_SITEVERIFY_ENDPOINT, {
+        const response = await fetch(TURNSTILE_SITEVERIFY_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -203,26 +194,21 @@ const verifyTurnstile = async (
             }),
             signal: AbortSignal.timeout(TURNSTILE_TIMEOUT_MS),
         });
+
+        if (!response.ok) {
+            return 'unavailable';
+        }
+
+        const result: unknown = await response.json();
+
+        if (!isRecord(result) || typeof result.success !== 'boolean') {
+            return 'unavailable';
+        }
+
+        return result.success ? 'passed' : 'rejected';
     } catch {
         return 'unavailable';
     }
-
-    if (!response.ok) {
-        return 'unavailable';
-    }
-
-    let result: unknown;
-    try {
-        result = await response.json();
-    } catch {
-        return 'unavailable';
-    }
-
-    if (!isRecord(result) || typeof result.success !== 'boolean') {
-        return 'unavailable';
-    }
-
-    return result.success ? 'passed' : 'rejected';
 };
 
 export const onRequestPost = async ({
@@ -249,14 +235,17 @@ export const onRequestPost = async ({
     }
 
     const remoteIp = request.headers.get('CF-Connecting-IP')?.trim() || undefined;
+
     const turnstileResult = await verifyTurnstile(
         contactRequest.turnstileToken,
         config.turnstileSecretKey,
         remoteIp,
     );
+
     if (turnstileResult === 'rejected') {
         return errorResponse(400);
     }
+
     if (turnstileResult === 'unavailable') {
         return errorResponse(502);
     }
@@ -264,39 +253,28 @@ export const onRequestPost = async ({
     const message: ContactMessage = contactRequest;
     const sendVisitorConfirmation = config.sendVisitorConfirmation && turnstileResult === 'passed';
 
-    const emailBatch = createEmailBatch(
+    const { internalEmails, visitorConfirmation } = createEmails(
         message,
         config.sender,
         config.recipient,
         sendVisitorConfirmation,
     );
-    let resendResponse: Response;
+
+    const resend = new Resend(config.apiKey);
+
     try {
-        resendResponse = await fetch(RESEND_BATCH_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${config.apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(emailBatch),
-            signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
-        });
+        const requests = internalEmails.map((email) => resend.emails.send(email));
+
+        if (visitorConfirmation) {
+            requests.push(resend.emails.send(visitorConfirmation));
+        }
+
+        const results = await Promise.all(requests);
+
+        if (results.some(({ error }) => error)) {
+            return errorResponse(502);
+        }
     } catch {
-        return errorResponse(502);
-    }
-
-    if (!resendResponse.ok) {
-        return errorResponse(502);
-    }
-
-    let resendResult: unknown;
-    try {
-        resendResult = await resendResponse.json();
-    } catch {
-        return errorResponse(502);
-    }
-
-    if (!hasAcceptedCompleteBatch(resendResult, emailBatch.length)) {
         return errorResponse(502);
     }
 
