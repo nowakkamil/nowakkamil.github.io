@@ -133,7 +133,11 @@ ${indentedSignature}
 </html>
 `;
 
-    await writeFile(path.join(signatureDirectory, 'signature.preview.html'), preview);
+    void preview;
+    await writeFile(
+        path.join(signatureDirectory, 'signature.preview.html'),
+        `${signature.trim()}\n`,
+    );
     console.log('Built emails/signature/signature.preview.html');
 }
 

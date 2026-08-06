@@ -82,10 +82,8 @@
                 font-weight: 400 !important;
             }
 
-            .email-signature .kn-signature-divider {
+            .email-signature .kn-signature-divider-line {
                 background-color: #2b3541 !important;
-                border-top-color: #02050a !important;
-                border-bottom-color: #02050a !important;
             }
 
             .email-signature .kn-signature-contact-table,
@@ -107,21 +105,6 @@
             }
 
             @media only screen and (max-width: 600px) {
-                .email-signature .kn-signature-monogram-wrap {
-                    height: auto !important;
-                }
-
-                .email-signature .kn-signature-divider-cell {
-                    height: auto !important;
-                    padding: 0 !important;
-                    border-right: 0 !important;
-                }
-
-                .email-signature .kn-signature-divider-spacer {
-                    display: none !important;
-                    height: 0 !important;
-                }
-
                 .email-signature .kn-signature-divider {
                     display: none !important;
                 }
@@ -163,20 +146,10 @@
                     padding-left: 0 !important;
                 }
 
-                .email-signature .kn-signature-monogram {
+                .email-signature .kn-signature-monogram-image {
                     width: 74px !important;
+                    height: 74px !important;
                     margin: 0 auto !important;
-                }
-
-                .email-signature .kn-signature-monogram-wrap {
-                    width: 100% !important;
-                    height: auto !important;
-                }
-
-                .email-signature .kn-signature-divider-cell {
-                    height: auto !important;
-                    padding: 0 !important;
-                    border-right: 0 !important;
                 }
 
                 .email-signature .kn-signature-identity {

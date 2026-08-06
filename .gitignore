@@ -27,3 +27,5 @@ dist-ssr
 .env.*
 .dev.vars
 .dev.vars.*
+
+/public/email/
