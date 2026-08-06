@@ -76,8 +76,34 @@ async function buildVariant(variant) {
     console.log(`Built functions/generated/${variant}.ts`);
 }
 
+async function buildSignaturePreview() {
+    const signatureDirectory = path.join(projectRoot, 'emails', 'signature');
+    const signaturePath = path.join(signatureDirectory, 'signature.html');
+    const signature = await readFile(signaturePath, 'utf8');
+    const indentedSignature = signature
+        .trimEnd()
+        .split('\n')
+        .map((line) => (line.length > 0 ? `        ${line}` : ''))
+        .join('\n');
+    const preview = `<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Kamil Nowak — Email signature preview</title>
+    </head>
+    <body style="margin: 0; padding: 16px; background-color: #03070d">
+${indentedSignature}
+    </body>
+</html>
+`;
+
+    await writeFile(path.join(signatureDirectory, 'signature.preview.html'), preview);
+    console.log('Built emails/signature/signature.preview.html');
+}
+
 await Promise.all([
     mkdir(outputDirectory, { recursive: true }),
     mkdir(generatedModuleDirectory, { recursive: true }),
 ]);
-await buildVariant(variant);
+await Promise.all([buildVariant(variant), buildSignaturePreview()]);
