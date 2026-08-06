@@ -44,7 +44,7 @@ interface ResendEmail {
     subject: string;
     text: string;
     html?: string;
-    reply_to?: string;
+    replyTo?: string;
     attachments?: EmailAttachment[];
 }
 
@@ -152,7 +152,7 @@ const createEmails = (
         {
             from: sender,
             to: [recipient],
-            reply_to: message.email,
+            replyTo: message.email,
             subject: `New portfolio contact message from ${message.name} — ${message.email}`,
             text: `Name: ${message.name}\nEmail: ${message.email}\n\nMessage:\n${message.message}`,
         },
@@ -162,7 +162,7 @@ const createEmails = (
         ? {
               from: sender,
               to: [message.email],
-              reply_to: recipient,
+              replyTo: recipient,
               subject: 'nowakkamil.com — Your message has been received',
               text: renderCustomerConfirmationText(message.message),
               html: renderCustomerConfirmationHtml(message),
