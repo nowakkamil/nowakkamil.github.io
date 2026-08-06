@@ -7,9 +7,42 @@
     </head>
     <body style="margin: 0; padding: 16px; background-color: #03070d">
         <style type="text/css">
-            @media only screen and (max-width: 700px) {
+            .kn-signature-frame,
+            .kn-signature-frame table,
+            .kn-signature-frame td,
+            .kn-signature-frame a {
+                font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif !important;
+            }
+
+            @media only screen and (max-width: 899px) {
                 .kn-signature-frame {
-                    padding: 26px 18px !important;
+                    padding: 22px 20px !important;
+                }
+
+                .kn-signature-description {
+                    padding-bottom: 10px !important;
+                }
+
+                .kn-signature-contact-table,
+                .kn-signature-contact-table > tbody,
+                .kn-signature-contact-row {
+                    display: block !important;
+                    width: 100% !important;
+                }
+
+                .kn-signature-contact-item {
+                    display: block !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    padding: 8px 0 !important;
+                    border-top: 1px solid #9aa6b2 !important;
+                    border-left: 0 !important;
+                }
+            }
+
+            @media only screen and (max-width: 600px) {
+                .kn-signature-frame {
+                    padding: 22px 16px !important;
                 }
 
                 .kn-signature-monogram-cell,
@@ -25,9 +58,29 @@
                 }
 
                 .kn-signature-monogram {
-                    width: 82px !important;
+                    width: 74px !important;
                     margin: 0 auto !important;
                     border-radius: 42px !important;
+                }
+
+                .kn-signature-monogram-wrap {
+                    width: 100% !important;
+                    height: auto !important;
+                }
+
+                .kn-signature-divider-cell {
+                    height: auto !important;
+                    padding: 0 !important;
+                    border-right: 0 !important;
+                }
+
+                .kn-signature-divider-spacer {
+                    display: none !important;
+                    height: 0 !important;
+                }
+
+                .kn-signature-divider {
+                    display: none !important;
                 }
 
                 .kn-signature-monogram-svg {
@@ -68,20 +121,30 @@
                 .kn-signature-description {
                     padding: 4px 0 8px !important;
                 }
+            }
 
-                .kn-signature-contact-table,
-                .kn-signature-contact-table > tbody,
-                .kn-signature-contact-row {
-                    display: block !important;
-                    width: 100% !important;
+            @media only screen and (max-width: 360px) {
+                .kn-signature-frame {
+                    padding: 20px 12px !important;
+                }
+
+                .kn-signature-monogram {
+                    width: 70px !important;
+                }
+
+                .kn-signature-name {
+                    font-size: 19px !important;
+                    line-height: 23px !important;
+                }
+
+                .kn-signature-role {
+                    font-size: 10px !important;
+                    letter-spacing: 0.5px !important;
                 }
 
                 .kn-signature-contact-item {
-                    display: block !important;
-                    width: 100% !important;
-                    padding: 8px 0 !important;
-                    border-top: 1px solid #9aa6b2 !important;
-                    border-left: 0 !important;
+                    padding-top: 7px !important;
+                    padding-bottom: 7px !important;
                 }
             }
         </style>
@@ -95,11 +158,18 @@
                 width: 100%;
                 max-width: 900px;
                 border-collapse: collapse;
-                font-family: Helvetica, sans-serif;
+                font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
             "
         >
             <tr>
-                <td class="kn-signature-frame" style="padding: 24px 26px">
+                <td
+                    class="kn-signature-frame"
+                    style="
+                        padding: 22px 24px;
+                        font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                        font-weight: 400;
+                    "
+                >
                     <table
                         role="presentation"
                         cellpadding="0"
@@ -111,111 +181,154 @@
                         <tr>
                             <td
                                 class="kn-signature-monogram-cell"
-                                width="132"
+                                width="120"
                                 valign="middle"
-                                style="width: 132px; padding: 0 14px 0 0; border-right: 1px solid #9aa6b2"
+                                style="width: 120px; padding: 0"
                             >
                                 <table
-                                    class="kn-signature-monogram"
+                                    class="kn-signature-monogram-wrap"
                                     role="presentation"
                                     cellpadding="0"
                                     cellspacing="0"
                                     border="0"
-                                    width="104"
-                                    align="center"
-                                    style="width: 104px; border-radius: 53px; border-collapse: separate"
+                                    width="120"
+                                    height="100%"
+                                    style="width: 120px; height: 100%; border-collapse: collapse"
                                 >
-                                    <tr>
-                                        <td style="padding: 0">
-                                            <svg
-                                                class="kn-signature-monogram-svg"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="104"
-                                                height="104"
-                                                viewBox="0 0 104 104"
-                                                role="img"
-                                                aria-label="KN"
-                                                style="display: block; width: 104px; height: 104px"
-                                            >
-                                                <circle
-                                                    cx="52"
-                                                    cy="52"
-                                                    r="50.5"
-                                                    fill="none"
-                                                    stroke="#159bb0"
-                                                    stroke-width="1.1"
-                                                ></circle>
-                                                <text
-                                                    x="52"
-                                                    y="63"
-                                                    text-anchor="middle"
-                                                    fill="#168ca1"
-                                                    font-family="Helvetica, sans-serif"
-                                                    font-size="31"
-                                                    font-weight="400"
-                                                    letter-spacing="3"
-                                                >
-                                                    KN
-                                                </text>
-                                                <circle cx="64" cy="13" r="1.2" fill="#159bb0"></circle>
-                                                <circle cx="75" cy="17" r="1.4" fill="#159bb0"></circle>
-                                                <circle cx="84" cy="23" r="1.25" fill="#159bb0"></circle>
-                                                <circle cx="91" cy="32" r="1.45" fill="#159bb0"></circle>
-                                                <circle cx="95" cy="42" r="1.25" fill="#159bb0"></circle>
-                                                <circle cx="97" cy="52" r="1.45" fill="#159bb0"></circle>
-                                                <circle cx="95" cy="62" r="1.25" fill="#159bb0"></circle>
-                                                <circle cx="91" cy="72" r="1.45" fill="#159bb0"></circle>
-                                                <circle cx="84" cy="81" r="1.25" fill="#159bb0"></circle>
-                                                <circle cx="75" cy="87" r="1.4" fill="#159bb0"></circle>
-                                                <circle cx="64" cy="91" r="1.2" fill="#159bb0"></circle>
-                                            </svg>
+                                    <tr class="kn-signature-divider-spacer">
+                                        <td height="14" style="height: 14px; padding: 0; line-height: 0">
+                                            &nbsp;
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr height="100%">
                                         <td
-                                            class="kn-signature-monogram-inner"
-                                            hidden
-                                            height="102"
+                                            class="kn-signature-divider-cell"
+                                            height="100%"
                                             valign="middle"
-                                            style="display: none; height: 102px; padding: 0"
+                                            style="height: 100%; padding: 0 14px 0 0"
                                         >
                                             <table
+                                                class="kn-signature-monogram"
                                                 role="presentation"
                                                 cellpadding="0"
                                                 cellspacing="0"
                                                 border="0"
-                                                width="100%"
-                                                style="width: 100%; border-collapse: collapse"
+                                                width="104"
+                                                align="center"
+                                                style="width: 104px; border-collapse: separate"
                                             >
                                                 <tr>
-                                                    <td
-                                                        class="kn-signature-monogram-text"
-                                                        width="82"
-                                                        height="102"
-                                                        align="center"
-                                                        valign="middle"
-                                                        style="
-                                                            width: 82px;
-                                                            height: 102px;
-                                                            padding: 0 0 0 9px;
-                                                            font-family: Helvetica, sans-serif;
-                                                            font-size: 31px;
-                                                            font-weight: 400;
-                                                            letter-spacing: 5px;
-                                                            line-height: 102px;
-                                                        "
-                                                    >
-                                                        KN
+                                                    <td style="padding: 0">
+                                                        <svg
+                                                            class="kn-signature-monogram-svg"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="94"
+                                                            height="94"
+                                                            viewBox="0 0 104 104"
+                                                            role="img"
+                                                            aria-label="KN"
+                                                            style="
+                                                                display: block;
+                                                                width: 94px;
+                                                                height: 94px;
+                                                            "
+                                                        >
+                                                            <circle
+                                                                cx="52"
+                                                                cy="52"
+                                                                r="50.5"
+                                                                fill="none"
+                                                                stroke="#159bb0"
+                                                                stroke-width="1.1"
+                                                            ></circle>
+                                                            <text
+                                                                x="52"
+                                                                y="63"
+                                                                text-anchor="middle"
+                                                                fill="#168ca1"
+                                                                font-family="'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif"
+                                                                font-size="31"
+                                                                font-weight="300"
+                                                                letter-spacing="3"
+                                                            >
+                                                                KN
+                                                            </text>
+                                                            <circle
+                                                                cx="64"
+                                                                cy="13"
+                                                                r="1.2"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="75"
+                                                                cy="17"
+                                                                r="1.4"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="84"
+                                                                cy="23"
+                                                                r="1.25"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="91"
+                                                                cy="32"
+                                                                r="1.45"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="95"
+                                                                cy="42"
+                                                                r="1.25"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="97"
+                                                                cy="52"
+                                                                r="1.45"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="95"
+                                                                cy="62"
+                                                                r="1.25"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="91"
+                                                                cy="72"
+                                                                r="1.45"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="84"
+                                                                cy="81"
+                                                                r="1.25"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="75"
+                                                                cy="87"
+                                                                r="1.4"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                            <circle
+                                                                cx="64"
+                                                                cy="91"
+                                                                r="1.2"
+                                                                fill="#159bb0"
+                                                            ></circle>
+                                                        </svg>
                                                     </td>
+                                                </tr>
+                                                <tr>
                                                     <td
-                                                        width="20"
+                                                        class="kn-signature-monogram-inner"
+                                                        hidden
+                                                        height="102"
                                                         valign="middle"
-                                                        style="
-                                                            width: 20px;
-                                                            padding: 0;
-                                                            font-family: Helvetica, sans-serif;
-                                                            line-height: 7px;
-                                                        "
+                                                        style="display: none; height: 102px; padding: 0"
                                                     >
                                                         <table
                                                             role="presentation"
@@ -223,118 +336,173 @@
                                                             cellspacing="0"
                                                             border="0"
                                                             width="100%"
-                                                            style="
-                                                                width: 100%;
-                                                                border-collapse: collapse;
-                                                                font-family: Helvetica, sans-serif;
-                                                                line-height: 7px;
-                                                            "
+                                                            style="width: 100%; border-collapse: collapse"
                                                         >
                                                             <tr>
-                                                                <td style="padding-left: 0; font-size: 4px">
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
                                                                 <td
+                                                                    class="kn-signature-monogram-text"
+                                                                    width="82"
+                                                                    height="102"
+                                                                    align="center"
+                                                                    valign="middle"
                                                                     style="
-                                                                        padding-left: 4px;
-                                                                        font-size: 6px;
+                                                                        width: 82px;
+                                                                        height: 102px;
+                                                                        padding: 0 0 0 9px;
+                                                                        font-family:
+                                                                            'Avenir Next', Avenir,
+                                                                            'Segoe UI', Helvetica,
+                                                                            sans-serif;
+                                                                        font-size: 31px;
+                                                                        font-weight: 300;
+                                                                        letter-spacing: 5px;
+                                                                        line-height: 102px;
                                                                     "
                                                                 >
-                                                                    &#8226;
+                                                                    KN
                                                                 </td>
-                                                            </tr>
-                                                            <tr>
                                                                 <td
+                                                                    width="20"
+                                                                    valign="middle"
                                                                     style="
-                                                                        padding-left: 7px;
-                                                                        font-size: 4px;
+                                                                        width: 20px;
+                                                                        padding: 0;
+                                                                        font-family:
+                                                                            'Avenir Next', Avenir,
+                                                                            'Segoe UI', Helvetica,
+                                                                            sans-serif;
+                                                                        line-height: 7px;
                                                                     "
                                                                 >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 9px;
-                                                                        font-size: 6px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 10px;
-                                                                        font-size: 4px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 10px;
-                                                                        font-size: 6px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 10px;
-                                                                        font-size: 4px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 9px;
-                                                                        font-size: 6px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 7px;
-                                                                        color: #58eaff;
-                                                                        font-size: 4px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 4px;
-                                                                        font-size: 6px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td
-                                                                    style="
-                                                                        padding-left: 0;
-                                                                        color: #83a8ef;
-                                                                        font-size: 4px;
-                                                                    "
-                                                                >
-                                                                    &#8226;
+                                                                    <table
+                                                                        role="presentation"
+                                                                        cellpadding="0"
+                                                                        cellspacing="0"
+                                                                        border="0"
+                                                                        width="100%"
+                                                                        style="
+                                                                            width: 100%;
+                                                                            border-collapse: collapse;
+                                                                            font-family:
+                                                                                'Avenir Next', Avenir,
+                                                                                'Segoe UI', Helvetica,
+                                                                                sans-serif;
+                                                                            line-height: 7px;
+                                                                        "
+                                                                    >
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 0;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 4px;
+                                                                                    font-size: 6px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 7px;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 9px;
+                                                                                    font-size: 6px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 10px;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 10px;
+                                                                                    font-size: 6px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 10px;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 9px;
+                                                                                    font-size: 6px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 7px;
+                                                                                    color: #58eaff;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 4px;
+                                                                                    font-size: 6px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="
+                                                                                    padding-left: 0;
+                                                                                    color: #83a8ef;
+                                                                                    font-size: 4px;
+                                                                                "
+                                                                            >
+                                                                                &#8226;
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -343,7 +511,27 @@
                                             </table>
                                         </td>
                                     </tr>
+                                    <tr class="kn-signature-divider-spacer">
+                                        <td height="14" style="height: 14px; padding: 0; line-height: 0">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
                                 </table>
+                            </td>
+                            <td
+                                class="kn-signature-divider"
+                                width="1"
+                                bgcolor="#9aa6b2"
+                                style="
+                                    width: 1px;
+                                    padding: 0;
+                                    border-top: 14px solid #ffffff;
+                                    border-bottom: 14px solid #ffffff;
+                                    font-size: 0;
+                                    line-height: 0;
+                                "
+                            >
+                                &nbsp;
                             </td>
                             <td
                                 class="kn-signature-content-cell"
@@ -364,9 +552,10 @@
                                             class="kn-signature-name"
                                             style="
                                                 padding: 0;
-                                                font-family: Helvetica, sans-serif;
+                                                font-family:
+                                                    'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
                                                 font-size: 22px;
-                                                font-weight: 700;
+                                                font-weight: 400;
                                                 line-height: 27px;
                                             "
                                         >
@@ -379,9 +568,10 @@
                                             style="
                                                 padding: 5px 0 0;
                                                 color: #159bb0;
-                                                font-family: Helvetica, sans-serif;
+                                                font-family:
+                                                    'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
                                                 font-size: 12px;
-                                                font-weight: 700;
+                                                font-weight: 400;
                                                 letter-spacing: 1px;
                                                 line-height: 18px;
                                                 text-transform: uppercase;
@@ -395,7 +585,8 @@
                                             class="kn-signature-description"
                                             style="
                                                 padding: 6px 0 8px;
-                                                font-family: Helvetica, sans-serif;
+                                                font-family:
+                                                    'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
                                                 font-size: 12px;
                                                 font-weight: 400;
                                                 line-height: 18px;
@@ -436,7 +627,7 @@
                                                         valign="middle"
                                                         style="
                                                             width: 28px;
-                                                            padding: 0 7px 0 0;
+                                                            padding: 0 4px 0 0;
                                                             color: #159bb0;
                                                             line-height: 20px;
                                                         "
@@ -462,7 +653,9 @@
                                                     <td
                                                         style="
                                                             padding: 0;
-                                                            font-family: Helvetica, sans-serif;
+                                                            font-family:
+                                                                'Avenir Next', Avenir, 'Segoe UI',
+                                                                Helvetica, sans-serif;
                                                             font-size: 11px;
                                                             line-height: 20px;
                                                             white-space: nowrap;
@@ -506,9 +699,11 @@
                                                         valign="middle"
                                                         style="
                                                             width: 28px;
-                                                            padding: 0 7px 0 0;
+                                                            padding: 0 4px 0 0;
                                                             color: #159bb0;
-                                                            font-family: Helvetica, sans-serif;
+                                                            font-family:
+                                                                'Avenir Next', Avenir, 'Segoe UI',
+                                                                Helvetica, sans-serif;
                                                             font-size: 17px;
                                                             line-height: 20px;
                                                         "
@@ -518,7 +713,9 @@
                                                     <td
                                                         style="
                                                             padding: 0;
-                                                            font-family: Helvetica, sans-serif;
+                                                            font-family:
+                                                                'Avenir Next', Avenir, 'Segoe UI',
+                                                                Helvetica, sans-serif;
                                                             font-size: 11px;
                                                             line-height: 20px;
                                                             white-space: nowrap;
@@ -561,7 +758,7 @@
                                                         valign="middle"
                                                         style="
                                                             width: 28px;
-                                                            padding: 0 7px 0 0;
+                                                            padding: 0 4px 0 0;
                                                             line-height: 20px;
                                                         "
                                                     >
@@ -586,7 +783,9 @@
                                                     <td
                                                         style="
                                                             padding: 0;
-                                                            font-family: Helvetica, sans-serif;
+                                                            font-family:
+                                                                'Avenir Next', Avenir, 'Segoe UI',
+                                                                Helvetica, sans-serif;
                                                             font-size: 11px;
                                                             line-height: 20px;
                                                             white-space: nowrap;
@@ -630,7 +829,7 @@
                                                         valign="middle"
                                                         style="
                                                             width: 28px;
-                                                            padding: 0 7px 0 0;
+                                                            padding: 0 4px 0 0;
                                                             color: #159bb0;
                                                             line-height: 20px;
                                                         "
@@ -657,7 +856,9 @@
                                                     <td
                                                         style="
                                                             padding: 0;
-                                                            font-family: Helvetica, sans-serif;
+                                                            font-family:
+                                                                'Avenir Next', Avenir, 'Segoe UI',
+                                                                Helvetica, sans-serif;
                                                             font-size: 11px;
                                                             line-height: 20px;
                                                             white-space: nowrap;

@@ -1,25 +1,16 @@
 <mjml lang="en" dir="ltr">
     <mj-head>
         <mj-title>Kamil Nowak — Customer message</mj-title>
-        <mj-preview>A personal note from Kamil Nowak about your project.</mj-preview>
+        <mj-preview>A personal note from Kamil Nowak about your message.</mj-preview>
 
         <mj-attributes>
-            <mj-all font-family="Arial, Helvetica, sans-serif" />
-            <mj-text color="#f4f8ff" font-size="16px" line-height="1.7" />
+            <mj-all
+                font-family="'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif"
+                font-weight="400"
+            />
+            <mj-text color="#d9dee5" font-size="15px" line-height="1.72" />
             <mj-section padding="0" />
             <mj-column padding="0" />
-            <mj-button
-                background-color="#071426"
-                border="1px solid #58eaff"
-                border-radius="2px"
-                color="#ffffff"
-                font-size="12px"
-                font-weight="700"
-                letter-spacing="2px"
-                line-height="18px"
-                padding="0"
-                text-transform="uppercase"
-            />
         </mj-attributes>
 
         <mj-style inline="inline">
@@ -27,93 +18,169 @@
                 overflow-x: hidden !important;
             }
 
-            .dark-surface {
-                background-color: #050b18 !important;
-                background-image:
-                    radial-gradient(
-                        circle at 112% 36%,
-                        rgba(77, 226, 255, 0.24) 0%,
-                        rgba(13, 92, 149, 0.16) 27%,
-                        rgba(5, 11, 24, 0) 60%
-                    ),
-                    linear-gradient(110deg, #050b18 0%, #050b18 66%, #07172c 100%) !important;
-                background-repeat: no-repeat !important;
-                box-sizing: border-box !important;
+            .contact-surface {
                 width: 100% !important;
+                box-sizing: border-box !important;
+                background-color: #02050a !important;
             }
 
-            .dark-surface > table {
-                background: transparent !important;
-                background-color: transparent !important;
-                table-layout: fixed !important;
+            .contact-surface > table {
                 width: 100% !important;
+                table-layout: fixed !important;
+                background-color: #02050a !important;
             }
 
             .message-copy p {
                 margin-top: 0;
             }
 
-            .email-margin {
-                height: 24px !important;
-                line-height: 24px !important;
+            .message-copy blockquote {
+                border-left-color: #159bb0 !important;
+                background-color: #050c14 !important;
+                color: #dfe6ed !important;
+                font-style: normal !important;
+                font-weight: 400 !important;
             }
 
-            .footer-link a {
-                color: #f4f8ff !important;
+            .email-margin {
+                height: 20px !important;
+                line-height: 20px !important;
+            }
+
+            .portfolio-link a,
+            .email-signature a {
+                color: #d9dee5 !important;
                 text-decoration: none !important;
+                -webkit-text-fill-color: #d9dee5 !important;
             }
         </mj-style>
 
         <mj-style>
+            /* SIGNATURE_STYLES */
+
+            .email-signature > table {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .email-signature .kn-signature-frame {
+                padding: 28px 36px 32px !important;
+            }
+
+            .email-signature .kn-signature-name {
+                color: #f2f5f8 !important;
+                font-weight: 400 !important;
+            }
+
+            .email-signature .kn-signature-role {
+                color: #159bb0 !important;
+                font-weight: 400 !important;
+            }
+
+            .email-signature .kn-signature-description {
+                color: #bfc6cf !important;
+                font-weight: 400 !important;
+            }
+
+            .email-signature .kn-signature-divider {
+                background-color: #2b3541 !important;
+                border-top-color: #02050a !important;
+                border-bottom-color: #02050a !important;
+            }
+
+            .email-signature .kn-signature-contact-table,
+            .email-signature .kn-signature-contact-table > tbody,
+            .email-signature .kn-signature-contact-row {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .email-signature .kn-signature-contact-item {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 8px 0 !important;
+                border-top: 1px solid #2b3541 !important;
+                border-left: 0 !important;
+                color: #d9dee5 !important;
+                font-weight: 400 !important;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .email-signature .kn-signature-monogram-wrap {
+                    height: auto !important;
+                }
+
+                .email-signature .kn-signature-divider-cell {
+                    height: auto !important;
+                    padding: 0 !important;
+                    border-right: 0 !important;
+                }
+
+                .email-signature .kn-signature-divider-spacer {
+                    display: none !important;
+                    height: 0 !important;
+                }
+
+                .email-signature .kn-signature-divider {
+                    display: none !important;
+                }
+            }
+
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
-                    padding-left: 28px !important;
-                    padding-right: 28px !important;
+                    padding-left: 24px !important;
+                    padding-right: 24px !important;
                 }
 
                 .email-margin {
-                    height: 16px !important;
-                    line-height: 16px !important;
-                }
-
-                .header-name {
-                    padding-top: 30px !important;
-                }
-
-                .header-rule {
-                    padding-top: 14px !important;
+                    height: 12px !important;
+                    line-height: 12px !important;
                 }
 
                 .email-greeting {
-                    padding-top: 14px !important;
-                    font-size: 28px !important;
+                    padding-top: 24px !important;
+                    font-size: 26px !important;
                 }
 
-                .footer-divider {
-                    padding-left: 28px !important;
-                    padding-right: 28px !important;
+                .email-signature .kn-signature-frame {
+                    padding: 24px !important;
                 }
 
-                .footer-monogram {
-                    padding: 22px 0 12px !important;
+                .email-signature .kn-signature-monogram-cell,
+                .email-signature .kn-signature-content-cell {
+                    display: block !important;
+                    width: 100% !important;
                 }
 
-                .footer-identity {
-                    padding: 0 28px 20px !important;
+                .email-signature .kn-signature-monogram-cell {
+                    padding: 0 0 14px !important;
+                    border-right: 0 !important;
                     text-align: center !important;
                 }
 
-                .footer-identity div {
-                    text-align: center !important;
+                .email-signature .kn-signature-content-cell {
+                    padding-left: 0 !important;
                 }
 
-                .footer-contact {
-                    padding: 0 28px 30px !important;
-                }
-
-                .footer-contact table {
-                    width: 250px !important;
+                .email-signature .kn-signature-monogram {
+                    width: 74px !important;
                     margin: 0 auto !important;
+                }
+
+                .email-signature .kn-signature-monogram-wrap {
+                    width: 100% !important;
+                    height: auto !important;
+                }
+
+                .email-signature .kn-signature-divider-cell {
+                    height: auto !important;
+                    padding: 0 !important;
+                    border-right: 0 !important;
+                }
+
+                .email-signature .kn-signature-identity {
+                    text-align: center !important;
                 }
             }
         </mj-style>
@@ -124,65 +191,72 @@
         </mj-raw>
     </mj-head>
 
-    <mj-body width="600px" background-color="#020611">
-        <mj-section padding="0" background-color="#020611">
+    <mj-body width="600px" background-color="#03070d">
+        <mj-section padding="0" background-color="#03070d">
             <mj-column>
-                <mj-spacer css-class="email-margin" height="24px" />
+                <mj-spacer css-class="email-margin" height="20px" />
             </mj-column>
         </mj-section>
 
-        <!-- The solid background is the Outlook and no-gradient fallback. -->
         <mj-wrapper
-            css-class="dark-surface"
-            background-color="#050b18"
-            border="1px solid #243248"
+            css-class="contact-surface"
+            background-color="#02050a"
+            border="1px solid #161f29"
             padding="0"
         >
-            <mj-section background-color="transparent">
-                <mj-column background-color="transparent">
-                    <mj-text
-                        css-class="mobile-gutter header-name"
-                        color="#ffffff"
-                        font-size="18px"
-                        font-weight="700"
-                        letter-spacing="6px"
-                        line-height="22px"
-                        padding="40px 40px 0"
-                        text-transform="uppercase"
-                    >
-                        Kamil Nowak
-                    </mj-text>
-
-                    <mj-text
-                        css-class="mobile-gutter header-role"
-                        color="#58eaff"
-                        font-size="11px"
-                        font-weight="700"
-                        letter-spacing="2.2px"
-                        line-height="18px"
-                        padding="7px 40px 0"
-                        text-transform="uppercase"
-                    >
-                        Senior Full-stack Developer
-                    </mj-text>
-
+            <mj-section background-color="#02050a">
+                <mj-column>
                     <mj-table
-                        css-class="mobile-gutter header-rule"
+                        css-class="mobile-gutter"
                         cellpadding="0"
                         cellspacing="0"
-                        padding="20px 40px 0"
+                        padding="28px 36px 0"
                         role="presentation"
                         width="100%"
                     >
                         <tr>
                             <td
-                                bgcolor="#58eaff"
-                                height="1"
-                                style="width: 38px; font-size: 0; line-height: 0"
+                                width="50%"
+                                style="
+                                    padding: 0 18px 10px 0;
+                                    color: #f2f5f8;
+                                    font-family:
+                                        'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                    font-size: 11px;
+                                    font-weight: 400;
+                                    letter-spacing: 2px;
+                                    line-height: 16px;
+                                    text-transform: uppercase;
+                                "
                             >
-                                &nbsp;
+                                Message
                             </td>
-                            <td bgcolor="#29364a" height="1" style="font-size: 0; line-height: 0">
+                            <td
+                                class="portfolio-link"
+                                align="right"
+                                width="50%"
+                                style="
+                                    padding: 0 0 10px;
+                                    color: #8f98a5;
+                                    font-family:
+                                        'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                    font-size: 10px;
+                                    font-weight: 400;
+                                    letter-spacing: 1.4px;
+                                    line-height: 16px;
+                                    text-transform: uppercase;
+                                "
+                            >
+                                <a href="https://nowakkamil.com" target="_blank">nowakkamil.com</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                colspan="2"
+                                bgcolor="#2b3541"
+                                height="1"
+                                style="font-size: 0; line-height: 0"
+                            >
                                 &nbsp;
                             </td>
                         </tr>
@@ -190,224 +264,50 @@
 
                     <mj-text
                         css-class="mobile-gutter email-greeting"
-                        color="#ffffff"
-                        font-size="32px"
+                        color="#f2f5f8"
+                        font-size="28px"
                         font-weight="400"
-                        letter-spacing="-0.7px"
-                        line-height="1.25"
-                        padding="20px 40px 20px"
+                        letter-spacing="-0.6px"
+                        line-height="1.2"
+                        padding="32px 36px 8px"
                     >
-                        Hi {{ name }},
+                        Hi {{ firstName }},
                     </mj-text>
 
                     <mj-text
                         css-class="mobile-gutter message-copy"
-                        color="#f0f5fc"
-                        font-size="16px"
+                        color="#cdd3da"
+                        font-size="15px"
                         font-weight="400"
                         line-height="1.72"
-                        padding="0 40px 26px"
+                        padding="8px 36px 32px"
                     >
                         {{ message }}
                     </mj-text>
 
-                    <!-- Optional CTA: remove this entire mj-button block when it is not needed. -->
-                    <mj-button
-                        css-class="mobile-gutter"
-                        align="left"
-                        href="{{ctaUrl}}"
-                        inner-padding="14px 22px"
-                        padding="0 40px 34px"
-                        target="_blank"
-                    >
-                        {{ ctaText }}&nbsp;&nbsp;&nbsp;→
-                    </mj-button>
-
                     <mj-divider
-                        css-class="footer-divider"
-                        border-color="#2b394d"
+                        border-color="#2b3541"
                         border-style="solid"
                         border-width="1px"
-                        padding="0 40px"
+                        padding="0 36px"
                     />
                 </mj-column>
             </mj-section>
 
-            <mj-section background-color="transparent" padding="30px 40px 34px">
-                <mj-column width="90px" vertical-align="top">
+            <mj-section background-color="#02050a">
+                <mj-column>
                     <mj-table
-                        css-class="footer-monogram"
                         cellpadding="0"
                         cellspacing="0"
                         padding="0"
                         role="presentation"
-                        width="88px"
-                    >
-                        <tr>
-                            <td
-                                align="center"
-                                valign="middle"
-                                width="88"
-                                style="color: #58eaff; font-family: Arial, Helvetica, sans-serif"
-                            >
-                                <div
-                                    style="
-                                        width: 72px;
-                                        height: 72px;
-                                        margin: 0 auto;
-                                        border: 1px solid #58eaff;
-                                        border-radius: 50%;
-                                        color: #58eaff;
-                                        font-size: 22px;
-                                        font-weight: 400;
-                                        letter-spacing: 5px;
-                                        line-height: 72px;
-                                        text-align: center;
-                                    "
-                                >
-                                    KN
-                                </div>
-                            </td>
-                        </tr>
-                    </mj-table>
-                </mj-column>
-
-                <mj-column width="180px" vertical-align="top">
-                    <mj-text
-                        css-class="footer-identity"
-                        color="#ffffff"
-                        font-size="15px"
-                        font-weight="700"
-                        line-height="21px"
-                        padding="4px 18px 0 10px"
-                    >
-                        Kamil Nowak
-                        <div
-                            style="
-                                margin-top: 4px;
-                                color: #58eaff;
-                                font-size: 12px;
-                                font-weight: 400;
-                                line-height: 18px;
-                            "
-                        >
-                            Senior Full-stack Developer
-                        </div>
-                        <div
-                            style="
-                                margin-top: 10px;
-                                color: #c6d0df;
-                                font-size: 11px;
-                                font-weight: 400;
-                                line-height: 17px;
-                            "
-                        >
-                            Building digital experiences that are fast, reliable and thoughtfully
-                            crafted.
-                        </div>
-                    </mj-text>
-                </mj-column>
-
-                <mj-column width="245px" vertical-align="top">
-                    <mj-table
-                        css-class="footer-contact"
-                        cellpadding="0"
-                        cellspacing="0"
-                        padding="2px 0 0 4px"
-                        role="presentation"
                         width="100%"
                     >
                         <tr>
-                            <td
-                                valign="top"
-                                width="24"
-                                style="
-                                    padding: 0 0 12px;
-                                    color: #58eaff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 16px;
-                                    line-height: 20px;
-                                "
-                            >
-                                ⊕
-                            </td>
-                            <td
-                                class="footer-link"
-                                valign="top"
-                                style="
-                                    padding: 0 0 12px;
-                                    color: #f4f8ff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 12px;
-                                    line-height: 20px;
-                                "
-                            >
-                                <a
-                                    href="https://nowakkamil.com"
-                                    style="color: #f4f8ff; text-decoration: none"
-                                    target="_blank"
-                                >
-                                    nowakkamil.com
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                valign="top"
-                                width="24"
-                                style="
-                                    padding: 0 0 12px;
-                                    color: #58eaff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 16px;
-                                    line-height: 20px;
-                                "
-                            >
-                                ✉
-                            </td>
-                            <td
-                                class="footer-link"
-                                valign="top"
-                                style="
-                                    padding: 0 0 12px;
-                                    color: #f4f8ff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 12px;
-                                    line-height: 20px;
-                                "
-                            >
-                                <a
-                                    href="mailto:hello@nowakkamil.com"
-                                    style="color: #f4f8ff; text-decoration: none"
-                                >
-                                    hello@nowakkamil.com
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                valign="top"
-                                width="24"
-                                style="
-                                    color: #58eaff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 16px;
-                                    line-height: 20px;
-                                "
-                            >
-                                ⌂
-                            </td>
-                            <td
-                                valign="top"
-                                style="
-                                    color: #f4f8ff;
-                                    font-family: Arial, Helvetica, sans-serif;
-                                    font-size: 11px;
-                                    line-height: 20px;
-                                    white-space: nowrap;
-                                "
-                            >
-                                Based in Poland, working globally
+                            <td style="padding: 0">
+                                <div class="email-signature">
+                                    <!-- SIGNATURE_HTML -->
+                                </div>
                             </td>
                         </tr>
                     </mj-table>
@@ -415,9 +315,9 @@
             </mj-section>
         </mj-wrapper>
 
-        <mj-section padding="0" background-color="#020611">
+        <mj-section padding="0" background-color="#03070d">
             <mj-column>
-                <mj-spacer css-class="email-margin" height="24px" />
+                <mj-spacer css-class="email-margin" height="20px" />
             </mj-column>
         </mj-section>
     </mj-body>

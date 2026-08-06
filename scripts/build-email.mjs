@@ -4,6 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 import mjml2html from 'mjml';
 
+import {
+    customerConfirmationPreview,
+    escapeHtml,
+    getFirstName,
+    renderCustomerConfirmationBodyHtml,
+} from '../functions/customerConfirmation.ts';
+
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, '..');
 const outputDirectory = path.join(projectRoot, 'emails', 'dist');
@@ -12,24 +19,8 @@ const generatedModuleDirectory = path.join(projectRoot, 'functions', 'generated'
 const variant = 'customer-message-dark';
 
 const previewReplacements = [
-    [/{{\s*name\s*}}/g, 'John'],
-    [
-        /{{\s*message\s*}}/g,
-        `
-        <p style="margin: 0 0 18px 0;">
-            Thank you for sharing the outline of your new platform. The combination of a clear
-            product story, thoughtful interaction design, and a dependable technical foundation
-            is exactly the kind of challenge I enjoy working on.
-        </p>
-        <p style="margin: 0;">
-            I have reviewed the initial scope and can already see a focused path from discovery
-            through delivery. I would be glad to talk through the priorities, timing, and the
-            level of support that would be most useful to your team.
-        </p>
-    `,
-    ],
-    [/{{\s*ctaText\s*}}/g, 'View selected work'],
-    [/{{\s*ctaUrl\s*}}/g, 'https://nowakkamil.com'],
+    [/{{\s*firstName\s*}}/g, escapeHtml(getFirstName(customerConfirmationPreview.name))],
+    [/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(customerConfirmationPreview.message)],
 ];
 
 async function compile(mjml, sourcePath, outputName) {
@@ -51,7 +42,26 @@ async function compile(mjml, sourcePath, outputName) {
 
 async function buildVariant(variant) {
     const sourcePath = path.join(projectRoot, 'emails', `${variant}.mjml`);
-    const source = await readFile(sourcePath, 'utf8');
+    const signaturePath = path.join(projectRoot, 'emails', 'signature', 'signature.html');
+    const [sourceTemplate, signature] = await Promise.all([
+        readFile(sourcePath, 'utf8'),
+        readFile(signaturePath, 'utf8'),
+    ]);
+    const signatureStyleMatch = signature.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+    if (!signatureStyleMatch) {
+        throw new Error('Signature source must contain an embedded <style> block.');
+    }
+
+    const signatureStyles = signatureStyleMatch[1].trim();
+    const signatureMarkup = signature.replace(signatureStyleMatch[0], '').trim();
+    const source = sourceTemplate
+        .replace('/* SIGNATURE_STYLES */', signatureStyles)
+        .replace('<!-- SIGNATURE_HTML -->', signatureMarkup);
+
+    if (source === sourceTemplate || source.includes('SIGNATURE_')) {
+        throw new Error('Email source is missing its signature build placeholders.');
+    }
+
     let previewSource = source;
     for (const [pattern, value] of previewReplacements) {
         previewSource = previewSource.replace(pattern, value);

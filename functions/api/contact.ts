@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 import { contactSchema, type ContactMessage } from '../../src/sections/contact/contactModel.ts';
+import {
+    escapeHtml,
+    getFirstName,
+    renderCustomerConfirmationBodyHtml,
+    renderCustomerConfirmationText,
+} from '../customerConfirmation.ts';
 import { customerMessageDarkHtml } from '../generated/customer-message-dark.ts';
 
 const MAX_BODY_BYTES = 16_384;
@@ -40,33 +46,10 @@ interface ResendEmail {
     reply_to?: string;
 }
 
-const CUSTOMER_CONFIRMATION_CTA_TEXT = 'View selected work';
-const CUSTOMER_CONFIRMATION_CTA_URL = 'https://nowakkamil.com';
-
-const escapeHtml = (value: string): string =>
-    value
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-
-const renderCustomerConfirmationHtml = (message: ContactMessage): string => {
-    const quotedMessage = escapeHtml(message.message).replace(/\r\n?|\n/g, '<br />');
-    const confirmationMessage =
-        '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
-        `<blockquote style="margin: 0 0 18px 0; padding: 2px 0 2px 18px; border-left: 2px solid #58eaff; color: #dce8f5;">${quotedMessage}</blockquote>` +
-        '<p style="margin: 0;">I will review it and reply as soon as possible.</p>';
-
-    return customerMessageDarkHtml
-        .replace(/{{\s*name\s*}}/g, escapeHtml(message.name))
-        .replace(/{{\s*message\s*}}/g, confirmationMessage)
-        .replace(/{{\s*ctaText\s*}}/g, CUSTOMER_CONFIRMATION_CTA_TEXT)
-        .replace(/{{\s*ctaUrl\s*}}/g, CUSTOMER_CONFIRMATION_CTA_URL);
-};
-
-const renderCustomerConfirmationText = (message: ContactMessage): string =>
-    `Your message has been received. Here is a copy for your records:\n\n${message.message}\n\nI will review it and reply as soon as possible.`;
+const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): string =>
+    customerMessageDarkHtml
+        .replace(/{{\s*firstName\s*}}/g, escapeHtml(getFirstName(name)))
+        .replace(/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(message));
 
 interface ContactServerConfig {
     apiKey: string;
@@ -174,7 +157,7 @@ const createEmailBatch = (
             to: [message.email],
             reply_to: recipient,
             subject: 'Your message has been received',
-            text: renderCustomerConfirmationText(message),
+            text: renderCustomerConfirmationText(message.message),
             html: renderCustomerConfirmationHtml(message),
         });
     }
