@@ -9,6 +9,8 @@ import {
 } from '../customerConfirmation.ts';
 import { customerMessageDarkHtml } from '../generated/customer-message-dark.ts';
 
+import { EMAIL_ATTACHMENTS, EMAIL_CID, type EmailAttachment } from '../emailAssets.ts';
+
 const MAX_BODY_BYTES = 16_384;
 const TURNSTILE_TOKEN_MAX_LENGTH = 2_048;
 const TURNSTILE_TIMEOUT_MS = 5_000;
@@ -44,12 +46,18 @@ interface ResendEmail {
     text: string;
     html?: string;
     reply_to?: string;
+    attachments?: EmailAttachment[];
 }
 
 const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): string =>
     customerMessageDarkHtml
         .replace(/{{\s*firstName\s*}}/g, escapeHtml(getFirstName(name)))
-        .replace(/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(message));
+        .replace(/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(message))
+        .replaceAll('{{assetMonogram}}', `cid:${EMAIL_CID.monogram}`)
+        .replaceAll('{{assetGlobe}}', `cid:${EMAIL_CID.globe}`)
+        .replaceAll('{{assetEmail}}', `cid:${EMAIL_CID.email}`)
+        .replaceAll('{{assetLinkedIn}}', `cid:${EMAIL_CID.linkedIn}`)
+        .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`);
 
 interface ContactServerConfig {
     apiKey: string;
@@ -156,9 +164,10 @@ const createEmailBatch = (
             from: sender,
             to: [message.email],
             reply_to: recipient,
-            subject: 'Your message has been received',
+            subject: 'nowakkamil.com — Your message has been received',
             text: renderCustomerConfirmationText(message.message),
             html: renderCustomerConfirmationHtml(message),
+            attachments: [...EMAIL_ATTACHMENTS],
         });
     }
 

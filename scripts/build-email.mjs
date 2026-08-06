@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +15,22 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, '..');
 const outputDirectory = path.join(projectRoot, 'emails', 'dist');
 const generatedModuleDirectory = path.join(projectRoot, 'functions', 'generated');
+const emailAssetSourceDirectory = path.join(projectRoot, 'src', 'assets', 'email');
+const publicEmailAssetDirectory = path.join(projectRoot, 'public', 'email');
+const signatureAssetNames = [
+    'email.png',
+    'globe.png',
+    'kn-monogram.png',
+    'linkedin.png',
+    'location.png',
+];
+const signatureAssetPreviewReplacements = [
+    ['{{assetMonogram}}', 'https://nowakkamil.com/email/kn-monogram.png'],
+    ['{{assetGlobe}}', 'https://nowakkamil.com/email/globe.png'],
+    ['{{assetEmail}}', 'https://nowakkamil.com/email/email.png'],
+    ['{{assetLinkedIn}}', 'https://nowakkamil.com/email/linkedin.png'],
+    ['{{assetLocation}}', 'https://nowakkamil.com/email/location.png'],
+];
 
 const variant = 'customer-message-dark';
 
@@ -22,6 +38,14 @@ const previewReplacements = [
     [/{{\s*firstName\s*}}/g, escapeHtml(getFirstName(customerConfirmationPreview.name))],
     [/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(customerConfirmationPreview.message)],
 ];
+
+const resolveSignaturePreviewAssets = (html) => {
+    let resolvedHtml = html;
+    for (const [token, url] of signatureAssetPreviewReplacements) {
+        resolvedHtml = resolvedHtml.replaceAll(token, url);
+    }
+    return resolvedHtml;
+};
 
 async function compile(mjml, sourcePath, outputName) {
     const { html, errors } = await mjml2html(mjml, {
@@ -66,6 +90,7 @@ async function buildVariant(variant) {
     for (const [pattern, value] of previewReplacements) {
         previewSource = previewSource.replace(pattern, value);
     }
+    previewSource = resolveSignaturePreviewAssets(previewSource);
 
     const [productionHtml, previewHtml] = await Promise.all([
         compile(source, sourcePath, `${variant}.html`),
@@ -89,7 +114,7 @@ async function buildVariant(variant) {
 async function buildSignaturePreview() {
     const signatureDirectory = path.join(projectRoot, 'emails', 'signature');
     const signaturePath = path.join(signatureDirectory, 'signature.html');
-    const signature = await readFile(signaturePath, 'utf8');
+    const signature = resolveSignaturePreviewAssets(await readFile(signaturePath, 'utf8'));
     const indentedSignature = signature
         .trimEnd()
         .split('\n')
@@ -112,8 +137,21 @@ ${indentedSignature}
     console.log('Built emails/signature/signature.preview.html');
 }
 
+async function publishSignatureAssets() {
+    await mkdir(publicEmailAssetDirectory, { recursive: true });
+    await Promise.all(
+        signatureAssetNames.map((assetName) =>
+            copyFile(
+                path.join(emailAssetSourceDirectory, assetName),
+                path.join(publicEmailAssetDirectory, assetName),
+            ),
+        ),
+    );
+    console.log('Published public/email signature assets');
+}
+
 await Promise.all([
     mkdir(outputDirectory, { recursive: true }),
     mkdir(generatedModuleDirectory, { recursive: true }),
 ]);
-await Promise.all([buildVariant(variant), buildSignaturePreview()]);
+await Promise.all([buildVariant(variant), buildSignaturePreview(), publishSignatureAssets()]);

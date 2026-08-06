@@ -179,7 +179,10 @@ describe('contact Pages Function', () => {
         assert.match(String(visitorEmail.html), /This is a valid contact message\./);
         assert.match(String(visitorEmail.text), /This is a valid contact message\./);
         assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
-        assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:name|message|ctaText|ctaUrl)\s*}}/);
+        assert.match(String(visitorEmail.html), /src="cid:kn-monogram"/);
+        assert.match(String(visitorEmail.html), /src="cid:signature-globe"/);
+        assert.equal((visitorEmail.attachments as unknown[]).length, 5);
+        assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:firstName|message|asset\w+)\s*}}/);
     });
 
     it('HTML-escapes the visitor name before rendering the customer template', async () => {
