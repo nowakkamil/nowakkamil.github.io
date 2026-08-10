@@ -1,3 +1,89 @@
-# Kamil Nowak
+<h1 align="center">Kamil Nowak — Interactive 3D Portfolio</h1>
 
-Personal website as a portfolio.
+<p align="center">
+  A cinematic portfolio combining reliable engineering with motion, visual depth and real-time graphics.
+</p>
+
+<p align="center">
+  <a href="https://nowakkamil.com">Live website</a>
+  ·
+  <a href="https://www.linkedin.com/in/nowakkamil">LinkedIn</a>
+  ·
+  <a href="https://github.com/nowakkamil">GitHub</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Three.js-WebGL-000000?style=flat-square&logo=threedotjs&logoColor=white" alt="Three.js and WebGL" />
+  <img src="https://img.shields.io/badge/TypeScript-7%20%7C%20Strict-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 7 in strict mode" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 8" />
+</p>
+
+## About the project
+
+This is not a template-based portfolio or a static collection of cards. It is an exploration of how software engineering, interface design, animation and real-time rendering can work together without sacrificing clarity, accessibility or maintainability.
+
+The experience has two main goals: to present my work through a distinctive visual identity and to make moving through it feel natural. **Three.js**, custom **GLSL shaders** and particles create the atmosphere, while **GSAP** connects scrolling, camera movement, text and shader transitions into one coherent timeline.
+
+Visitors can explore my professional experience, education and recommendations, navigate an interactive constellation of projects, and get in touch directly through the website.
+
+## Behind the experience
+
+🌌 **Cinematic WebGL environment:** particles, lighting, fog, bloom and section-aware shaders<br>
+🧭 **Scroll-directed storytelling:** coordinated DOM, camera and shader transitions<br>
+✨ **Project constellation:** connected projects with keyboard-operable details and navigation<br>
+📱 **Responsive rendering:** dedicated camera, layout and effect settings for smaller devices<br>
+⚡ **Performance:** bounded frame updates, reusable scene objects and geometry work moved to a Web Worker<br>
+♿ **Accessibility:** semantic content, reduced-motion support and professional information kept outside WebGL<br>
+🔎 **SEO:** structured data, social metadata, sitemap and a canonical custom domain
+
+The application is organised into focused modules for page sections, rendering systems, shaders, interactions and styling. `main.ts` acts primarily as a composition root instead of holding the full implementation.
+
+React is part of my professional stack, but this project does not need a large component state model. Native DOM APIs and modular TypeScript keep the interface lightweight and allow the visual layer to remain independent.
+
+## Core technologies
+
+🟦 **Language and tooling:** TypeScript, Vite<br>
+🎨 **Rendering:** Three.js, WebGL, GLSL<br>
+🎬 **Motion:** GSAP, ScrollTrigger, ScrollSmoother, SplitText<br>
+🖌️ **Styling:** SCSS<br>
+🧵 **Background processing:** Web Worker<br>
+☁️ **Hosting:** Cloudflare Pages and GitHub Pages
+
+## Local development
+
+You will need a recent Node.js release, npm and a browser with WebGL support.
+
+```bash
+npm install
+npm run dev
+```
+
+Useful commands:
+
+```bash
+npm run typecheck  # validate TypeScript
+npm run lint       # check code and styles
+npm test           # run contact-form tests
+npm run build      # create the production build
+npm run preview    # preview the generated site
+```
+
+The contact form uses Cloudflare Pages Functions, Turnstile and Resend. A production setup requires `VITE_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `CONTACT_SENDER` and `CONTACT_RECIPIENT`. Visitor confirmation emails can be enabled with `SEND_VISITOR_CONFIRMATION=true`.
+
+## Deployment
+
+The primary version is served through Cloudflare Pages at [nowakkamil.com](https://nowakkamil.com/). The [GitHub Pages deployment](https://nowakkamil.github.io/) remains available as an alternate address, while the custom domain is canonical for search engines and public sharing.
+
+## About me
+
+I am a senior full-stack developer specialising in **React, TypeScript and .NET**. I build robust applications across front end, back end and cloud infrastructure, and particularly enjoy transforming ambitious visual concepts into maintainable digital products.
+
+My interest in Three.js, WebGL and digital motion draws on a background in fine-art photography and compositing — the point where technical problem-solving and visual experimentation meet.
+
+## License
+
+Unless a separate licence file states otherwise, the source code, visual design, text, shaders, media and project assets are provided for evaluation and demonstration purposes. They may not be copied, redistributed or used as a template without permission. Third-party libraries and assets remain subject to their respective licences.
+
+<p align="center">
+  Built with TypeScript, Three.js, GLSL, GSAP, SCSS and a refusal to make another ordinary portfolio.
+</p>
