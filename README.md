@@ -85,5 +85,7 @@ My interest in Three.js, WebGL and digital motion draws on a background in fine-
 Unless a separate licence file states otherwise, the source code, visual design, text, shaders, media and project assets are provided for evaluation and demonstration purposes. They may not be copied, redistributed or used as a template without permission. Third-party libraries and assets remain subject to their respective licences.
 
 <p align="center">
-  Built with TypeScript, Three.js, GLSL, GSAP, SCSS and a refusal to make another ordinary portfolio.
+  <i>
+    Built with TypeScript, Three.js, GLSL, GSAP, SCSS and a refusal to make another ordinary portfolio.
+  </i>
 </p>
