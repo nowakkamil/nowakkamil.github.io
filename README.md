@@ -49,6 +49,13 @@ React is part of my professional stack, but this project does not need a large c
 🧵 **Background processing:** Web Worker<br>
 ☁️ **Hosting:** Cloudflare Pages and GitHub Pages
 
+## Email templates
+
+The repository also contains the email assets used by the contact flow:
+
+- [Customer confirmation email](emails/README.md) — build, variables and sending behaviour;
+- [Email signature](emails/signature/README.md) — Spark installation and testing.
+
 ## Local development
 
 You will need a recent Node.js release, npm and a browser with WebGL support.

@@ -1,9 +1,16 @@
-export const MOBILE_MAX_WIDTH = 767;
-export const TABLET_MAX_WIDTH = 1024;
-export const DESKTOP_SCALE_REFERENCE_WIDTH = 3840;
+const MOBILE_MAX_WIDTH = 767;
+const TABLET_MAX_WIDTH = 1024;
+const DESKTOP_SCALE_REFERENCE_WIDTH = 3840;
 const DESKTOP_PIXEL_RATIO_CAP = 2;
 const DESKTOP_BLOOM_PIXEL_RATIO_CAP = 2;
 const MOBILE_BLOOM_STRENGTH_SCALE = 0.66;
+const TEXT_MOBILE_MAX_SCALE = 0.88;
+const TEXT_TABLET_START_SCALE = 0.72;
+const TEXT_TABLET_SCALE_REDUCTION = 0.12;
+const TEXT_DESKTOP_START_SCALE_RANGE = 0.28;
+const TEXT_DESKTOP_END_SCALE = 0.6;
+const TEXT_DESKTOP_END_SCALE_REDUCTION = 0.1;
+const TEXT_DESKTOP_SCALE_ARC_STRENGTH = 0.02;
 const TABLET_TEXT_CURVE_STRENGTH = 0.2;
 const DESKTOP_TEXT_CURVE_STRENGTH = 1;
 const TABLET_TEXT_CURVE_BOW = 0.2;
@@ -35,6 +42,12 @@ export interface ResponsiveConfig {
     text: {
         curveStrength: number;
         curveBow: number;
+        transformScaleStart: number;
+        transformScaleEnd: number;
+        transformScaleArcStrength: number;
+        relativeOffsetYFactor: number;
+        topAnchor: number;
+        scrollDepthOffset: number;
     };
     layout: {
         introTextWidth: number;
@@ -67,6 +80,11 @@ export interface ResponsiveConfig {
         ellipsis: number;
         tunnelRadiusScale: number;
         tunnelBokehSizeScale: number;
+    };
+    mainCloud: {
+        sizeBase: number;
+        pointSizeScale: number;
+        introParticleControl: number;
     };
     camera: {
         fov: number;
@@ -168,6 +186,17 @@ const getResponsiveConfig = (
         DESKTOP_EXPERIENCE_ROW_INLINE_PADDING,
         desktopHtmlSpacingProgress,
     );
+    const mobileTextScale = TEXT_MOBILE_MAX_SCALE * clamp(width / MOBILE_MAX_WIDTH, 0, 1);
+    const textTransformScaleStart = isMobile
+        ? mobileTextScale
+        : isTablet
+          ? TEXT_TABLET_START_SCALE
+          : TEXT_TABLET_START_SCALE + TEXT_DESKTOP_START_SCALE_RANGE * desktopViewportProgress;
+    const textTransformScaleEnd = isMobile
+        ? mobileTextScale
+        : isTablet
+          ? TEXT_TABLET_START_SCALE - TEXT_TABLET_SCALE_REDUCTION
+          : TEXT_DESKTOP_END_SCALE - TEXT_DESKTOP_END_SCALE_REDUCTION * desktopViewportProgress;
     const sharedResponsiveValues = {
         text: {
             curveStrength: isMobile
@@ -184,6 +213,15 @@ const getResponsiveConfig = (
                 DESKTOP_TEXT_CURVE_BOW,
                 desktopViewportProgress,
             ),
+            transformScaleStart: textTransformScaleStart,
+            transformScaleEnd: textTransformScaleEnd,
+            transformScaleArcStrength:
+                isMobile || isTablet
+                    ? 0
+                    : TEXT_DESKTOP_SCALE_ARC_STRENGTH * desktopViewportProgress,
+            relativeOffsetYFactor: isMobile ? -1 : 0,
+            topAnchor: isMobile ? 0.35 : 0.3,
+            scrollDepthOffset: isMobile ? 4 : 0,
         },
         layout: {
             introTextWidth: interpolate(
@@ -205,7 +243,12 @@ const getResponsiveConfig = (
                 scrub: reducedMotion ? true : isMobile ? 0.45 : useCompactMotion ? 0.6 : 1.2,
             },
         },
-    } satisfies Pick<ResponsiveConfig, 'text' | 'layout' | 'sectionTextAnimations'>;
+        mainCloud: {
+            sizeBase: isMobile ? 150 : 200,
+            pointSizeScale: isMobile ? 0.6 : 1,
+            introParticleControl: isMobile ? 1 : 0,
+        },
+    } satisfies Pick<ResponsiveConfig, 'text' | 'layout' | 'sectionTextAnimations' | 'mainCloud'>;
 
     if (mode === 'desktop') {
         return {

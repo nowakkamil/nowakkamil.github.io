@@ -4,13 +4,7 @@ import { AfterimagePass } from 'three/addons/postprocessing/AfterimagePass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
-import {
-    DESKTOP_SCALE_REFERENCE_WIDTH,
-    MOBILE_MAX_WIDTH,
-    TABLET_MAX_WIDTH,
-    refreshResponsiveConfig,
-    type ResponsiveConfig,
-} from '../app/responsiveConfig';
+import { refreshResponsiveConfig, type ResponsiveConfig } from '../app/responsiveConfig';
 import { IntroCameraController } from './controllers/IntroCameraController';
 import { ContactCameraController } from './controllers/ContactCameraController';
 import { ProjectsCameraController } from './controllers/ProjectsCameraController';
@@ -63,13 +57,6 @@ const getRendererViewportSize = (canvas: HTMLCanvasElement) => ({
 
 const TEXT_TRANSFORM_PROGRESS_MIN = 0;
 const TEXT_TRANSFORM_PROGRESS_MAX = 1;
-const TEXT_MOBILE_MAX_SCALE = 0.88;
-const TEXT_TABLET_START_SCALE = 0.72;
-const TEXT_TABLET_SCALE_REDUCTION = 0.12;
-const TEXT_DESKTOP_START_SCALE_RANGE = 0.28;
-const TEXT_DESKTOP_END_SCALE = 0.6;
-const TEXT_DESKTOP_END_SCALE_REDUCTION = 0.1;
-const TEXT_DESKTOP_SCALE_ARC_STRENGTH = 0.02;
 const TEXT_COMPACT_ARC_STRENGTH = 0.05;
 const TEXT_DEFAULT_ARC_STRENGTH = 0.1;
 const TEXT_COMPACT_DRIFT_STRENGTH = 0.005;
@@ -391,7 +378,7 @@ export class World {
         this.fadeOverlaySystem.setViewportSize(width, height);
         this.shaderSystem.setViewportSize(width, height);
         this.contentSystem.setTextBloomScale(nextResponsiveConfig.renderer.textBloomScale);
-        this.contentSystem.setScrollTextDepthOffset(nextResponsiveConfig.isMobile ? 4 : 0);
+        this.contentSystem.setScrollTextDepthOffset(nextResponsiveConfig.text.scrollDepthOffset);
         this.contentSystem.setViewportSize(width);
         this.updateOwnedCamera();
     };
@@ -598,31 +585,10 @@ export class World {
     }
 
     public updateTextTransform(progress: number, config: ResponsiveConfig): void {
-        const viewportWidth = window.innerWidth;
-        const mobileMaxScale =
-            TEXT_MOBILE_MAX_SCALE *
-            Math.min(viewportWidth / MOBILE_MAX_WIDTH, TEXT_TRANSFORM_PROGRESS_MAX);
-        const desktopScaleProgress = Math.min(
-            Math.max(
-                (viewportWidth - TABLET_MAX_WIDTH) /
-                    (DESKTOP_SCALE_REFERENCE_WIDTH - TABLET_MAX_WIDTH),
-                TEXT_TRANSFORM_PROGRESS_MIN,
-            ),
-            TEXT_TRANSFORM_PROGRESS_MAX,
-        );
-        const desktopStartScale =
-            TEXT_TABLET_START_SCALE + TEXT_DESKTOP_START_SCALE_RANGE * desktopScaleProgress;
-        const desktopEndScale =
-            TEXT_DESKTOP_END_SCALE - TEXT_DESKTOP_END_SCALE_REDUCTION * desktopScaleProgress;
-        const scale = config.isMobile
-            ? mobileMaxScale
-            : config.isTablet
-              ? TEXT_TABLET_START_SCALE - TEXT_TABLET_SCALE_REDUCTION * progress
-              : desktopStartScale +
-                (desktopEndScale - desktopStartScale) * progress +
-                TEXT_DESKTOP_SCALE_ARC_STRENGTH *
-                    desktopScaleProgress *
-                    Math.sin(progress * Math.PI);
+        const scale =
+            config.text.transformScaleStart +
+            (config.text.transformScaleEnd - config.text.transformScaleStart) * progress +
+            config.text.transformScaleArcStrength * Math.sin(progress * Math.PI);
         this.setTextScale(scale);
 
         const useCompactTextMotion = config.isCompact || config.hasCoarsePointer;
@@ -644,7 +610,7 @@ export class World {
         const { y } = this.getTextTopPosition();
 
         this.setTextPosition(y * progress + arc + drift);
-        this.setMainTextRelativeOffsetY(config.isMobile ? -progress : TEXT_TRANSFORM_PROGRESS_MIN);
+        this.setMainTextRelativeOffsetY(config.text.relativeOffsetYFactor * progress);
         this.setTextTilt(progress);
     }
 
@@ -669,8 +635,7 @@ export class World {
         const verticalFov = THREE.MathUtils.degToRad(this.camera.fov);
         const height = 2 * Math.tan(verticalFov / 2) * cameraDistance;
 
-        const anchor = this.responsiveConfig.isMobile ? 0.35 : 0.3;
-        return { y: height * anchor };
+        return { y: height * this.responsiveConfig.text.topAnchor };
     }
 
     public setBackgroundParticlesVisibility(visibility: number): void {
@@ -868,12 +833,13 @@ export class World {
     }
 
     private updateMainCloudResponsiveStyle(): void {
-        const isMobile = this.responsiveConfig.isMobile;
+        const config = this.responsiveConfig.mainCloud;
 
-        this.mainCloudMaterial.uniforms.uSizeBase.value = isMobile ? 150 : 200;
-        this.mainCloudMaterial.uniforms.uCloudPointSizeScale.value = isMobile ? 0.6 : 1;
+        this.mainCloudMaterial.uniforms.uSizeBase.value = config.sizeBase;
+        this.mainCloudMaterial.uniforms.uCloudPointSizeScale.value = config.pointSizeScale;
         this.mainCloudMaterial.uniforms.uCloudBrightness.value = 1;
-        this.mainCloudMaterial.uniforms.uMobileIntroParticleControl.value = isMobile ? 1 : 0;
+        this.mainCloudMaterial.uniforms.uMobileIntroParticleControl.value =
+            config.introParticleControl;
     }
 
     private createMainCloudParticles(): void {
