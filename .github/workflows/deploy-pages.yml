@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy GitHub Pages Redirect
 
 on:
     push:
@@ -14,48 +14,10 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    build:
+    deploy:
         runs-on: ubuntu-latest
-        timeout-minutes: 10
         permissions:
             contents: read
-            pages: read
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
-              with:
-                  persist-credentials: false
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v6
-              with:
-                  node-version: 26
-                  cache: npm
-                  cache-dependency-path: package-lock.json
-
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Lint
-              run: npm run lint
-
-            - name: Build
-              run: npm run build
-
-            - name: Configure GitHub Pages
-              uses: actions/configure-pages@v6
-
-            - name: Upload production build
-              uses: actions/upload-pages-artifact@v5
-              with:
-                  path: dist
-
-    deploy:
-        needs: build
-        runs-on: ubuntu-latest
-        timeout-minutes: 5
-        permissions:
             pages: write
             id-token: write
 
@@ -64,6 +26,19 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
 
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+              with:
+                  persist-credentials: false
+
+            - name: Configure GitHub Pages
+              uses: actions/configure-pages@v6
+
+            - name: Upload redirect site
+              uses: actions/upload-pages-artifact@v5
+              with:
+                  path: .github/pages-redirect
+
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v5
