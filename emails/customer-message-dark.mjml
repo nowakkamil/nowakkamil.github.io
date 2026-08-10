@@ -8,7 +8,7 @@
                 font-family="'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif"
                 font-weight="400"
             />
-            <mj-text color="#d9dee5" font-size="15px" line-height="1.72" />
+            <mj-text color="#d9dee5" font-size="15px" line-height="26px" />
             <mj-section padding="0" />
             <mj-column padding="0" />
         </mj-attributes>
@@ -63,53 +63,6 @@
                 max-width: 100% !important;
             }
 
-            .email-signature .kn-signature-frame {
-                padding: 28px 36px 32px !important;
-            }
-
-            .email-signature .kn-signature-name {
-                color: #f2f5f8 !important;
-                font-weight: 400 !important;
-            }
-
-            .email-signature .kn-signature-role {
-                color: #159bb0 !important;
-                font-weight: 400 !important;
-            }
-
-            .email-signature .kn-signature-description {
-                color: #bfc6cf !important;
-                font-weight: 400 !important;
-            }
-
-            .email-signature .kn-signature-divider-line {
-                background-color: #2b3541 !important;
-            }
-
-            .email-signature .kn-signature-contact-table,
-            .email-signature .kn-signature-contact-table > tbody,
-            .email-signature .kn-signature-contact-row {
-                display: block !important;
-                width: 100% !important;
-            }
-
-            .email-signature .kn-signature-contact-item {
-                display: block !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 8px 0 !important;
-                border-top: 1px solid #2b3541 !important;
-                border-left: 0 !important;
-                color: #d9dee5 !important;
-                font-weight: 400 !important;
-            }
-
-            @media only screen and (max-width: 600px) {
-                .email-signature .kn-signature-divider {
-                    display: none !important;
-                }
-            }
-
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
@@ -126,34 +79,8 @@
                     font-size: 26px !important;
                 }
 
-                .email-signature .kn-signature-frame {
+                .email-signature .kn-email-signature-frame {
                     padding: 24px !important;
-                }
-
-                .email-signature .kn-signature-monogram-cell,
-                .email-signature .kn-signature-content-cell {
-                    display: block !important;
-                    width: 100% !important;
-                }
-
-                .email-signature .kn-signature-monogram-cell {
-                    padding: 0 0 14px !important;
-                    border-right: 0 !important;
-                    text-align: center !important;
-                }
-
-                .email-signature .kn-signature-content-cell {
-                    padding-left: 0 !important;
-                }
-
-                .email-signature .kn-signature-monogram-image {
-                    width: 74px !important;
-                    height: 74px !important;
-                    margin: 0 auto !important;
-                }
-
-                .email-signature .kn-signature-identity {
-                    text-align: center !important;
                 }
             }
         </mj-style>
@@ -241,7 +168,7 @@
                         font-size="28px"
                         font-weight="400"
                         letter-spacing="-0.6px"
-                        line-height="1.2"
+                        line-height="34px"
                         padding="32px 36px 8px"
                     >
                         Hi {{ firstName }},
@@ -252,7 +179,7 @@
                         color="#cdd3da"
                         font-size="15px"
                         font-weight="400"
-                        line-height="1.72"
+                        line-height="26px"
                         padding="8px 36px 32px"
                     >
                         {{ message }}

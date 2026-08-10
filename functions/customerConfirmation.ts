@@ -19,7 +19,7 @@ export const renderCustomerConfirmationBodyHtml = (message: string): string => {
 
     return (
         '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
-        `<blockquote style="margin: 0 0 20px 0; padding: 10px 14px; border-left: 2px solid #159bb0; background-color: #050c14; color: #dfe6ed; line-height: 1.65;">${quotedMessage}</blockquote>` +
+        `<blockquote style="margin: 0 0 20px 0; padding: 10px 14px; border-left: 2px solid #159bb0; background-color: #050c14; color: #dfe6ed; line-height: 25px;">${quotedMessage}</blockquote>` +
         '<p style="margin: 0;">I’ll review it and reply as soon as possible.</p>'
     );
 };

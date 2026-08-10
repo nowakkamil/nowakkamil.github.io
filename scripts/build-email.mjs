@@ -66,7 +66,7 @@ async function compile(mjml, sourcePath, outputName) {
 
 async function buildVariant(variant) {
     const sourcePath = path.join(projectRoot, 'emails', `${variant}.mjml`);
-    const signaturePath = path.join(projectRoot, 'emails', 'signature', 'signature.html');
+    const signaturePath = path.join(projectRoot, 'emails', 'signature', 'signature.automated.html');
     const [sourceTemplate, signature] = await Promise.all([
         readFile(sourcePath, 'utf8'),
         readFile(signaturePath, 'utf8'),
