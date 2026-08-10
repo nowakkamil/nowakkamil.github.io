@@ -62,6 +62,13 @@ vec3 cinematicGeminiPalette(float phase) {
     return color;
 }
 
+vec3 gentlyReduceBlue(vec3 color) {
+    float blueReference = max(color.r, color.g);
+    float blueExcess = max(color.b - blueReference, 0.0);
+    color.b -= blueExcess * 0.10;
+    return color;
+}
+
 void applyTunnelAtmosphere(
     inout vec3 color,
     inout float alpha,
@@ -147,7 +154,7 @@ void main() {
 
         applyTunnelAtmosphere(color, alpha, tunnelColor, tunnelPresence);
 
-        gl_FragColor = vec4(color, alpha * uGlobalOpacity);
+        gl_FragColor = vec4(gentlyReduceBlue(color), alpha * uGlobalOpacity);
         return;
     }
 
@@ -253,7 +260,7 @@ void main() {
 
         applyTunnelAtmosphere(color, alpha, fastTunnelColor, tunnelPresence);
 
-        gl_FragColor = vec4(color, alpha * uGlobalOpacity);
+        gl_FragColor = vec4(gentlyReduceBlue(color), alpha * uGlobalOpacity);
         return;
     }
 
@@ -354,5 +361,8 @@ void main() {
     color *= cloudBrightness;
     alpha *= cloudBrightness;
 
-    gl_FragColor = vec4(color, alpha * uGlobalOpacity * vNearCameraFade);
+    gl_FragColor = vec4(
+        gentlyReduceBlue(color),
+        alpha * uGlobalOpacity * vNearCameraFade
+    );
 }

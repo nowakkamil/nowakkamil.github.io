@@ -180,6 +180,11 @@ export class PortfolioConstellation {
 
     public update(delta: number, elapsed: number): void {
         this.reveal = THREE.MathUtils.damp(this.reveal, this.revealTarget, 5.5, delta);
+        this.group.visible = this.reveal > 0.001 || this.revealTarget > 0.001;
+        if (!this.group.visible) {
+            return;
+        }
+
         this.group.position.copy(this.basePosition);
         this.group.scale.setScalar(this.baseScale);
 
@@ -232,11 +237,8 @@ export class PortfolioConstellation {
         this.revealTarget = nextReveal;
     }
 
-    public prepare(renderer?: THREE.WebGLRenderer): void {
+    public prepare(): void {
         this.initialize();
-        if (renderer) {
-            this.textures.forEach((texture) => renderer.initTexture(texture));
-        }
     }
 
     public setConstellationScrollProgress(progress: number): void {
@@ -1347,6 +1349,7 @@ export class PortfolioConstellation {
     private applyReveal(progress: number): void {
         this.reveal = clamp01(progress);
         this.revealTarget = this.reveal;
+        this.group.visible = this.reveal > 0.001;
         this.group.position.copy(this.basePosition);
         this.group.scale.setScalar(this.baseScale);
 

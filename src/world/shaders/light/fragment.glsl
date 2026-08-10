@@ -82,16 +82,12 @@ void main() {
     geminiColors[3] = uGeminiColors[3];
     geminiColors[4] = uGeminiColors[4];
 
-    vec3 geminiBlue = uGeminiColors[0];
-    geminiColors[1] = mix(geminiColors[1], geminiBlue, 0.34);
-    geminiColors[2] = mix(geminiColors[2], geminiBlue, 0.16);
-    geminiColors[3] = mix(geminiColors[3], geminiBlue, 0.52);
-    geminiColors[4] = mix(geminiColors[4], geminiBlue, 0.22);
-
     float colorWindowSize = clamp(floor(uColorWindowSize + 0.5), 2.0, 5.0);
     if(colorWindowSize < 5.0) {
-        geminiColors[0] = mix(uMobileLightColors[0], geminiBlue, 0.28);
-        geminiColors[1] = mix(uMobileLightColors[1], geminiBlue, 0.38);
+        geminiColors[0] = uMobileLightColors[0];
+        geminiColors[1] = uMobileLightColors[1];
+        geminiColors[0].b *= 0.68;
+        geminiColors[1].b *= 0.68;
     }
 
     float colorWindowPhase = uTime * 0.04;
@@ -276,7 +272,7 @@ void main() {
             0.45 *
             uVisibility;
 
-        finalColor += vec3(0.85, 0.92, 1.0) * shimmerGlow;
+        finalColor += vec3(1.0) * shimmerGlow;
         totalAlpha += shimmerGlow;
     }
 
@@ -291,7 +287,6 @@ void main() {
     }
 
     finalColor = pow(finalColor, vec3(0.92));
-    finalColor *= vec3(0.98, 1.00, 1.04);
 
     float d = blueNoise(gl_FragCoord.xy + uTime * 12.37);
     d = d - 0.5;

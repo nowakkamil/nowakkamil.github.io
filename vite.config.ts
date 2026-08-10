@@ -16,6 +16,10 @@ export default defineConfig({
     build: {
         sourcemap: true,
         rolldownOptions: {
+            input: {
+                main: 'index.html',
+                privacy: 'privacy.html',
+            },
             output: {
                 codeSplitting: {
                     groups: [

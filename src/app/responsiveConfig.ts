@@ -60,8 +60,8 @@ export interface ResponsiveConfig {
     renderer: {
         pixelRatioCap: number;
         bloomPixelRatioCap: number;
-        bloomStrengthScale: number;
-        textBloomScale: number;
+        bloomPassStrengthScale: number;
+        textBloomStrengthScale: number;
     };
     coloredLight: {
         horizontalScale: number;
@@ -264,8 +264,8 @@ const getResponsiveConfig = (
             renderer: {
                 pixelRatioCap: DESKTOP_PIXEL_RATIO_CAP,
                 bloomPixelRatioCap: DESKTOP_BLOOM_PIXEL_RATIO_CAP,
-                bloomStrengthScale: 1,
-                textBloomScale: 1.6,
+                bloomPassStrengthScale: 1,
+                textBloomStrengthScale: 1.6,
             },
             coloredLight: {
                 horizontalScale: 200,
@@ -331,8 +331,8 @@ const getResponsiveConfig = (
             renderer: {
                 pixelRatioCap: DESKTOP_PIXEL_RATIO_CAP,
                 bloomPixelRatioCap: DESKTOP_BLOOM_PIXEL_RATIO_CAP,
-                bloomStrengthScale: 1,
-                textBloomScale: 1.38,
+                bloomPassStrengthScale: 1,
+                textBloomStrengthScale: 1.38,
             },
             coloredLight: {
                 horizontalScale: isPortrait ? 90 : 110,
@@ -388,8 +388,8 @@ const getResponsiveConfig = (
         renderer: {
             pixelRatioCap: DESKTOP_PIXEL_RATIO_CAP,
             bloomPixelRatioCap: DESKTOP_BLOOM_PIXEL_RATIO_CAP,
-            bloomStrengthScale: MOBILE_BLOOM_STRENGTH_SCALE,
-            textBloomScale: 1.5,
+            bloomPassStrengthScale: MOBILE_BLOOM_STRENGTH_SCALE,
+            textBloomStrengthScale: 1.5,
         },
         coloredLight: {
             horizontalScale: isPortrait ? 80 : 100,

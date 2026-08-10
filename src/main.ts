@@ -165,7 +165,6 @@ try {
     });
 
     const navigation = initNavigation(smoother, responsiveConfig, () => {
-        void world.preparePortfolioConstellation();
         void loadProjectFeatures?.();
     });
 
@@ -244,25 +243,24 @@ try {
 
     createIntroTextAnimation(responsiveConfig);
     const initRemainingScrollTriggers = sectionTransitions.initScrollTriggers();
-    const loadExperienceFeatures = observeSectionOnce(
-        sectionSelectors.experience,
-        'experience animations',
-        async () => {
-            const { initExperienceAnimations } =
-                await import('./sections/experience/initExperienceAnimations');
-            initExperienceAnimations(responsiveConfig);
-        },
-    );
+    observeSectionOnce(sectionSelectors.experience, 'experience animations', async () => {
+        const { initExperienceAnimations } =
+            await import('./sections/experience/initExperienceAnimations');
+        initExperienceAnimations(responsiveConfig);
+    });
 
     loadProjectFeatures = observeSectionOnce(
         sectionSelectors.projects,
         'project interactions',
         async () => {
+            initRemainingScrollTriggers?.();
+            const projectModules = Promise.all([
+                import('./sections/projects/createProjectPreviewCard'),
+                import('./sections/projects/createProjectDetailsPanel'),
+            ]);
+            await world.preparePortfolioConstellation();
             const [{ default: createProjectPreviewCard }, { default: createProjectDetailsPanel }] =
-                await Promise.all([
-                    import('./sections/projects/createProjectPreviewCard'),
-                    import('./sections/projects/createProjectDetailsPanel'),
-                ]);
+                await projectModules;
 
             projectPreviewCard = createProjectPreviewCard(world, reduceMotion);
             projectDetailsPanel = createProjectDetailsPanel(
@@ -277,42 +275,29 @@ try {
         },
     );
 
-    const loadContactFeatures = observeSectionOnce(
-        sectionSelectors.contact,
-        'contact interactions',
-        async () => {
-            const [
-                ,
-                ,
-                { initContactTabs },
-                { initContactForm },
-                { initRecommendationWallEvents },
-                { createSocialLinks },
-            ] = await Promise.all([
-                world.ready,
-                sectionTransitions.initContactInteractions(),
-                import('./sections/contact/contactTabs'),
-                import('./sections/contact/contactForm'),
-                import('./sections/contact/initRecommendationWallEvents'),
-                import('./sections/contact/createSocialLinks'),
-            ]);
-            createSocialLinks();
-            initContactTabs();
-            initContactForm();
-            initRecommendationWallEvents(responsiveConfig);
-            createContactTextAnimation(contactTabs, responsiveConfig, smoother);
-        },
-    );
-
-    const loadRemainingFeatures = async (): Promise<void> => {
+    observeSectionOnce(sectionSelectors.contact, 'contact interactions', async () => {
         initRemainingScrollTriggers?.();
-        await Promise.all([
-            loadExperienceFeatures(),
-            loadProjectFeatures?.(),
-            loadContactFeatures(),
+        const [
+            ,
+            ,
+            { initContactTabs },
+            { initContactForm },
+            { initRecommendationWallEvents },
+            { createSocialLinks },
+        ] = await Promise.all([
+            world.ready,
+            sectionTransitions.initContactInteractions(),
+            import('./sections/contact/contactTabs'),
+            import('./sections/contact/contactForm'),
+            import('./sections/contact/initRecommendationWallEvents'),
+            import('./sections/contact/createSocialLinks'),
         ]);
-    };
-    const remainingFeaturesReady = loadRemainingFeatures();
+        createSocialLinks();
+        initContactTabs();
+        initContactForm();
+        initRecommendationWallEvents(responsiveConfig);
+        createContactTextAnimation(contactTabs, responsiveConfig, smoother);
+    });
 
     const revealLoadedPage = (): void => {
         if (smootherContentElement) {
@@ -364,9 +349,8 @@ try {
         cursor?.update(deltaSeconds, time);
     };
 
-    await Promise.all([introFontReady, remainingFeaturesReady]);
+    await introFontReady;
     document.documentElement.classList.add('intro-font-ready');
-    await world.preparePortfolioConstellation();
     ScrollTrigger.refresh();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);

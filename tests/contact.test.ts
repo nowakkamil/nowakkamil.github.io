@@ -103,7 +103,7 @@ describe('contact Pages Function', () => {
         await assertGenericNoStoreResponse(response, 502);
     });
 
-    it('returns a generic upstream error when Resend rejects the batch', async () => {
+    it('returns a generic upstream error when Resend rejects the email', async () => {
         let fetchCount = 0;
         globalThis.fetch = (async () => {
             fetchCount += 1;
@@ -138,29 +138,39 @@ describe('contact Pages Function', () => {
         await assertGenericNoStoreResponse(response, 204);
         assert.equal(calls.length, 2);
         assert.match(calls[0]?.input ?? '', /siteverify$/);
-        assert.match(calls[1]?.input ?? '', /emails\/batch$/);
+        assert.match(calls[1]?.input ?? '', /emails$/);
         assert.equal(calls[0]?.init?.signal instanceof AbortSignal, true);
-        assert.equal(calls[1]?.init?.signal instanceof AbortSignal, true);
 
         const verificationBody = JSON.parse(String(calls[0]?.init?.body));
         assert.equal(verificationBody.remoteip, '203.0.113.10');
         assert.equal(verificationBody.response, validBody.turnstileToken);
 
-        const emailBatch = JSON.parse(String(calls[1]?.init?.body));
-        assert.equal(emailBatch.length, 1);
+        const ownerEmail = JSON.parse(String(calls[1]?.init?.body)) as Record<string, unknown>;
+        assert.deepEqual(ownerEmail.to, [validEnv.CONTACT_RECIPIENT]);
+        assert.equal(ownerEmail.reply_to, validBody.email);
+        assert.equal(ownerEmail.subject, 'Project inquiry via nowakkamil.com');
+        assert.match(String(ownerEmail.html), /New inquiry/);
+        assert.match(String(ownerEmail.html), /Test Visitor/);
+        assert.match(String(ownerEmail.html), /visitor@example\.com/);
+        assert.match(String(ownerEmail.html), /This is a valid contact message\./);
+        assert.doesNotMatch(
+            String(ownerEmail.html),
+            /{{\s*(?:customerName|customerEmail|message)\s*}}/,
+        );
+        assert.equal(ownerEmail.attachments, undefined);
     });
 
     it('sends visitor confirmation only when explicitly enabled after Turnstile passes', async () => {
         let fetchCount = 0;
-        let resendBody: unknown;
+        const resendBodies: Array<Record<string, unknown>> = [];
         globalThis.fetch = (async (_input, init) => {
             fetchCount += 1;
             if (fetchCount === 1) {
                 return jsonResponse({ success: true });
             }
 
-            resendBody = JSON.parse(String(init?.body));
-            return jsonResponse({ data: [{ id: 'owner-email' }, { id: 'visitor-email' }] });
+            resendBodies.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
+            return jsonResponse({ id: `email-${fetchCount}` });
         }) as typeof fetch;
 
         const response = await onRequestPost({
@@ -169,9 +179,17 @@ describe('contact Pages Function', () => {
         });
 
         await assertGenericNoStoreResponse(response, 204);
-        assert.equal(Array.isArray(resendBody) ? resendBody.length : 0, 2);
-        assert.ok(Array.isArray(resendBody));
-        const visitorEmail = resendBody[1] as Record<string, unknown>;
+        assert.equal(resendBodies.length, 2);
+        const ownerEmail = resendBodies.find(
+            ({ to }) => (to as string[] | undefined)?.[0] === validEnv.CONTACT_RECIPIENT,
+        );
+        const visitorEmail = resendBodies.find(
+            ({ to }) => (to as string[] | undefined)?.[0] === validBody.email,
+        );
+        assert.ok(ownerEmail);
+        assert.ok(visitorEmail);
+        assert.equal(ownerEmail.reply_to, validBody.email);
+        assert.equal(visitorEmail.reply_to, validEnv.CONTACT_RECIPIENT);
         assert.equal((visitorEmail.to as string[])[0], validBody.email);
         assert.equal(typeof visitorEmail.text, 'string');
         assert.equal(typeof visitorEmail.html, 'string');
@@ -187,15 +205,15 @@ describe('contact Pages Function', () => {
 
     it('HTML-escapes the visitor name before rendering the customer template', async () => {
         let fetchCount = 0;
-        let resendBody: unknown;
+        const resendBodies: Array<Record<string, unknown>> = [];
         globalThis.fetch = (async (_input, init) => {
             fetchCount += 1;
             if (fetchCount === 1) {
                 return jsonResponse({ success: true });
             }
 
-            resendBody = JSON.parse(String(init?.body));
-            return jsonResponse({ data: [{ id: 'owner-email' }, { id: 'visitor-email' }] });
+            resendBodies.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
+            return jsonResponse({ id: `email-${fetchCount}` });
         }) as typeof fetch;
 
         const response = await onRequestPost({
@@ -208,8 +226,23 @@ describe('contact Pages Function', () => {
         });
 
         await assertGenericNoStoreResponse(response, 204);
-        assert.ok(Array.isArray(resendBody));
-        const visitorHtml = String((resendBody[1] as Record<string, unknown>).html);
+        const ownerEmail = resendBodies.find(
+            ({ to }) => (to as string[] | undefined)?.[0] === validEnv.CONTACT_RECIPIENT,
+        );
+        const visitorEmail = resendBodies.find(
+            ({ to }) => (to as string[] | undefined)?.[0] === validBody.email,
+        );
+        assert.ok(ownerEmail);
+        assert.ok(visitorEmail);
+        const ownerHtml = String(ownerEmail.html);
+        const visitorHtml = String(visitorEmail.html);
+        assert.match(ownerHtml, /&lt;Test&gt; Visitor &amp; Co/);
+        assert.doesNotMatch(ownerHtml, /<Test> Visitor/);
+        assert.match(
+            ownerHtml,
+            /Please review &lt;script&gt;alert\(&quot;email&quot;\)&lt;\/script&gt;\.<br \/>Second line\./,
+        );
+        assert.doesNotMatch(ownerHtml, /<script>alert/);
         assert.match(visitorHtml, /Hi &lt;Test&gt;,/);
         assert.doesNotMatch(visitorHtml, /Hi <Test>/);
         assert.match(

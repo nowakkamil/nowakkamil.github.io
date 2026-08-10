@@ -66,7 +66,7 @@ export class SceneContentSystem implements System {
     private mainTextOffsetY = 0;
     private mainTextRelativeOffsetY = 0;
     private textBloomPresence = 0;
-    private textBloomScale = 1;
+    private textBloomStrengthScale = 1;
     private scrollTextDepthOffset = 0;
     private scrollTextMaterial?: THREE.ShaderMaterial;
     private scrollTextObject?: THREE.Points;
@@ -146,7 +146,7 @@ export class SceneContentSystem implements System {
     public getTextBloomState(): TextBloomState {
         this.textBloomState.presence = this.textBloomPresence;
         this.textBloomState.visualScale = this.textScale * this.viewportScale;
-        this.textBloomState.strengthScale = this.textBloomScale;
+        this.textBloomState.strengthScale = this.textBloomStrengthScale;
         return this.textBloomState;
     }
 
@@ -251,8 +251,8 @@ export class SceneContentSystem implements System {
         this.setTextScale(this.textScale);
     }
 
-    public setTextBloomScale(value: number): void {
-        this.textBloomScale = Math.max(value, 0);
+    public setTextBloomStrengthScale(value: number): void {
+        this.textBloomStrengthScale = Math.max(value, 0);
     }
 
     public setTextPosition(y: number): void {

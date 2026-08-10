@@ -9,6 +9,11 @@ import {
     renderCustomerConfirmationText,
 } from '../customerConfirmation.ts';
 import { customerMessageDarkHtml } from '../generated/customer-message-dark.ts';
+import { internalContactNotificationHtml } from '../generated/internal-contact-notification.ts';
+import {
+    renderInternalNotificationMessageHtml,
+    renderInternalNotificationText,
+} from '../internalNotification.ts';
 
 import { EMAIL_ATTACHMENTS, EMAIL_CID, type EmailAttachment } from '../emailAssets.ts';
 
@@ -57,6 +62,12 @@ const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): stri
         .replaceAll('{{assetEmail}}', `cid:${EMAIL_CID.email}`)
         .replaceAll('{{assetLinkedIn}}', `cid:${EMAIL_CID.linkedIn}`)
         .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`);
+
+const renderInternalNotificationHtml = ({ name, email, message }: ContactMessage): string =>
+    internalContactNotificationHtml
+        .replace(/{{\s*customerName\s*}}/g, escapeHtml(name))
+        .replace(/{{\s*customerEmail\s*}}/g, escapeHtml(email))
+        .replace(/{{\s*message\s*}}/g, renderInternalNotificationMessageHtml(message));
 
 interface ContactServerConfig {
     apiKey: string;
@@ -153,8 +164,9 @@ const createEmails = (
             from: sender,
             to: [recipient],
             replyTo: message.email,
-            subject: `New portfolio contact message from ${message.name} — ${message.email}`,
-            text: `Name: ${message.name}\nEmail: ${message.email}\n\nMessage:\n${message.message}`,
+            subject: 'Project inquiry via nowakkamil.com',
+            text: renderInternalNotificationText(message),
+            html: renderInternalNotificationHtml(message),
         },
     ];
 

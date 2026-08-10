@@ -3,6 +3,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
+import { compileShaderMaterials } from '../rendering/compileShaderMaterials';
+
 export const BLOOM_LAYER = 1;
 
 export interface TextBloomState {
@@ -19,6 +21,8 @@ export class SelectiveBloomSystem {
     private readonly camera: THREE.Camera;
     private readonly composer: EffectComposer;
     private readonly bloomPass: UnrealBloomPass;
+    private width: number;
+    private height: number;
     private pixelRatio = 0;
     private strengthScaleValue = 1;
 
@@ -30,6 +34,8 @@ export class SelectiveBloomSystem {
         height: number,
     ) {
         this.camera = camera;
+        this.width = width;
+        this.height = height;
         this.composer = new EffectComposer(renderer);
         this.composer.renderToScreen = false;
         this.composer.addPass(new RenderPass(scene, camera));
@@ -84,11 +90,54 @@ export class SelectiveBloomSystem {
         this.renderBloomLayer(material, textPassOpacity);
     }
 
+    public async prepare(renderer: THREE.WebGLRenderer, state: TextBloomState): Promise<void> {
+        const previousRenderTarget = renderer.getRenderTarget();
+        renderer.setRenderTarget(this.composer.renderTarget1);
+
+        try {
+            await compileShaderMaterials(renderer, [
+                this.bloomPass.materialHighPassFilter,
+                ...this.bloomPass.separableBlurMaterials,
+                this.bloomPass.compositeMaterial,
+                this.bloomPass.blendMaterial,
+            ]);
+        } finally {
+            renderer.setRenderTarget(previousRenderTarget);
+        }
+
+        const { width, height, pixelRatio } = this;
+        this.setSize(1, 1, 1);
+        try {
+            this.render(state);
+        } finally {
+            this.setSize(width, height, pixelRatio);
+        }
+
+        for (const renderTarget of [
+            this.composer.renderTarget1,
+            this.composer.renderTarget2,
+            this.bloomPass.renderTargetBright,
+            ...this.bloomPass.renderTargetsHorizontal,
+            ...this.bloomPass.renderTargetsVertical,
+        ]) {
+            renderer.initRenderTarget(renderTarget);
+        }
+
+        renderer.setRenderTarget(this.composer.renderTarget2);
+        try {
+            renderer.clear();
+        } finally {
+            renderer.setRenderTarget(previousRenderTarget);
+        }
+    }
+
     public setStrengthScale(value: number): void {
         this.strengthScale = value;
     }
 
     public setSize(width: number, height: number, pixelRatio: number): void {
+        this.width = width;
+        this.height = height;
         if (this.pixelRatio !== pixelRatio) {
             this.composer.setPixelRatio(pixelRatio);
             this.pixelRatio = pixelRatio;

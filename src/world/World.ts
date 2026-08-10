@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { AfterimagePass } from 'three/addons/postprocessing/AfterimagePass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import type { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 import { refreshResponsiveConfig, type ResponsiveConfig } from '../app/responsiveConfig';
 import { IntroCameraController } from './controllers/IntroCameraController';
@@ -35,6 +36,7 @@ import {
     createMainParticleMaterial,
 } from './factories/MaterialFactory';
 import { createColoredLightMesh } from './factories/SceneObjectFactory';
+import { compileShaderMaterials } from './rendering/compileShaderMaterials';
 import type {
     PortfolioConstellation,
     PortfolioProject,
@@ -72,12 +74,12 @@ export class World {
     private readonly afterimagePass: AfterimagePass;
     private readonly selectiveBloomSystem: SelectiveBloomSystem;
     private readonly finalComposer: EffectComposer;
+    private readonly bloomCompositePass: ShaderPass;
     private readonly introCameraController: IntroCameraController;
     private readonly projectsCameraController: ProjectsCameraController;
     private readonly contactCameraController: ContactCameraController;
     private portfolioConstellation: PortfolioConstellation | undefined;
     private portfolioConstellationPromise: Promise<PortfolioConstellation> | undefined;
-    private portfolioConstellationPreparationPromise: Promise<void> | undefined;
     private portfolioConstellationReveal = 0;
     private portfolioConstellationRevealImmediate = false;
     private portfolioConstellationScrollProgress = 0;
@@ -164,6 +166,7 @@ export class World {
             canvas,
             antialias: true,
             alpha: true,
+            stencil: false,
             powerPreference: 'high-performance',
         });
         this.renderer.setPixelRatio(
@@ -186,11 +189,11 @@ export class World {
             initialViewportSize.width,
             initialViewportSize.height,
         );
-        const bloomCompositePass = createBloomCompositePassMaterial();
-        bloomCompositePass.uniforms.bloomTexture.value = this.selectiveBloomSystem.texture;
+        this.bloomCompositePass = createBloomCompositePassMaterial();
+        this.bloomCompositePass.uniforms.bloomTexture.value = this.selectiveBloomSystem.texture;
         this.finalComposer = new EffectComposer(this.renderer);
         this.finalComposer.addPass(baseRenderPass);
-        this.finalComposer.addPass(bloomCompositePass);
+        this.finalComposer.addPass(this.bloomCompositePass);
         this.afterimagePass = new AfterimagePass(0);
         this.afterimagePass.enabled = true;
         this.finalComposer.addPass(this.afterimagePass);
@@ -364,7 +367,7 @@ export class World {
         }
         this.renderer.setSize(width, height, false);
         this.selectiveBloomSystem.setStrengthScale(
-            nextResponsiveConfig.renderer.bloomStrengthScale,
+            nextResponsiveConfig.renderer.bloomPassStrengthScale,
         );
         this.selectiveBloomSystem.setSize(width, height, bloomPixelRatio);
         if (this.finalPixelRatio !== rendererPixelRatio) {
@@ -377,7 +380,9 @@ export class World {
         this.camera.updateProjectionMatrix();
         this.fadeOverlaySystem.setViewportSize(width, height);
         this.shaderSystem.setViewportSize(width, height);
-        this.contentSystem.setTextBloomScale(nextResponsiveConfig.renderer.textBloomScale);
+        this.contentSystem.setTextBloomStrengthScale(
+            nextResponsiveConfig.renderer.textBloomStrengthScale,
+        );
         this.contentSystem.setScrollTextDepthOffset(nextResponsiveConfig.text.scrollDepthOffset);
         this.contentSystem.setViewportSize(width);
         this.updateOwnedCamera();
@@ -507,18 +512,12 @@ export class World {
             });
     }
 
-    public preparePortfolioConstellation(): Promise<void> {
-        this.portfolioConstellationPreparationPromise ??= this.loadPortfolioConstellation()
-            .then(async (constellation) => {
-                constellation.prepare(this.renderer);
-                await this.renderer.compileAsync(this.scene, this.camera);
-            })
-            .catch((error) => {
-                this.portfolioConstellationPreparationPromise = undefined;
-                console.error('Failed to prepare portfolio constellation', error);
-            });
-
-        return this.portfolioConstellationPreparationPromise;
+    public async preparePortfolioConstellation(): Promise<void> {
+        try {
+            await this.loadPortfolioConstellation();
+        } catch (error) {
+            console.error('Failed to prepare portfolio constellation', error);
+        }
     }
 
     public setPortfolioConstellationScrollProgress(progress: number): void {
@@ -729,8 +728,29 @@ export class World {
     private async init3d(): Promise<void> {
         await this.contentSystem.initialize();
         await this.renderer.compileAsync(this.scene, this.camera);
-        this.renderFrame();
+        await this.selectiveBloomSystem.prepare(
+            this.renderer,
+            this.contentSystem.getTextBloomState(),
+        );
+        await this.compileFinalComposerShaders();
+        this.finalComposer.render();
         this.resolveReady();
+    }
+
+    private async compileFinalComposerShaders(): Promise<void> {
+        const previousRenderTarget = this.renderer.getRenderTarget();
+        this.renderer.setRenderTarget(this.finalComposer.renderTarget1);
+
+        try {
+            await compileShaderMaterials(this.renderer, [
+                this.bloomCompositePass.material,
+                this.afterimagePass.compFsMaterial,
+            ]);
+        } finally {
+            this.renderer.setRenderTarget(previousRenderTarget);
+        }
+
+        await compileShaderMaterials(this.renderer, [this.afterimagePass.copyFsMaterial]);
     }
 
     private renderFrame(): void {

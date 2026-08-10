@@ -376,6 +376,55 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     }
 }
 
+.form-group__label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.form-group__privacy-link {
+    font-family: Urbanist, sans-serif;
+    font-size: 0.64rem;
+    font-weight: 450;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration-color: rgb(255 255 255 / 24%);
+    text-underline-offset: 0.2em;
+    color: rgb(255 255 255 / 46%);
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+        color 180ms ease,
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms ease,
+        text-decoration-color 180ms ease,
+        text-shadow 180ms ease;
+
+    &:hover,
+    &:focus-visible {
+        color: rgb(255 255 255 / 82%);
+        text-decoration-color: rgb(255 255 255 / 58%);
+        text-shadow: 0 0 0.8rem rgb(158 239 255 / 16%);
+    }
+
+    &:focus-visible {
+        outline: 1px solid rgb(255 255 255 / 55%);
+        outline-offset: 0.2rem;
+    }
+}
+
+form[data-contact-form-ready='true']:not([data-message-interacted='true'])
+    .form-group__privacy-link {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.15rem);
+    pointer-events: none;
+}
+
 .form-field__error,
 .contact-form__status {
     margin: 0;
@@ -1019,6 +1068,7 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     .contact-tabs input,
     .contact-tabs textarea,
     .contact-tabs label,
+    .form-group__privacy-link,
     .contact-action,
     .contact-action::before,
     .contact-tabs__intro-emphasis,

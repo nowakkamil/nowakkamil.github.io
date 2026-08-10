@@ -190,6 +190,16 @@ export const initContactForm = (): void => {
     );
     const turnstile = createTurnstileController(turnstileContainer);
 
+    const revealPrivacyNotice = (): void => {
+        form.dataset.messageInteracted = 'true';
+    };
+
+    form.dataset.contactFormReady = 'true';
+    if (messageControl.value.trim()) {
+        revealPrivacyNotice();
+    }
+    messageControl.addEventListener('focus', revealPrivacyNotice, { once: true });
+
     const setSubmitting = (submitting: boolean): void => {
         submitButton.disabled = submitting;
         submitLabel.hidden = submitting;
