@@ -13,13 +13,10 @@ import type {
     PortfolioProject,
     PortfolioProjectPreviewState,
 } from './sections/projects/portfolioConstellation';
-import {
-    createContactTextAnimation,
-    createIntroTextAnimation,
-} from './sections/transitions/createSectionTextAnimations';
+import { createIntroTextAnimation } from './sections/transitions/createSectionTextAnimations';
 import { createSectionTransitions } from './sections/transitions/createSectionTransitions';
 import { initSmoother } from './app/initSmoother';
-import { type SectionSelector, sectionSelectors } from './sections/sectionIds';
+import { sectionSelectors } from './sections/sectionIds';
 
 declare global {
     interface Window {
@@ -54,17 +51,14 @@ try {
 
     registerGsap();
 
-    const observeSectionOnce = (
-        selector: SectionSelector,
+    const createFeatureLoader = (
         featureName: string,
         initialize: () => Promise<void>,
     ): (() => Promise<void>) => {
         let initialization: Promise<void> | undefined;
-        let observer: IntersectionObserver | undefined;
 
-        const load = (): Promise<void> => {
+        return (): Promise<void> => {
             if (!initialization) {
-                observer?.disconnect();
                 initialization = initialize().catch((error) => {
                     console.error(`Failed to initialize ${featureName}`, error);
                 });
@@ -72,26 +66,6 @@ try {
 
             return initialization;
         };
-
-        const section = document.querySelector<HTMLElement>(selector);
-        if (!section || !('IntersectionObserver' in window)) {
-            void load();
-            return load;
-        }
-
-        observer = new IntersectionObserver(
-            (entries) => {
-                if (entries.some((entry) => entry.isIntersecting)) {
-                    void load();
-                }
-            },
-            {
-                rootMargin: '100% 0px',
-            },
-        );
-        observer.observe(section);
-
-        return load;
     };
 
     const canvas = document.querySelector<HTMLCanvasElement>('.webgl');
@@ -256,16 +230,14 @@ try {
 
     createIntroTextAnimation(responsiveConfig);
     const initRemainingScrollTriggers = sectionTransitions.initScrollTriggers();
-    observeSectionOnce(sectionSelectors.experience, 'experience animations', async () => {
-        const { initExperienceAnimations } =
-            await import('./sections/experience/initExperienceAnimations');
-        initExperienceAnimations(responsiveConfig);
-    });
+    const initializeRemainingSections = async (): Promise<void> => {
+        const loadExperienceAnimations = createFeatureLoader('experience animations', async () => {
+            const { initExperienceAnimations } =
+                await import('./sections/experience/initExperienceAnimations');
+            initExperienceAnimations(responsiveConfig);
+        });
 
-    loadProjectFeatures = observeSectionOnce(
-        sectionSelectors.projects,
-        'project interactions',
-        async () => {
+        const loadProjectInteractions = createFeatureLoader('project interactions', async () => {
             initRemainingScrollTriggers?.();
             const projectModules = Promise.all([
                 import('./sections/projects/createProjectPreviewCard'),
@@ -285,32 +257,39 @@ try {
                 projectPreviewCard?.update(state);
                 sectionTransitions.setProjectSelected(Boolean(state.selectedProject));
             });
-        },
-    );
+        });
+        loadProjectFeatures = loadProjectInteractions;
 
-    observeSectionOnce(sectionSelectors.contact, 'contact interactions', async () => {
-        initRemainingScrollTriggers?.();
-        const [
-            ,
-            ,
-            { initContactTabs },
-            { initContactForm },
-            { initRecommendationWallEvents },
-            { createSocialLinks },
-        ] = await Promise.all([
-            world.ready,
-            sectionTransitions.initContactInteractions(),
-            import('./sections/contact/contactTabs'),
-            import('./sections/contact/contactForm'),
-            import('./sections/contact/initRecommendationWallEvents'),
-            import('./sections/contact/createSocialLinks'),
-        ]);
-        createSocialLinks();
-        initContactTabs();
-        initContactForm();
-        initRecommendationWallEvents(responsiveConfig);
-        createContactTextAnimation(contactTabs, responsiveConfig, smoother);
-    });
+        const loadContactFeatures = createFeatureLoader('contact interactions', async () => {
+            initRemainingScrollTriggers?.();
+            const [
+                ,
+                ,
+                { createContactTextAnimation },
+                { initContactTabs },
+                { initContactForm },
+                { initRecommendationWallEvents },
+                { createSocialLinks },
+            ] = await Promise.all([
+                world.ready,
+                sectionTransitions.initContactInteractions(),
+                import('./sections/transitions/createContactTextAnimation'),
+                import('./sections/contact/contactTabs'),
+                import('./sections/contact/contactForm'),
+                import('./sections/contact/initRecommendationWallEvents'),
+                import('./sections/contact/createSocialLinks'),
+            ]);
+            createSocialLinks();
+            initContactTabs();
+            initContactForm();
+            initRecommendationWallEvents(responsiveConfig);
+            createContactTextAnimation(contactTabs, responsiveConfig, smoother);
+        });
+
+        await loadExperienceAnimations();
+        await loadProjectInteractions();
+        await loadContactFeatures();
+    };
 
     const revealLoadedPage = (): void => {
         if (smootherContentElement) {
@@ -334,27 +313,29 @@ try {
     introLink?.classList.add('active');
 
     const useCompactMotion = responsiveConfig.isCompact || responsiveConfig.hasCoarsePointer;
-    gsap.fromTo(
-        links,
-        {
-            y: reduceMotion || responsiveConfig.isMobile ? 0 : '-2vh',
-        },
-        {
-            opacity: (_, link: HTMLElement) => (link.classList.contains('active') ? 0.9 : 0.5),
-            y: 0,
-            stagger: {
-                each: reduceMotion ? 0 : 0.5,
+    const animateNavigation = (): void => {
+        gsap.fromTo(
+            links,
+            {
+                y: reduceMotion || responsiveConfig.isMobile ? 0 : '-2vh',
             },
-            duration: reduceMotion ? 0.01 : useCompactMotion ? 0.65 : 1,
-            ease: 'sine',
-            delay: reduceMotion ? 0 : 1,
-            onComplete: () =>
-                links.forEach((element) => {
-                    element.removeAttribute('style');
-                    return element.classList.add('animated');
-                }),
-        },
-    );
+            {
+                opacity: (_, link: HTMLElement) => (link.classList.contains('active') ? 0.9 : 0.5),
+                y: 0,
+                stagger: {
+                    each: reduceMotion ? 0 : 0.5,
+                },
+                duration: reduceMotion ? 0.01 : useCompactMotion ? 0.65 : 1,
+                ease: 'sine',
+                delay: reduceMotion ? 0 : 1,
+                onComplete: () =>
+                    links.forEach((element) => {
+                        element.removeAttribute('style');
+                        return element.classList.add('animated');
+                    }),
+            },
+        );
+    };
 
     const updateWorld = (time: number, deltaTime: number): void => {
         const deltaSeconds = deltaTime / 1000;
@@ -362,11 +343,13 @@ try {
         cursor?.update(deltaSeconds, time);
     };
 
+    await initializeRemainingSections();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
     window.__portfolioStartup?.succeed();
 
     gsap.ticker.add(updateWorld);
+    animateNavigation();
     world.startIntroReveal(() => {
         sectionTransitions.releaseSmootherAtTop();
         navigation.setReady();

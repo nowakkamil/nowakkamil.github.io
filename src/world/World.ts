@@ -495,6 +495,14 @@ export class World {
             return;
         }
 
+        void this.prepareShootingStars();
+    }
+
+    public prepareShootingStars(): Promise<void> {
+        if (this.shootingStarSystem) {
+            return Promise.resolve();
+        }
+
         this.shootingStarSystemPromise ??= import('./systems/ShootingStarSystem')
             .then(({ ShootingStarSystem }) => {
                 const system = new ShootingStarSystem(
@@ -510,6 +518,8 @@ export class World {
                 this.shootingStarSystemPromise = undefined;
                 console.error('Failed to initialize shooting stars', error);
             });
+
+        return this.shootingStarSystemPromise;
     }
 
     public async preparePortfolioConstellation(): Promise<void> {
@@ -726,8 +736,9 @@ export class World {
     }
 
     private async init3d(): Promise<void> {
-        await this.contentSystem.initialize();
+        await Promise.all([this.contentSystem.initialize(), this.prepareShootingStars()]);
         await this.renderer.compileAsync(this.scene, this.camera);
+        await this.shootingStarSystem?.prepare(this.renderer);
         await this.selectiveBloomSystem.prepare(
             this.renderer,
             this.contentSystem.getTextBloomState(),

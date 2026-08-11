@@ -18,7 +18,7 @@ import {
     MOBILE_PROJECTS_TEXT_LOWER,
     PROJECTS_TRANSITION,
 } from './sectionTransitionConfig';
-import { CONTACT_FORM_REVEAL_TRIGGER_ID } from './createSectionTextAnimations';
+import { CONTACT_FORM_REVEAL_TRIGGER_ID } from './contactTransitionIds';
 import { getSectionSelector, sectionIds, sectionSelectors, type SectionId } from '../sectionIds';
 
 type ProjectPanel = {
