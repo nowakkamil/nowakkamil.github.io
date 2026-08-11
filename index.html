@@ -907,14 +907,24 @@
                     return;
                 }
 
-                cursor.dataset.pointerX = String(window.innerWidth * 0.5);
-                cursor.dataset.pointerY = String(window.innerHeight * 0.5);
-
-                const move = (event) => {
-                    cursor.dataset.pointerX = String(event.clientX);
-                    cursor.dataset.pointerY = String(event.clientY);
-                    cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate3d(-50%, -50%, 0)`;
+                const setPosition = (x, y) => {
+                    cursor.dataset.pointerX = String(x);
+                    cursor.dataset.pointerY = String(y);
+                    cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate3d(-50%, -50%, 0)`;
                 };
+                const loadingMotion = document.querySelector('.loading-screen__motion');
+                const loadingMotionBounds = loadingMotion?.getBoundingClientRect();
+
+                setPosition(
+                    loadingMotionBounds
+                        ? loadingMotionBounds.left + loadingMotionBounds.width * 0.5
+                        : document.documentElement.clientWidth * 0.5,
+                    loadingMotionBounds
+                        ? loadingMotionBounds.top + loadingMotionBounds.height * 0.5
+                        : document.documentElement.clientHeight * 0.5,
+                );
+
+                const move = (event) => setPosition(event.clientX, event.clientY);
                 const remove = () => {
                     window.removeEventListener('pointermove', move);
                     cursor.remove();

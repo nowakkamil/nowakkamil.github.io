@@ -116,6 +116,8 @@ try {
     }
 
     setLoadingPhase('finalizing');
+    await introFontReady;
+    document.documentElement.classList.add('intro-font-ready');
 
     const soundControls = initSoundControls(responsiveConfig.reducedMotion);
     const smoother = initSmoother(responsiveConfig);
@@ -360,9 +362,6 @@ try {
         cursor?.update(deltaSeconds, time);
     };
 
-    await introFontReady;
-    document.documentElement.classList.add('intro-font-ready');
-    ScrollTrigger.refresh();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
     window.__portfolioStartup?.succeed();
