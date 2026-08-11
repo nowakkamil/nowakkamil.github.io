@@ -508,6 +508,90 @@
                 transform: translateX(-50%);
             }
 
+            .loading-screen__error {
+                position: relative;
+                z-index: 2;
+                width: min(32rem, calc(100vw - 3rem));
+                padding: 2rem;
+                color: rgb(255 255 255 / 88%);
+                font-family: system-ui, sans-serif;
+                text-align: center;
+            }
+
+            .loading-screen__error[hidden] {
+                display: none;
+            }
+
+            .loading-screen__error-title {
+                margin: 0 0 0.65rem;
+                color: #fff;
+                font-size: clamp(1.35rem, 4vw, 1.75rem);
+                font-weight: 400;
+                letter-spacing: -0.02em;
+            }
+
+            .loading-screen__error-message {
+                max-width: 28rem;
+                margin: 0 auto 1.4rem;
+                color: rgb(255 255 255 / 64%);
+                font-size: 0.95rem;
+                font-weight: 300;
+                line-height: 1.55;
+            }
+
+            .loading-screen__retry {
+                min-width: 9rem;
+                padding: 0.72rem 1.2rem;
+                border: 1px solid rgb(134 234 255 / 55%);
+                border-radius: 999px;
+                background: rgb(134 234 255 / 8%);
+                color: #fff;
+                font:
+                    400 0.85rem/1 system-ui,
+                    sans-serif;
+                letter-spacing: 0.04em;
+                transition:
+                    background-color 160ms ease,
+                    border-color 160ms ease;
+            }
+
+            .loading-screen__retry:hover {
+                border-color: rgb(134 234 255 / 85%);
+                background: rgb(134 234 255 / 15%);
+            }
+
+            .loading-screen__retry:focus-visible {
+                border-color: #86eaff;
+                outline: none;
+                background: rgb(134 234 255 / 15%);
+                box-shadow: 0 0 1rem rgb(134 234 255 / 18%);
+            }
+
+            .loading-screen--error {
+                pointer-events: auto;
+            }
+
+            .loading-screen--error .loading-screen__motion,
+            .loading-screen--error .loading-screen__pulse,
+            .loading-screen--error .loading-screen__status {
+                display: none;
+            }
+
+            html.startup-error,
+            html.startup-error body,
+            html.startup-error body * {
+                cursor: auto !important;
+            }
+
+            html.startup-error .html-loading-cursor,
+            html.startup-error .cursor-sound-label {
+                display: none !important;
+            }
+
+            html.startup-error .loading-screen__retry {
+                cursor: pointer !important;
+            }
+
             @keyframes loading-ring-breathe {
                 0%,
                 100% {
@@ -574,15 +658,15 @@
 
             .html-loading-cursor {
                 position: fixed;
-                left: 50%;
-                top: 50%;
+                left: 0;
+                top: 0;
                 z-index: 2147483647;
                 width: 40px;
                 height: 40px;
                 color: #fff;
                 pointer-events: none;
-                transform: translate3d(-50%, -50%, 0);
-                will-change: left, top;
+                transform: translate3d(50vw, 50vh, 0) translate3d(-50%, -50%, 0);
+                will-change: transform;
             }
 
             .html-loading-cursor__glow,
@@ -673,6 +757,98 @@
                 }
             }
         </style>
+        <script>
+            (() => {
+                let startupComplete = false;
+                let errorPending = false;
+
+                const renderStartupError = () => {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (!loadingScreen) {
+                        return;
+                    }
+
+                    errorPending = false;
+                    document.documentElement.classList.add('startup-error');
+                    document.getElementById('html-loading-cursor')?.remove();
+                    const cursorLabel = document.querySelector('.cursor-sound-label');
+                    if (cursorLabel instanceof HTMLElement) {
+                        cursorLabel.hidden = true;
+                    }
+                    loadingScreen.classList.add('loading-screen--error');
+
+                    const errorPanel = loadingScreen.querySelector('.loading-screen__error');
+                    const announcement = loadingScreen.querySelector(
+                        '.loading-screen__announcement',
+                    );
+                    const retryButton = loadingScreen.querySelector('[data-loading-retry]');
+
+                    if (errorPanel instanceof HTMLElement) {
+                        errorPanel.hidden = false;
+                    }
+                    if (announcement instanceof HTMLElement) {
+                        announcement.textContent =
+                            'The experience could not be loaded. Reload the page to try again.';
+                    }
+                    if (retryButton instanceof HTMLButtonElement) {
+                        retryButton.addEventListener('click', () => window.location.reload(), {
+                            once: true,
+                        });
+                    }
+                };
+
+                const fail = () => {
+                    if (startupComplete) {
+                        return;
+                    }
+
+                    if (document.readyState === 'loading') {
+                        if (!errorPending) {
+                            errorPending = true;
+                            document.addEventListener('DOMContentLoaded', renderStartupError, {
+                                once: true,
+                            });
+                        }
+                        return;
+                    }
+
+                    renderStartupError();
+                };
+
+                const handleResourceError = (event) => {
+                    const target = event.target;
+                    if (
+                        event.error ||
+                        target instanceof HTMLScriptElement ||
+                        target instanceof HTMLLinkElement
+                    ) {
+                        fail();
+                    }
+                };
+                const handleUnhandledRejection = () => fail();
+                const handlePreloadError = (event) => {
+                    event.preventDefault();
+                    fail();
+                };
+                const removeErrorListeners = () => {
+                    window.removeEventListener('error', handleResourceError, true);
+                    window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+                    window.removeEventListener('vite:preloadError', handlePreloadError);
+                };
+
+                window.__portfolioStartup = {
+                    fail,
+                    succeed: () => {
+                        startupComplete = true;
+                        removeErrorListeners();
+                    },
+                };
+
+                window.addEventListener('error', handleResourceError, true);
+                window.addEventListener('unhandledrejection', handleUnhandledRejection);
+                window.addEventListener('vite:preloadError', handlePreloadError);
+            })();
+        </script>
         <script type="module" src="/src/main.ts"></script>
     </head>
 
@@ -704,6 +880,16 @@
             >
                 Preparing experience…
             </span>
+            <div class="loading-screen__error" role="alert" hidden>
+                <h1 class="loading-screen__error-title">Unable to load the experience</h1>
+                <p class="loading-screen__error-message">
+                    Some required site files could not be loaded. This can happen briefly during a
+                    new deployment or when the connection is interrupted.
+                </p>
+                <button class="loading-screen__retry" type="button" data-loading-retry>
+                    Reload page
+                </button>
+            </div>
         </div>
 
         <div id="html-loading-cursor" class="html-loading-cursor" aria-hidden="true">
@@ -727,8 +913,7 @@
                 const move = (event) => {
                     cursor.dataset.pointerX = String(event.clientX);
                     cursor.dataset.pointerY = String(event.clientY);
-                    cursor.style.left = `${event.clientX}px`;
-                    cursor.style.top = `${event.clientY}px`;
+                    cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate3d(-50%, -50%, 0)`;
                 };
                 const remove = () => {
                     window.removeEventListener('pointermove', move);

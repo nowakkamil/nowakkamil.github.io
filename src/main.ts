@@ -19,8 +19,16 @@ import {
 } from './sections/transitions/createSectionTextAnimations';
 import { createSectionTransitions } from './sections/transitions/createSectionTransitions';
 import { initSmoother } from './app/initSmoother';
-import { World } from './world/World';
 import { type SectionSelector, sectionSelectors } from './sections/sectionIds';
+
+declare global {
+    interface Window {
+        __portfolioStartup?: {
+            fail: () => void;
+            succeed: () => void;
+        };
+    }
+}
 
 const smoothWrapper = document.querySelector<HTMLElement>('#smooth-wrapper');
 const contactTabs = document.querySelector<HTMLElement>('.contact-tabs');
@@ -42,7 +50,7 @@ const slowConnectionTimeout = window.setTimeout(() => {
 
 try {
     setLoadingPhase('assets');
-    await import('./app/initStyles');
+    const [{ World }] = await Promise.all([import('./world/World'), import('./app/initStyles')]);
 
     registerGsap();
 
@@ -93,6 +101,9 @@ try {
 
     const responsiveConfig = refreshResponsiveConfig(window.innerWidth, canvas.clientHeight);
 
+    await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+    });
     const world = new World(canvas, responsiveConfig, {
         onSceneBuildStart: () => setLoadingPhase('scene'),
     });
@@ -354,6 +365,7 @@ try {
     ScrollTrigger.refresh();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
+    window.__portfolioStartup?.succeed();
 
     gsap.ticker.add(updateWorld);
     world.startIntroReveal(() => {
@@ -362,6 +374,9 @@ try {
         scrollCue.setReady();
         scrollCue.reveal();
     });
+} catch (error) {
+    console.error('Failed to initialize the portfolio experience', error);
+    window.__portfolioStartup?.fail();
 } finally {
     window.clearTimeout(slowConnectionTimeout);
     finishLoadingPhases();

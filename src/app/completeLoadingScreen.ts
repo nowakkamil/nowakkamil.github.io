@@ -18,13 +18,10 @@ export const completeLoadingScreen = (loadingScreen: HTMLElement | null): Promis
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const duration = reducedMotion ? 0.01 : 1;
 
-    const cssTransform = getComputedStyle(motion).transform;
-    const cssMatrix =
-        cssTransform === 'none' ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(cssTransform);
-    const cssScale = Math.hypot(cssMatrix.a, cssMatrix.b);
-
-    motion.style.transform = `scale(${cssScale})`;
-    motion.getAnimations().forEach((animation) => animation.cancel());
+    motion.getAnimations().forEach((animation) => {
+        animation.commitStyles();
+        animation.cancel();
+    });
 
     return new Promise((resolve) => {
         gsap.timeline({

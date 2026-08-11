@@ -126,6 +126,31 @@
                 display: inline-block;
                 margin-top: 3rem;
             }
+
+            .legal-reference {
+                font-size: 0.72em;
+                line-height: 0;
+                vertical-align: super;
+            }
+
+            .legal-reference a {
+                text-decoration: none;
+            }
+
+            .legal-notes {
+                margin-top: 2.2rem;
+                padding-top: 1.2rem;
+                border-top: 1px solid rgb(255 255 255 / 12%);
+            }
+
+            .legal-notes h2 {
+                margin-top: 0;
+            }
+
+            .legal-notes li {
+                font-size: 0.82rem;
+                color: rgb(255 255 255 / 56%);
+            }
         </style>
     </head>
     <body>
@@ -135,8 +160,9 @@
             <p class="updated">Last updated: 11 August 2026</p>
 
             <p>
-                This notice explains how I handle personal data when you contact me through this
-                website. The data controller is Kamil Nowak. You can contact me at
+                This notice explains how I handle personal data under the General Data Protection
+                Regulation (GDPR, known in Poland as RODO) when you contact me through this website.
+                The data controller is Kamil Nowak. You can contact me at
                 <a href="mailto:contact@nowakkamil.com">contact@nowakkamil.com</a>.
             </p>
 
@@ -144,9 +170,15 @@
             <p>
                 The contact form collects your name, email address, and message so that I can review
                 and respond to your enquiry. I process this data to take steps at your request
-                before entering into a contract where relevant (Article 6(1)(b) GDPR), and otherwise
-                on the basis of my legitimate interest in responding to professional enquiries
-                (Article 6(1)(f) GDPR).
+                before entering into a contract where relevant.<sup class="legal-reference"
+                    ><a href="#legal-basis-contract" aria-label="Legal reference 1">1</a></sup
+                >
+                Otherwise, I rely on my legitimate interest in responding to professional
+                enquiries.<sup class="legal-reference"
+                    ><a href="#legal-basis-legitimate-interest" aria-label="Legal reference 2"
+                        >2</a
+                    ></sup
+                >
             </p>
             <p>
                 Providing this information is voluntary, but I cannot respond through the form
@@ -156,18 +188,32 @@
 
             <h2>Service providers and transfers</h2>
             <p>
-                Cloudflare provides hosting and abuse protection for the form, including Turnstile,
-                and Resend processes the email delivery. These providers process data on my behalf.
-                Where data is processed outside the European Economic Area, I rely on a lawful
-                transfer mechanism and appropriate safeguards as required by the GDPR.
+                Cloudflare provides hosting and abuse protection. Its Turnstile service processes
+                technical and security signals, including your IP address and browser information,
+                to distinguish legitimate users from automated traffic. Resend handles email
+                delivery, and my email service provider receives and may store the resulting
+                message. Cloudflare and Resend process data in connection with providing their
+                services; where they act as processors, they process personal data on my behalf.
+                Website and form security and abuse prevention are based on my legitimate interest
+                in protecting this site and my communications.<sup class="legal-reference"
+                    ><a href="#legal-basis-legitimate-interest" aria-label="Legal reference 2"
+                        >2</a
+                    ></sup
+                >
+            </p>
+            <p>
+                Where data is processed outside the European Economic Area, transfers rely, as
+                applicable, on an adequacy decision or appropriate safeguards, including the
+                European Commission's Standard Contractual Clauses where required. You can contact
+                me for further information about the mechanisms and safeguards used.
             </p>
 
             <h2>How long I keep it</h2>
             <p>
-                I keep enquiries only for as long as reasonably necessary to respond and manage any
-                resulting professional relationship, normally no longer than 12 months after our
-                last correspondence. I may retain limited information for longer where required by
-                law or necessary to establish, exercise, or defend legal claims.
+                I keep enquiries only for as long as reasonably necessary to respond, normally no
+                longer than 12 months after our last correspondence. Relevant information may be
+                kept longer if an enquiry leads to a professional relationship or where required for
+                legal, contractual, tax, or claims purposes.
             </p>
 
             <h2>Your rights</h2>
@@ -186,11 +232,24 @@
 
             <h2>Cookieless analytics</h2>
             <p>
-                This site may use cookieless, aggregate analytics to understand traffic and site
-                performance. It does not use analytics cookies. Analytics are separate from the
-                contact form and are not used to build advertising profiles from the details you
-                submit.
+                This site uses Cloudflare Web Analytics, a cookieless service, for aggregate traffic
+                and performance analytics. It does not use analytics cookies, connect analytics to
+                details submitted through the contact form, or build advertising profiles. I use it
+                on the basis of my legitimate interest in understanding and improving site
+                performance.<sup class="legal-reference"
+                    ><a href="#legal-basis-legitimate-interest" aria-label="Legal reference 2"
+                        >2</a
+                    ></sup
+                >
             </p>
+
+            <section class="legal-notes" aria-labelledby="legal-notes-title">
+                <h2 id="legal-notes-title">Legal references</h2>
+                <ol>
+                    <li id="legal-basis-contract">GDPR, Article 6(1)(b).</li>
+                    <li id="legal-basis-legitimate-interest">GDPR, Article 6(1)(f).</li>
+                </ol>
+            </section>
 
             <a class="back-link" href="/#contact">← Back to the contact form</a>
         </main>

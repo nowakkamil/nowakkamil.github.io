@@ -84,6 +84,7 @@ export class CursorSystem {
     private wakeEnergy = 0;
     private wakeWarmupFrames = 0;
     private lastPointerTarget: EventTarget | null = null;
+    private htmlCursorHandoffPending = false;
 
     constructor(
         cursorLabel?: HTMLElement,
@@ -179,6 +180,7 @@ export class CursorSystem {
     private takeOverFromHtmlCursor(): void {
         const htmlCursor = document.querySelector<HTMLElement>('#html-loading-cursor');
         if (htmlCursor) {
+            this.htmlCursorHandoffPending = true;
             htmlCursor.style.color = this.coreMaterial.color.getStyle();
             const htmlGlow = htmlCursor.querySelector<HTMLElement>('.html-loading-cursor__glow');
             const htmlOrbit = htmlCursor.querySelector<HTMLElement>('.html-loading-cursor__orbit');
@@ -203,12 +205,15 @@ export class CursorSystem {
             this.orbit.position.set(x, y, 0);
             this.core.visible = true;
             this.orbit.visible = true;
-            this.setCursorLabelActive(true);
+            if (!this.htmlCursorHandoffPending) {
+                this.setCursorLabelActive(true);
+            }
             this.updateCursorLabelPosition();
         }
 
-        this.renderer?.render(this.scene, this.camera);
-        window.dispatchEvent(new Event('three-cursor-ready'));
+        if (!this.htmlCursorHandoffPending) {
+            this.renderer?.render(this.scene, this.camera);
+        }
     }
 
     public update(delta: number, elapsed: number): void {
@@ -247,8 +252,17 @@ export class CursorSystem {
             }
         }
 
+        if (this.htmlCursorHandoffPending) {
+            this.setCursorLabelActive(true);
+        }
+
         this.updateCursorLabelPosition();
         this.renderer.render(this.scene, this.camera);
+
+        if (this.htmlCursorHandoffPending) {
+            this.htmlCursorHandoffPending = false;
+            window.dispatchEvent(new Event('three-cursor-ready'));
+        }
     }
 
     private updateCursorLabelPosition(): void {
