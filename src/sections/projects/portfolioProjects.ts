@@ -1,71 +1,13 @@
 import { type PortfolioProject } from './portfolioConstellation';
-import { preloadAssetRequest, preloadImage } from '../../utils/assetLoaders';
+import { preloadImage } from '../../utils/assetLoaders';
 import { portfolioSkills } from './portfolioSkills';
-
-const getProjectScreenshotUrls = (
-    screenshots: Record<string, string>,
-): Partial<Record<string, string>> =>
-    Object.fromEntries(
-        Object.entries(screenshots).map(([path, source]) => {
-            const filename = path.split('/').at(-1) ?? path;
-            const projectId = filename.replace(/\.[^.]+$/, '');
-            return [projectId, source];
-        }),
-    );
-
-const projectScreenshotUrls = getProjectScreenshotUrls(
-    import.meta.glob<string>('../../assets/projects/previews/*.webp', {
-        eager: true,
-        import: 'default',
-        query: '?url',
-    }),
-);
-
-const projectDetailsScreenshotUrls = getProjectScreenshotUrls(
-    import.meta.glob<string>('../../assets/projects/*.png', {
-        eager: true,
-        import: 'default',
-        query: '?url',
-    }),
-);
-
-type ProjectScreenshotRequest = {
-    source: string;
-    promise: Promise<void>;
-};
-
-const reportFailedScreenshotPreloads = (requests: ProjectScreenshotRequest[]): void => {
-    Promise.allSettled(requests.map(({ promise }) => promise)).then((results) => {
-        results.forEach((result, index) => {
-            if (result.status === 'rejected') {
-                console.error(
-                    `Failed to preload project screenshot "${requests[index].source}"`,
-                    result.reason,
-                );
-            }
-        });
-    });
-};
-
-export const startProjectScreenshotPreloads = (): void => {
-    const previews = Object.values(projectScreenshotUrls).filter((source): source is string =>
-        Boolean(source),
-    );
-    const details = Object.values(projectDetailsScreenshotUrls).filter((source): source is string =>
-        Boolean(source),
-    );
-    const requests = [
-        ...previews.map((source) => ({ source, promise: preloadImage(source) })),
-        ...details.map((source) => ({ source, promise: preloadAssetRequest(source) })),
-    ];
-    reportFailedScreenshotPreloads(requests);
-};
+import { PROJECT_PREVIEW_IMAGE_SIZES, projectImagesById } from './projectImageAssets';
 
 const withProjectScreenshots = (projects: PortfolioProject[]): PortfolioProject[] =>
     projects.map((project) => ({
         ...project,
-        screenshot: projectScreenshotUrls[project.id],
-        detailsScreenshot: projectDetailsScreenshotUrls[project.id],
+        screenshot: projectImagesById[project.id]?.preview,
+        detailsScreenshot: projectImagesById[project.id]?.details,
         skills: project.skills.map(
             (skill) =>
                 portfolioSkills[portfolioSkills.findIndex((s) => s.id === skill)]?.label ?? skill,
@@ -98,7 +40,7 @@ export const preloadAdjacentProjectScreenshots = (project: PortfolioProject): vo
 
     adjacentProjects.forEach((candidate) => {
         if (candidate.screenshot) {
-            preloadImage(candidate.screenshot);
+            preloadImage(candidate.screenshot, PROJECT_PREVIEW_IMAGE_SIZES);
         }
     });
 };

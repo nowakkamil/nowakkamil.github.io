@@ -1,7 +1,6 @@
 export const sectionIds = ['intro', 'experience', 'projects', 'contact'] as const;
 
 export type SectionId = (typeof sectionIds)[number];
-export type SectionSelector = `#${SectionId}`;
 
 type SectionSelectors = {
     readonly [Key in SectionId]: `#${Key}`;

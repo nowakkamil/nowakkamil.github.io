@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { ResponsiveConfig } from '../../app/responsiveConfig';
+import type { ResponsiveImageSource } from '../../utils/assetLoaders';
 
 type PortfolioConstellationId = 'front-end' | 'full-stack' | 'back-end';
 
@@ -23,8 +24,8 @@ export interface PortfolioProject {
     skills: string[];
     domain: string;
     owner: string;
-    screenshot?: string;
-    detailsScreenshot?: string;
+    screenshot?: ResponsiveImageSource;
+    detailsScreenshot?: ResponsiveImageSource;
     constellation: {
         id: PortfolioConstellationId;
         position: readonly [number, number, number];

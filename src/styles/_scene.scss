@@ -52,22 +52,16 @@ section {
 #experience {
     min-height: 380vh;
     padding-top: 110vh;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 380vh;
 }
 
 #projects {
     min-height: 600vh;
     padding-top: 200vh;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 600vh;
 }
 
 #contact {
     min-height: 360vh;
     padding-top: 180vh;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 360vh;
 }
 
 @include responsive.down('tablet') {

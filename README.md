@@ -56,6 +56,18 @@ The repository also contains the email assets used by the contact flow:
 - [Customer confirmation email](emails/README.md) — build, variables and sending behaviour;
 - [Email signature](emails/signature/README.md) — Spark installation and testing.
 
+## Search and image checks
+
+SEO is focused on the portfolio itself and does not require a separate publishing workflow.
+
+```bash
+npm run seo:check        # validate the production SEO output in dist/
+npm run images:generate  # regenerate responsive project-image variants
+npm run images:check     # verify image dimensions, sizes and fallbacks
+```
+
+The deployment and recurring Google Search Console/Bing Webmaster Tools checklist is documented in [docs/seo-operations.md](docs/seo-operations.md).
+
 ## Local development
 
 You will need a recent Node.js release, npm and a browser with WebGL support.

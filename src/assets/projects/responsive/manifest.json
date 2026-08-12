@@ -1,0 +1,464 @@
+[
+    {
+        "id": "abb-cynk-portal",
+        "width": 3839,
+        "height": 2159,
+        "originalBytes": 4097470,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "abb-cynk-portal-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 44706
+            },
+            {
+                "filename": "abb-cynk-portal-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 91372
+            },
+            {
+                "filename": "abb-cynk-portal-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 178094
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "abb-cynk-portal-detail-1600.png",
+                "width": 1600,
+                "height": 900,
+                "bytes": 1014612
+            }
+        ]
+    },
+    {
+        "id": "bachelors-thesis",
+        "width": 1920,
+        "height": 1080,
+        "originalBytes": 94428,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "bachelors-thesis-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 14300
+            },
+            {
+                "filename": "bachelors-thesis-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 31492
+            },
+            {
+                "filename": "bachelors-thesis-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 66550
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": []
+    },
+    {
+        "id": "equiniti-design-system",
+        "width": 3200,
+        "height": 2400,
+        "originalBytes": 78328,
+        "previewEncoding": "webp-lossless",
+        "previewVariants": [
+            {
+                "filename": "equiniti-design-system-480.webp",
+                "width": 480,
+                "height": 360,
+                "bytes": 10076
+            },
+            {
+                "filename": "equiniti-design-system-768.webp",
+                "width": 768,
+                "height": 576,
+                "bytes": 20762
+            },
+            {
+                "filename": "equiniti-design-system-1200.webp",
+                "width": 1200,
+                "height": 900,
+                "bytes": 36594
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "equiniti-design-system-detail-1600.png",
+                "width": 1600,
+                "height": 1200,
+                "bytes": 133446
+            }
+        ],
+        "detailOriginal": {
+            "filename": "equiniti-design-system-detail-3200.png",
+            "width": 3200,
+            "height": 2400,
+            "bytes": 428919
+        }
+    },
+    {
+        "id": "equiniti-website",
+        "width": 2193,
+        "height": 1232,
+        "originalBytes": 1452125,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "equiniti-website-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 30582
+            },
+            {
+                "filename": "equiniti-website-768.webp",
+                "width": 768,
+                "height": 431,
+                "bytes": 64428
+            },
+            {
+                "filename": "equiniti-website-1200.webp",
+                "width": 1200,
+                "height": 674,
+                "bytes": 125740
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "equiniti-website-detail-1600.png",
+                "width": 1600,
+                "height": 899,
+                "bytes": 786909
+            }
+        ]
+    },
+    {
+        "id": "help-and-support",
+        "width": 3840,
+        "height": 2160,
+        "originalBytes": 397422,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "help-and-support-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 13366
+            },
+            {
+                "filename": "help-and-support-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 29206
+            },
+            {
+                "filename": "help-and-support-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 62768
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": []
+    },
+    {
+        "id": "interactive-3d-portfolio",
+        "width": 3839,
+        "height": 2159,
+        "originalBytes": 4939199,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "interactive-3d-portfolio-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 16580
+            },
+            {
+                "filename": "interactive-3d-portfolio-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 37136
+            },
+            {
+                "filename": "interactive-3d-portfolio-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 82056
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "interactive-3d-portfolio-detail-1600.png",
+                "width": 1600,
+                "height": 900,
+                "bytes": 785413
+            }
+        ]
+    },
+    {
+        "id": "intouch",
+        "width": 1792,
+        "height": 1194,
+        "originalBytes": 400295,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "intouch-480.webp",
+                "width": 480,
+                "height": 320,
+                "bytes": 39214
+            },
+            {
+                "filename": "intouch-768.webp",
+                "width": 768,
+                "height": 512,
+                "bytes": 74820
+            },
+            {
+                "filename": "intouch-1200.webp",
+                "width": 1200,
+                "height": 800,
+                "bytes": 144752
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": []
+    },
+    {
+        "id": "it-services",
+        "width": 1920,
+        "height": 1080,
+        "originalBytes": 693232,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "it-services-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 20426
+            },
+            {
+                "filename": "it-services-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 34588
+            },
+            {
+                "filename": "it-services-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 59042
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "it-services-detail-1600.png",
+                "width": 1600,
+                "height": 900,
+                "bytes": 401756
+            }
+        ]
+    },
+    {
+        "id": "kvl-security-device",
+        "width": 1774,
+        "height": 887,
+        "originalBytes": 46730,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "kvl-security-device-detail-1600.png",
+                "width": 1600,
+                "height": 800,
+                "bytes": 424139
+            }
+        ],
+        "detailOriginal": {
+            "filename": "kvl-security-device-detail-1774.png",
+            "width": 1774,
+            "height": 887,
+            "bytes": 477994
+        }
+    },
+    {
+        "id": "masters-thesis",
+        "width": 2193,
+        "height": 1232,
+        "originalBytes": 845097,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "masters-thesis-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 23542
+            },
+            {
+                "filename": "masters-thesis-768.webp",
+                "width": 768,
+                "height": 431,
+                "bytes": 53872
+            },
+            {
+                "filename": "masters-thesis-1200.webp",
+                "width": 1200,
+                "height": 674,
+                "bytes": 118728
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "masters-thesis-detail-1600.png",
+                "width": 1600,
+                "height": 899,
+                "bytes": 581311
+            }
+        ]
+    },
+    {
+        "id": "onboarding-solution",
+        "width": 2193,
+        "height": 1232,
+        "originalBytes": 222853,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "onboarding-solution-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 13462
+            },
+            {
+                "filename": "onboarding-solution-768.webp",
+                "width": 768,
+                "height": 431,
+                "bytes": 26168
+            },
+            {
+                "filename": "onboarding-solution-1200.webp",
+                "width": 1200,
+                "height": 674,
+                "bytes": 50878
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "onboarding-solution-detail-1600.png",
+                "width": 1600,
+                "height": 899,
+                "bytes": 180160
+            }
+        ]
+    },
+    {
+        "id": "power-analyser",
+        "width": 1920,
+        "height": 1080,
+        "originalBytes": 83156,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "power-analyser-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 12888
+            },
+            {
+                "filename": "power-analyser-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 24396
+            },
+            {
+                "filename": "power-analyser-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 43180
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": []
+    },
+    {
+        "id": "shareowner-online",
+        "width": 2146,
+        "height": 1206,
+        "originalBytes": 170211,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "shareowner-online-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 16784
+            },
+            {
+                "filename": "shareowner-online-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 32514
+            },
+            {
+                "filename": "shareowner-online-1200.webp",
+                "width": 1200,
+                "height": 674,
+                "bytes": 62128
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": []
+    },
+    {
+        "id": "taia-accelerator",
+        "width": 3840,
+        "height": 2160,
+        "originalBytes": 401775,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "taia-accelerator-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 11408
+            },
+            {
+                "filename": "taia-accelerator-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 21730
+            },
+            {
+                "filename": "taia-accelerator-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 39260
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "taia-accelerator-detail-1600.png",
+                "width": 1600,
+                "height": 900,
+                "bytes": 179213
+            }
+        ]
+    }
+]

@@ -24,33 +24,48 @@ export const createCachedAssetLoader = <T>(
     };
 };
 
-const pendingImages = new Map<string, Promise<void>>();
-const pendingAssetRequests = new Map<string, Promise<void>>();
+export interface ResponsiveImageSource {
+    src: string;
+    srcset?: string;
+    width: number;
+    height: number;
+}
 
-export const preloadAssetRequest = (source: string): Promise<void> => {
-    const existing = pendingAssetRequests.get(source);
-    if (existing) {
-        return existing;
+const pendingImages = new Map<string, Promise<void>>();
+
+const getResponsiveImageRequestKey = (source: ResponsiveImageSource, sizes: string): string =>
+    `${source.src}\n${source.srcset ?? ''}\n${sizes}\n${window.innerWidth}x${window.innerHeight}@${window.devicePixelRatio}`;
+
+export const applyResponsiveImageSource = (
+    image: HTMLImageElement,
+    source: ResponsiveImageSource,
+    sizes: string,
+): void => {
+    image.width = source.width;
+    image.height = source.height;
+
+    if (source.srcset) {
+        image.sizes = sizes;
+        image.srcset = source.srcset;
+    } else {
+        image.removeAttribute('sizes');
+        image.removeAttribute('srcset');
     }
 
-    const pending = fetch(source, { cache: 'force-cache' })
-        .then(async (response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status} ${response.statusText}`.trim());
-            }
-            await response.blob();
-        })
-        .catch((error: unknown) => {
-            pendingAssetRequests.delete(source);
-            throw new AssetLoadError(`asset "${source}"`, error);
-        });
-
-    pendingAssetRequests.set(source, pending);
-    return pending;
+    image.dataset.expectedSrc = source.src;
+    image.src = source.src;
 };
 
-export const preloadImage = (source: string): Promise<void> => {
-    const existing = pendingImages.get(source);
+export const clearResponsiveImageSource = (image: HTMLImageElement): void => {
+    image.removeAttribute('srcset');
+    image.removeAttribute('sizes');
+    image.removeAttribute('src');
+    delete image.dataset.expectedSrc;
+};
+
+export const preloadImage = (source: ResponsiveImageSource, sizes: string): Promise<void> => {
+    const requestKey = getResponsiveImageRequestKey(source, sizes);
+    const existing = pendingImages.get(requestKey);
     if (existing) {
         return existing;
     }
@@ -60,7 +75,7 @@ export const preloadImage = (source: string): Promise<void> => {
         image.decoding = 'async';
 
         const fail = (): void => {
-            reject(new AssetLoadError(`image "${source}"`, new Error('Image request failed')));
+            reject(new AssetLoadError(`image "${source.src}"`, new Error('Image request failed')));
         };
         const complete = (): void => {
             if (image.naturalWidth <= 0) {
@@ -73,13 +88,17 @@ export const preloadImage = (source: string): Promise<void> => {
 
         image.addEventListener('load', complete, { once: true });
         image.addEventListener('error', fail, { once: true });
-        image.src = source;
+        if (source.srcset) {
+            image.sizes = sizes;
+            image.srcset = source.srcset;
+        }
+        image.src = source.src;
     }).catch((error: unknown) => {
-        pendingImages.delete(source);
+        pendingImages.delete(requestKey);
         throw error;
     });
 
-    pendingImages.set(source, pending);
+    pendingImages.set(requestKey, pending);
     return pending;
 };
 

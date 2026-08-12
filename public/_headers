@@ -1,0 +1,11 @@
+/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+
+/og.png
+  Cache-Control: public, max-age=86400, must-revalidate
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex

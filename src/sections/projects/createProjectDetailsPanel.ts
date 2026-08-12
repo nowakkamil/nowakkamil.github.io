@@ -2,7 +2,12 @@ import gsap from 'gsap';
 
 import type { ResponsiveConfig } from '../../app/responsiveConfig';
 import type { World } from '../../world/World';
-import { preloadImage } from '../../utils/assetLoaders';
+import {
+    applyResponsiveImageSource,
+    clearResponsiveImageSource,
+    preloadImage,
+    type ResponsiveImageSource,
+} from '../../utils/assetLoaders';
 import {
     addStaggeredContentIn,
     addStaggeredContentOut,
@@ -12,7 +17,7 @@ import {
 import type { PortfolioProject } from './portfolioConstellation';
 import formatSkillLabel from './formatSkillLabel';
 import { constellations, getConstellationColorRgb } from './constellations';
-import { preloadAdjacentProjectScreenshots } from './portfolioProjects';
+import { PROJECT_DETAILS_IMAGE_SIZES } from './projectImageAssets';
 
 const DETAILS_CONTENT_DURATION = 0.22;
 const DETAILS_CONTENT_STAGGER = 0.02;
@@ -130,30 +135,30 @@ const createProjectDetailsPanel = (
 
     const prepareScreenshotSwap = async (
         requestId: number,
-        project: PortfolioProject,
-        src: string,
+        source: ResponsiveImageSource,
     ): Promise<void> => {
         try {
-            await preloadImage(src);
+            await preloadImage(source, PROJECT_DETAILS_IMAGE_SIZES);
         } catch {
-            if (requestId !== screenshotRequestId || screenshot.dataset.expectedSrc !== src) {
+            if (
+                requestId !== screenshotRequestId ||
+                screenshot.dataset.expectedSrc !== source.src
+            ) {
                 return;
             }
 
-            screenshot.removeAttribute('src');
-            delete screenshot.dataset.expectedSrc;
+            clearResponsiveImageSource(screenshot);
             screenshot.alt = '';
             screenshotFrame.classList.remove('is-loaded');
             screenshotFrame.hidden = true;
             return;
         }
 
-        if (requestId !== screenshotRequestId || screenshot.dataset.expectedSrc !== src) {
+        if (requestId !== screenshotRequestId || screenshot.dataset.expectedSrc !== source.src) {
             return;
         }
 
-        preloadAdjacentProjectScreenshots(project);
-        screenshot.setAttribute('src', src);
+        applyResponsiveImageSource(screenshot, source, PROJECT_DETAILS_IMAGE_SIZES);
 
         if (screenshot.complete && screenshot.naturalWidth > 0) {
             void revealScreenshotWhenDecoded(requestId);
@@ -233,8 +238,7 @@ const createProjectDetailsPanel = (
 
     const applyScreenshotSource = (
         requestId: number,
-        project: PortfolioProject,
-        nextScreenshot: string,
+        nextScreenshot: ResponsiveImageSource,
     ): void => {
         if (requestId !== screenshotRequestId) {
             return;
@@ -242,12 +246,12 @@ const createProjectDetailsPanel = (
 
         const currentScreenshot = screenshot.getAttribute('src');
         const isCurrentScreenshotLoaded =
-            currentScreenshot === nextScreenshot &&
+            currentScreenshot === nextScreenshot.src &&
             screenshot.complete &&
             screenshot.naturalWidth > 0 &&
             screenshotFrame.classList.contains('is-loaded');
 
-        screenshot.dataset.expectedSrc = nextScreenshot;
+        screenshot.dataset.expectedSrc = nextScreenshot.src;
 
         if (isCurrentScreenshotLoaded) {
             screenshotFrame.hidden = false;
@@ -257,7 +261,7 @@ const createProjectDetailsPanel = (
 
         screenshotFrame.classList.remove('is-loaded');
         screenshotFrame.hidden = false;
-        void prepareScreenshotSwap(requestId, project, nextScreenshot);
+        void prepareScreenshotSwap(requestId, nextScreenshot);
     };
 
     const showScreenshot = (project: PortfolioProject): void => {
@@ -266,8 +270,7 @@ const createProjectDetailsPanel = (
         const screenshotSrc = project.detailsScreenshot;
 
         if (!screenshotSrc) {
-            screenshot.removeAttribute('src');
-            delete screenshot.dataset.expectedSrc;
+            clearResponsiveImageSource(screenshot);
             screenshot.alt = '';
             screenshotFrame.classList.remove('is-loaded');
             screenshotFrame.hidden = true;
@@ -276,7 +279,7 @@ const createProjectDetailsPanel = (
 
         screenshot.alt = `${project.title} screenshot`;
         screenshotFrame.hidden = false;
-        applyScreenshotSource(requestId, project, screenshotSrc);
+        applyScreenshotSource(requestId, screenshotSrc);
     };
 
     const renderProject = (project: PortfolioProject): void => {
@@ -616,8 +619,7 @@ const createProjectDetailsPanel = (
         }
 
         screenshotRequestId += 1;
-        screenshot.removeAttribute('src');
-        delete screenshot.dataset.expectedSrc;
+        clearResponsiveImageSource(screenshot);
         screenshot.alt = '';
         screenshotFrame.classList.remove('is-loaded');
         screenshotFrame.hidden = true;

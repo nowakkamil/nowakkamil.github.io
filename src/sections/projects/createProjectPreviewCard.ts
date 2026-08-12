@@ -1,15 +1,23 @@
 import gsap from 'gsap';
 
+import type { ResponsiveConfig } from '../../app/responsiveConfig';
 import type { World } from '../../world/World';
-import { preloadImage } from '../../utils/assetLoaders';
+import {
+    applyResponsiveImageSource,
+    clearResponsiveImageSource,
+    preloadImage,
+    type ResponsiveImageSource,
+} from '../../utils/assetLoaders';
 import type { PortfolioProject, PortfolioProjectPreviewState } from './portfolioConstellation';
 import formatSkillLabel from './formatSkillLabel';
 import { constellations, getConstellationColorRgb } from './constellations';
+import { PROJECT_PREVIEW_IMAGE_SIZES } from './projectImageAssets';
 import { preloadAdjacentProjectScreenshots } from './portfolioProjects';
 
 const CARD_HIDE_DURATION_MS = 340;
 
-const createProjectPreviewCard = (world: World, reduceMotion: boolean) => {
+const createProjectPreviewCard = (world: World, config: ResponsiveConfig) => {
+    const reduceMotion = config.reducedMotion;
     const card = document.createElement('aside');
     const content = document.createElement('div');
     const screenshotFrame = document.createElement('figure');
@@ -26,24 +34,22 @@ const createProjectPreviewCard = (world: World, reduceMotion: boolean) => {
     const hideScreenshot = (): void => {
         screenshot.alt = '';
         screenshotFrame.hidden = true;
-        screenshot.removeAttribute('src');
-        delete screenshot.dataset.expectedSrc;
+        clearResponsiveImageSource(screenshot);
     };
 
     const applyScreenshotSource = (
-        source: string,
+        source: ResponsiveImageSource,
         project: PortfolioProject,
         requestId: number,
     ): void => {
-        void preloadImage(source)
+        void preloadImage(source, PROJECT_PREVIEW_IMAGE_SIZES)
             .then(() => {
                 if (requestId !== screenshotRequestId || currentProjectId !== project.id) {
                     return;
                 }
 
                 screenshot.alt = `${project.title} preview`;
-                screenshot.dataset.expectedSrc = source;
-                screenshot.src = source;
+                applyResponsiveImageSource(screenshot, source, PROJECT_PREVIEW_IMAGE_SIZES);
                 screenshotFrame.hidden = false;
                 preloadAdjacentProjectScreenshots(project);
             })
@@ -134,9 +140,9 @@ const createProjectPreviewCard = (world: World, reduceMotion: boolean) => {
         eyebrow.textContent = `${label} constellation`;
         title.textContent = project.title;
         description.textContent = project.description;
-        if (!screenshotSrc) {
+        if (!screenshotSrc || config.isMobile) {
             hideScreenshot();
-        } else if (screenshot.getAttribute('src') !== screenshotSrc) {
+        } else if (screenshot.getAttribute('src') !== screenshotSrc.src) {
             applyScreenshotSource(screenshotSrc, project, requestId);
         } else {
             screenshot.alt = `${project.title} preview`;
@@ -158,8 +164,11 @@ const createProjectPreviewCard = (world: World, reduceMotion: boolean) => {
         gsap.ticker.remove(commitShow);
         const wasHidden = card.hidden;
         const hasChangedProject = currentProjectId !== project.id;
+        const needsScreenshotRefresh =
+            config.isMobile === screenshot.hasAttribute('src') ||
+            (!config.isMobile && screenshot.getAttribute('src') !== project.screenshot?.src);
 
-        if (hasChangedProject) {
+        if (hasChangedProject || needsScreenshotRefresh) {
             renderProject(project);
             if (!reduceMotion && !wasHidden) {
                 gsap.killTweensOf(content);

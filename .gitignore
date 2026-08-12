@@ -29,3 +29,7 @@ dist-ssr
 .dev.vars.*
 
 /public/email/
+
+.continue
+.codeatlas
+.pnpm-store

@@ -645,7 +645,7 @@ export const createSectionTransitions = ({
         }
     };
 
-    const initScrollTriggers = (): (() => void) | undefined => {
+    const initScrollTriggers = (): void => {
         const projectsFullyInteractiveProgress = Math.max(
             PROJECTS_TRANSITION.constellationRevealEnd,
             PROJECTS_TRANSITION.panelBoundaryStart,
@@ -761,17 +761,7 @@ export const createSectionTransitions = ({
             });
         }
 
-        const initializedSections = new Set<SectionId>();
-        const approachingObservers = new Map<SectionId, IntersectionObserver>();
         const createSectionTrigger = (section: SectionId): void => {
-            approachingObservers.get(section)?.disconnect();
-            approachingObservers.delete(section);
-
-            if (initializedSections.has(section)) {
-                return;
-            }
-            initializedSections.add(section);
-
             const target = navigationTargets.get(section) ?? null;
 
             const trigger = ScrollTrigger.create({
@@ -822,50 +812,12 @@ export const createSectionTransitions = ({
             syncSectionLinkActiveState(section, target, trigger.isActive);
         };
 
-        const initializeWhenApproaching = (section: SectionId): void => {
-            const element = document.querySelector<HTMLElement>(getSectionSelector(section));
-            if (!element || !('IntersectionObserver' in window)) {
-                createSectionTrigger(section);
-                return;
-            }
-
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    if (!entries.some((entry) => entry.isIntersecting)) {
-                        return;
-                    }
-
-                    observer.disconnect();
-                    createSectionTrigger(section);
-                },
-                { rootMargin: '100% 0px' },
-            );
-            observer.observe(element);
-            approachingObservers.set(section, observer);
-        };
-
-        const initializeRemaining = config.isMobile
-            ? () => {
-                  createSectionTrigger('projects');
-                  createSectionTrigger('contact');
-              }
-            : undefined;
-
-        if (config.isMobile) {
-            createSectionTrigger('intro');
-            createSectionTrigger('experience');
-            initializeWhenApproaching('projects');
-            initializeWhenApproaching('contact');
-        } else {
-            sectionIds.forEach(createSectionTrigger);
-        }
+        sectionIds.forEach(createSectionTrigger);
 
         window.addEventListener('wheel', scheduleSectionSnap, { passive: true });
         window.addEventListener('touchmove', scheduleSectionSnap, { passive: true });
         window.addEventListener('keydown', scheduleSectionSnap, { passive: true });
         ScrollTrigger.addEventListener('scrollEnd', scheduleSectionSnap);
-
-        return initializeRemaining;
     };
 
     return {

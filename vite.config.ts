@@ -14,7 +14,7 @@ export default defineConfig({
         host: true,
     },
     build: {
-        sourcemap: true,
+        sourcemap: false,
         rolldownOptions: {
             input: {
                 main: 'index.html',

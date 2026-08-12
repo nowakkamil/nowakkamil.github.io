@@ -237,8 +237,12 @@ export class PortfolioConstellation {
         this.revealTarget = nextReveal;
     }
 
-    public prepare(): void {
+    public async prepare(renderer: THREE.WebGLRenderer): Promise<void> {
         this.initialize();
+        for (const texture of this.textures) {
+            renderer.initTexture(texture);
+        }
+        await renderer.compileAsync(this.group, this.camera, this.scene);
     }
 
     public setConstellationScrollProgress(progress: number): void {

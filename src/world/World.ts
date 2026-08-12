@@ -783,12 +783,10 @@ export class World {
             .then(
                 ([
                     { PortfolioConstellation },
-                    { portfolioProjects, startProjectScreenshotPreloads },
+                    { portfolioProjects },
                     { constellations },
                     { portfolioSkills },
                 ]) => {
-                    startProjectScreenshotPreloads();
-
                     const constellation = new PortfolioConstellation({
                         scene: this.scene,
                         camera: this.camera,
@@ -805,23 +803,32 @@ export class World {
                         },
                     });
 
-                    this.portfolioConstellation = constellation;
-                    constellation.setResponsiveConfig(this.responsiveConfig);
                     constellation.setProjectPreviewHandler(this.portfolioProjectPreviewHandler);
-                    constellation.setReveal(
-                        this.portfolioConstellationReveal,
-                        this.portfolioConstellationRevealImmediate,
-                    );
-                    constellation.setConstellationScrollProgress(
-                        this.portfolioConstellationScrollProgress,
-                    );
-                    constellation.setProjectPanelBoundaryActive(this.projectPanelBoundaryActive);
-                    constellation.setActiveProjectByScroll(
-                        this.portfolioConstellationScrollProgress,
-                    );
-                    constellation.prepare();
+                    return constellation.prepare(this.renderer).then(
+                        () => {
+                            this.portfolioConstellation = constellation;
+                            constellation.setResponsiveConfig(this.responsiveConfig);
+                            constellation.setReveal(
+                                this.portfolioConstellationReveal,
+                                this.portfolioConstellationRevealImmediate,
+                            );
+                            constellation.setConstellationScrollProgress(
+                                this.portfolioConstellationScrollProgress,
+                            );
+                            constellation.setProjectPanelBoundaryActive(
+                                this.projectPanelBoundaryActive,
+                            );
+                            constellation.setActiveProjectByScroll(
+                                this.portfolioConstellationScrollProgress,
+                            );
 
-                    return constellation;
+                            return constellation;
+                        },
+                        (error) => {
+                            constellation.dispose();
+                            throw error;
+                        },
+                    );
                 },
             )
             .catch((error) => {

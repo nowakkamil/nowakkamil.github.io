@@ -222,7 +222,7 @@ try {
     });
 
     createIntroTextAnimation(responsiveConfig);
-    const initRemainingScrollTriggers = sectionTransitions.initScrollTriggers();
+    sectionTransitions.initScrollTriggers();
     const initializeRemainingSections = async (): Promise<void> => {
         const experienceAnimationsModule = import('./sections/experience/initExperienceAnimations');
         const projectModules = Promise.all([
@@ -242,12 +242,11 @@ try {
         });
 
         const loadProjectInteractions = createFeatureLoader('project interactions', async () => {
-            initRemainingScrollTriggers?.();
             await projectPreparation;
             const [{ default: createProjectPreviewCard }, { default: createProjectDetailsPanel }] =
                 await projectModules;
 
-            projectPreviewCard = createProjectPreviewCard(world, reduceMotion);
+            projectPreviewCard = createProjectPreviewCard(world, responsiveConfig);
             projectDetailsPanel = createProjectDetailsPanel(
                 world,
                 responsiveConfig,
@@ -261,7 +260,6 @@ try {
         loadProjectFeatures = loadProjectInteractions;
 
         const loadContactFeatures = createFeatureLoader('contact interactions', async () => {
-            initRemainingScrollTriggers?.();
             const [
                 ,
                 ,
@@ -341,6 +339,7 @@ try {
     };
 
     await initializeRemainingSections();
+    ScrollTrigger.refresh();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
     window.__portfolioStartup?.succeed();

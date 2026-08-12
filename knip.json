@@ -1,3 +1,4 @@
 {
-    "entry": ["functions/api/contact.ts", "functions/emailAssets.ts"]
+    "entry": ["functions/api/contact.ts", "functions/emailAssets.ts"],
+    "ignore": ["outputs/**"]
 }
