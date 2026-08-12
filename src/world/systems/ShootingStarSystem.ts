@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import type { ResponsiveConfig } from '../../app/responsiveConfig';
-import { compileShaderMaterials } from '../rendering/compileShaderMaterials';
 import { BLOOM_LAYER } from './SelectiveBloomSystem';
 
 import trailVertexShader from '../shaders/starTrail/vertex.glsl';
@@ -81,13 +80,9 @@ export class ShootingStarSystem {
         this.viewportHeight = Math.max(1, height);
     }
 
-    public async prepare(renderer: THREE.WebGLRenderer): Promise<void> {
+    public getPreparationMaterials(): THREE.Material[] {
         const star = this.stars[0];
-        if (!star) {
-            return;
-        }
-
-        await compileShaderMaterials(renderer, [star.glowMaterial, star.lineMaterial]);
+        return star ? [star.glowMaterial, star.lineMaterial] : [];
     }
 
     public setAppearance(context: ShootingStarContext, visibility: number): void {

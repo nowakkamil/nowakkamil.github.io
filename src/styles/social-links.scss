@@ -72,6 +72,22 @@
         mask: var(--social-icon) center / contain no-repeat;
         filter: drop-shadow(0 0 0.4rem rgb(158 239 255 / 0%));
         transition: filter 200ms ease;
+
+        &--email {
+            --social-icon: url('../assets/icons/email.svg');
+        }
+
+        &--github {
+            --social-icon: url('../assets/icons/github.svg');
+        }
+
+        &--linkedin {
+            --social-icon: url('../assets/icons/linkedin.svg');
+        }
+
+        &--download {
+            --social-icon: url('../assets/icons/download.svg');
+        }
     }
 }
 

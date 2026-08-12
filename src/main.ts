@@ -75,9 +75,6 @@ try {
 
     const responsiveConfig = refreshResponsiveConfig(window.innerWidth, canvas.clientHeight);
 
-    await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => resolve());
-    });
     const world = new World(canvas, responsiveConfig, {
         onSceneBuildStart: () => setLoadingPhase('scene'),
     });
@@ -203,11 +200,7 @@ try {
         experienceNavigationLink.click();
     };
     const activateSkipLink = (): void => {
-        if (
-            sectionTransitions.transitionContactToIntro(() => {
-                requestAnimationFrame(navigateToExperience);
-            })
-        ) {
+        if (sectionTransitions.transitionContactToIntro(navigateToExperience)) {
             return;
         }
 
@@ -231,19 +224,26 @@ try {
     createIntroTextAnimation(responsiveConfig);
     const initRemainingScrollTriggers = sectionTransitions.initScrollTriggers();
     const initializeRemainingSections = async (): Promise<void> => {
+        const experienceAnimationsModule = import('./sections/experience/initExperienceAnimations');
+        const projectModules = Promise.all([
+            import('./sections/projects/createProjectPreviewCard'),
+            import('./sections/projects/createProjectDetailsPanel'),
+        ]);
+        const projectPreparation = world.preparePortfolioConstellation();
+        const contactTextAnimationModule =
+            import('./sections/transitions/createContactTextAnimation');
+        const contactTabsModule = import('./sections/contact/contactTabs');
+        const contactFormModule = import('./sections/contact/contactForm');
+        const recommendationWallModule = import('./sections/contact/initRecommendationWallEvents');
+
         const loadExperienceAnimations = createFeatureLoader('experience animations', async () => {
-            const { initExperienceAnimations } =
-                await import('./sections/experience/initExperienceAnimations');
+            const { initExperienceAnimations } = await experienceAnimationsModule;
             initExperienceAnimations(responsiveConfig);
         });
 
         const loadProjectInteractions = createFeatureLoader('project interactions', async () => {
             initRemainingScrollTriggers?.();
-            const projectModules = Promise.all([
-                import('./sections/projects/createProjectPreviewCard'),
-                import('./sections/projects/createProjectDetailsPanel'),
-            ]);
-            await world.preparePortfolioConstellation();
+            await projectPreparation;
             const [{ default: createProjectPreviewCard }, { default: createProjectDetailsPanel }] =
                 await projectModules;
 
@@ -269,17 +269,14 @@ try {
                 { initContactTabs },
                 { initContactForm },
                 { initRecommendationWallEvents },
-                { createSocialLinks },
             ] = await Promise.all([
                 world.ready,
                 sectionTransitions.initContactInteractions(),
-                import('./sections/transitions/createContactTextAnimation'),
-                import('./sections/contact/contactTabs'),
-                import('./sections/contact/contactForm'),
-                import('./sections/contact/initRecommendationWallEvents'),
-                import('./sections/contact/createSocialLinks'),
+                contactTextAnimationModule,
+                contactTabsModule,
+                contactFormModule,
+                recommendationWallModule,
             ]);
-            createSocialLinks();
             initContactTabs();
             initContactForm();
             initRecommendationWallEvents(responsiveConfig);

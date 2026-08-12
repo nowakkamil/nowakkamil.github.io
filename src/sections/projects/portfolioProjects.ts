@@ -1,5 +1,5 @@
 import { type PortfolioProject } from './portfolioConstellation';
-import { preloadImage } from '../../utils/assetLoaders';
+import { preloadAssetRequest, preloadImage } from '../../utils/assetLoaders';
 import { portfolioSkills } from './portfolioSkills';
 
 const getProjectScreenshotUrls = (
@@ -28,6 +28,29 @@ const projectDetailsScreenshotUrls = getProjectScreenshotUrls(
         query: '?url',
     }),
 );
+
+export const preloadProjectScreenshots = async (): Promise<void> => {
+    const previews = Object.values(projectScreenshotUrls).filter((source): source is string =>
+        Boolean(source),
+    );
+    const details = Object.values(projectDetailsScreenshotUrls).filter((source): source is string =>
+        Boolean(source),
+    );
+    const requests = [
+        ...previews.map((source) => ({ source, promise: preloadImage(source) })),
+        ...details.map((source) => ({ source, promise: preloadAssetRequest(source) })),
+    ];
+    const results = await Promise.allSettled(requests.map(({ promise }) => promise));
+
+    results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+            console.error(
+                `Failed to preload project screenshot "${requests[index].source}"`,
+                result.reason,
+            );
+        }
+    });
+};
 
 const withProjectScreenshots = (projects: PortfolioProject[]): PortfolioProject[] =>
     projects.map((project) => ({

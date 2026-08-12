@@ -1,4 +1,4 @@
-import { contactSchema, type ContactMessage } from './contactModel';
+import type { ContactMessage } from './contactModel';
 import type { ContactSubmissionResult } from './contactSubmissionService';
 import { createHttpContactSubmissionService } from './httpContactSubmissionService';
 
@@ -108,6 +108,34 @@ type ContactFormStatus =
     | 'network-failure'
     | 'server-failure';
 type ContactFieldControl = HTMLInputElement | HTMLTextAreaElement;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validateContactField = (field: ContactField, value: string): string | undefined => {
+    const length = value.trim().length;
+
+    if (field === 'name') {
+        if (length < 2) {
+            return 'Enter at least 2 characters.';
+        }
+        return length > 80 ? 'Use 80 characters or fewer.' : undefined;
+    }
+
+    if (field === 'email') {
+        if (length === 0) {
+            return 'Enter your email address.';
+        }
+        if (length > 254) {
+            return 'Use 254 characters or fewer.';
+        }
+        return EMAIL_PATTERN.test(value.trim()) ? undefined : 'Enter a valid email address.';
+    }
+
+    if (length < 10) {
+        return 'Enter at least 10 characters.';
+    }
+    return length > 4_000 ? 'Use 4,000 characters or fewer.' : undefined;
+};
 
 const contactFormMessages: Record<ContactFormStatus, string> = {
     idle: '',
@@ -221,11 +249,8 @@ export const initContactForm = (): void => {
         setSubmitting(status === 'submitting');
     };
 
-    const validateField = (field: ContactField): string | undefined => {
-        const result = contactSchema.shape[field].safeParse(state.values[field]);
-
-        return result.success ? undefined : result.error.issues[0]?.message;
-    };
+    const validateField = (field: ContactField): string | undefined =>
+        validateContactField(field, state.values[field]);
 
     const renderFieldError = (field: ContactField): void => {
         const message = state.touched[field] ? state.errors[field] : undefined;
@@ -302,24 +327,24 @@ export const initContactForm = (): void => {
             message: String(formData.get('message') ?? ''),
         };
 
-        const result = contactSchema.safeParse(state.values);
-
-        if (result.success) {
-            state.values = result.data;
-            state.errors = {};
-            contactFields.forEach(renderFieldError);
-            return result.data;
-        }
-
         const errors: ContactFormState['errors'] = {};
-
-        result.error.issues.forEach((issue) => {
-            const field = issue.path[0];
-
-            if ((field === 'name' || field === 'email' || field === 'message') && !errors[field]) {
-                errors[field] = issue.message;
+        contactFields.forEach((field) => {
+            const error = validateField(field);
+            if (error) {
+                errors[field] = error;
             }
         });
+
+        if (Object.keys(errors).length === 0) {
+            state.values = {
+                name: state.values.name.trim(),
+                email: state.values.email.trim(),
+                message: state.values.message.trim(),
+            };
+            state.errors = {};
+            contactFields.forEach(renderFieldError);
+            return state.values;
+        }
 
         state.errors = errors;
         setFormStatus('validation-failure');

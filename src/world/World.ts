@@ -738,30 +738,27 @@ export class World {
     private async init3d(): Promise<void> {
         await Promise.all([this.contentSystem.initialize(), this.prepareShootingStars()]);
         await this.renderer.compileAsync(this.scene, this.camera);
-        await this.shootingStarSystem?.prepare(this.renderer);
-        await this.selectiveBloomSystem.prepare(
-            this.renderer,
-            this.contentSystem.getTextBloomState(),
-        );
-        await this.compileFinalComposerShaders();
+        await this.compilePostprocessingShaders();
+        this.selectiveBloomSystem.prepare(this.renderer);
         this.finalComposer.render();
         this.resolveReady();
     }
 
-    private async compileFinalComposerShaders(): Promise<void> {
+    private async compilePostprocessingShaders(): Promise<void> {
         const previousRenderTarget = this.renderer.getRenderTarget();
         this.renderer.setRenderTarget(this.finalComposer.renderTarget1);
 
         try {
             await compileShaderMaterials(this.renderer, [
+                ...(this.shootingStarSystem?.getPreparationMaterials() ?? []),
+                ...this.selectiveBloomSystem.getPreparationMaterials(),
                 this.bloomCompositePass.material,
                 this.afterimagePass.compFsMaterial,
+                this.afterimagePass.copyFsMaterial,
             ]);
         } finally {
             this.renderer.setRenderTarget(previousRenderTarget);
         }
-
-        await compileShaderMaterials(this.renderer, [this.afterimagePass.copyFsMaterial]);
     }
 
     private renderFrame(): void {
@@ -784,9 +781,9 @@ export class World {
             import('../sections/projects/portfolioSkills'),
         ])
             .then(
-                ([
+                async ([
                     { PortfolioConstellation },
-                    { portfolioProjects },
+                    { portfolioProjects, preloadProjectScreenshots },
                     { constellations },
                     { portfolioSkills },
                 ]) => {
@@ -821,6 +818,7 @@ export class World {
                         this.portfolioConstellationScrollProgress,
                     );
                     constellation.prepare();
+                    await preloadProjectScreenshots();
 
                     return constellation;
                 },

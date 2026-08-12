@@ -25,6 +25,29 @@ export const createCachedAssetLoader = <T>(
 };
 
 const pendingImages = new Map<string, Promise<void>>();
+const pendingAssetRequests = new Map<string, Promise<void>>();
+
+export const preloadAssetRequest = (source: string): Promise<void> => {
+    const existing = pendingAssetRequests.get(source);
+    if (existing) {
+        return existing;
+    }
+
+    const pending = fetch(source, { cache: 'force-cache' })
+        .then(async (response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status} ${response.statusText}`.trim());
+            }
+            await response.blob();
+        })
+        .catch((error: unknown) => {
+            pendingAssetRequests.delete(source);
+            throw new AssetLoadError(`asset "${source}"`, error);
+        });
+
+    pendingAssetRequests.set(source, pending);
+    return pending;
+};
 
 export const preloadImage = (source: string): Promise<void> => {
     const existing = pendingImages.get(source);
