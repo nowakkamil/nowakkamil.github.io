@@ -29,7 +29,25 @@ const projectDetailsScreenshotUrls = getProjectScreenshotUrls(
     }),
 );
 
-export const preloadProjectScreenshots = async (): Promise<void> => {
+type ProjectScreenshotRequest = {
+    source: string;
+    promise: Promise<void>;
+};
+
+const reportFailedScreenshotPreloads = (requests: ProjectScreenshotRequest[]): void => {
+    Promise.allSettled(requests.map(({ promise }) => promise)).then((results) => {
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(
+                    `Failed to preload project screenshot "${requests[index].source}"`,
+                    result.reason,
+                );
+            }
+        });
+    });
+};
+
+export const startProjectScreenshotPreloads = (): void => {
     const previews = Object.values(projectScreenshotUrls).filter((source): source is string =>
         Boolean(source),
     );
@@ -40,16 +58,7 @@ export const preloadProjectScreenshots = async (): Promise<void> => {
         ...previews.map((source) => ({ source, promise: preloadImage(source) })),
         ...details.map((source) => ({ source, promise: preloadAssetRequest(source) })),
     ];
-    const results = await Promise.allSettled(requests.map(({ promise }) => promise));
-
-    results.forEach((result, index) => {
-        if (result.status === 'rejected') {
-            console.error(
-                `Failed to preload project screenshot "${requests[index].source}"`,
-                result.reason,
-            );
-        }
-    });
+    reportFailedScreenshotPreloads(requests);
 };
 
 const withProjectScreenshots = (projects: PortfolioProject[]): PortfolioProject[] =>

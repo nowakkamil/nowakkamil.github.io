@@ -1,8 +1,14 @@
-import gsap from 'gsap';
+const finishAnimation = async (animation: Animation): Promise<void> => {
+    try {
+        await animation.finished;
+    } catch {
+        // The loading screen may be removed by startup error recovery.
+    }
+};
 
-export const completeLoadingScreen = (loadingScreen: HTMLElement | null): Promise<void> => {
+export const completeLoadingScreen = async (loadingScreen: HTMLElement | null): Promise<void> => {
     if (!loadingScreen) {
-        return Promise.resolve();
+        return;
     }
 
     const motion = loadingScreen.querySelector<HTMLElement>('.loading-screen__motion');
@@ -12,64 +18,67 @@ export const completeLoadingScreen = (loadingScreen: HTMLElement | null): Promis
 
     if (!motion || !fog || !pulse) {
         loadingScreen.remove();
-        return Promise.resolve();
+        return;
     }
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = reducedMotion ? 0.01 : 1;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        loadingScreen.remove();
+        return;
+    }
 
     motion.getAnimations().forEach((animation) => {
         animation.commitStyles();
         animation.cancel();
     });
 
-    return new Promise((resolve) => {
-        gsap.timeline({
-            onComplete: () => {
-                loadingScreen.remove();
-                resolve();
+    const animations = [
+        motion.animate(
+            [
+                { transform: motion.style.transform },
+                { transform: 'translateZ(0) scale3d(0, 0, 1)' },
+            ],
+            {
+                duration: 240,
+                easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+                fill: 'forwards',
             },
-        })
-            .to(motion, {
-                force3D: true,
-                scale: 0,
-                duration: 0.62 * duration,
-                ease: 'power2.inOut',
-            })
-            .to(
-                fog,
-                {
-                    opacity: 0,
-                    duration: 0.42 * duration,
-                    ease: 'power2.out',
-                },
-                0,
-            )
-            .to(
-                status,
-                {
-                    opacity: 0,
-                    duration: 0.36 * duration,
-                    ease: 'sine.out',
-                },
-                0.08 * duration,
-            )
-            .set(pulse, { opacity: 0.36, scale: 0.12 })
-            .to(pulse, {
-                force3D: true,
-                opacity: 0,
-                scale: 1.65,
-                duration: 0.42 * duration,
-                ease: 'power2.out',
-            })
-            .to(
-                loadingScreen,
-                {
-                    opacity: 0,
-                    duration: 0.2 * duration,
-                    ease: 'sine.out',
-                },
-                '<',
-            );
-    });
+        ),
+        fog.animate([{ opacity: 1 }, { opacity: 0 }], {
+            duration: 180,
+            easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+            fill: 'forwards',
+        }),
+        pulse.animate(
+            [
+                { opacity: 0.36, transform: 'translate(-50%, -50%) scale(0.12)' },
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(1.65)' },
+            ],
+            {
+                delay: 55,
+                duration: 185,
+                easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+                fill: 'forwards',
+            },
+        ),
+        loadingScreen.animate([{ opacity: 1 }, { opacity: 0 }], {
+            delay: 60,
+            duration: 180,
+            easing: 'cubic-bezier(0.39, 0.575, 0.565, 1)',
+            fill: 'forwards',
+        }),
+    ];
+
+    if (status) {
+        animations.push(
+            status.animate([{ opacity: 1 }, { opacity: 0 }], {
+                delay: 5,
+                duration: 180,
+                easing: 'cubic-bezier(0.39, 0.575, 0.565, 1)',
+                fill: 'forwards',
+            }),
+        );
+    }
+
+    await Promise.all(animations.map(finishAnimation));
+    loadingScreen.remove();
 };

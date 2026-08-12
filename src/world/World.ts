@@ -781,12 +781,14 @@ export class World {
             import('../sections/projects/portfolioSkills'),
         ])
             .then(
-                async ([
+                ([
                     { PortfolioConstellation },
-                    { portfolioProjects, preloadProjectScreenshots },
+                    { portfolioProjects, startProjectScreenshotPreloads },
                     { constellations },
                     { portfolioSkills },
                 ]) => {
+                    startProjectScreenshotPreloads();
+
                     const constellation = new PortfolioConstellation({
                         scene: this.scene,
                         camera: this.camera,
@@ -818,7 +820,6 @@ export class World {
                         this.portfolioConstellationScrollProgress,
                     );
                     constellation.prepare();
-                    await preloadProjectScreenshots();
 
                     return constellation;
                 },
