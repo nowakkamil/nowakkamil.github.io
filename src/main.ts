@@ -340,6 +340,7 @@ try {
 
     await initializeRemainingSections();
     ScrollTrigger.refresh();
+    world.prepareForReveal();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
     window.__portfolioStartup?.succeed();

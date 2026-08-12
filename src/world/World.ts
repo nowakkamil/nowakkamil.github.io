@@ -394,6 +394,10 @@ export class World {
         this.fadeOverlaySystem.startHyperspaceZoom(onSettled);
     }
 
+    public prepareForReveal(): void {
+        this.renderFrame();
+    }
+
     public setScrollLocked(locked: boolean, resetPosition = true): void {
         if (locked) {
             this.fadeOverlaySystem.lockScroll(resetPosition);
