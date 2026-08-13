@@ -198,15 +198,7 @@ const frontEndProjects: PortfolioProject[] = [
         period: 'October 2017 – February 2018',
         role: 'Developer',
 
-        skills: [
-            'front-end',
-            'iot',
-            'data-visualization',
-            'graphs',
-            'csharp',
-            'dotnet',
-            'real-time-monitoring',
-        ],
+        skills: ['front-end', 'iot', 'data-visualization', 'graphs', 'real-time-monitoring'],
 
         domain: 'Internet of Things / Power Electronics',
         owner: 'Cracow University of Technology',
@@ -260,6 +252,13 @@ const fullStackProjects: PortfolioProject[] = [
 
         skills: [
             'full-stack',
+            'react',
+            'yjs',
+            'scss',
+            'csharp',
+            'aspnet-core',
+            'entity-framework-core',
+            'sql-server',
             'computer-science-research',
             'synchronization-logic',
             'groupware',
@@ -291,7 +290,10 @@ const fullStackProjects: PortfolioProject[] = [
             'full-stack',
             'knowledge-management',
             'web-architecture',
+            'react',
+            'scss',
             'csharp',
+            'aspnet-core',
             'entity-framework-core',
             'sql-server',
             'technical-leadership',
@@ -321,7 +323,6 @@ const fullStackProjects: PortfolioProject[] = [
         skills: [
             'full-stack',
             'csharp',
-            'dotnet-api',
             'aspnet-mvc',
             'react',
             'material-ui',
@@ -389,13 +390,12 @@ const fullStackProjects: PortfolioProject[] = [
         skills: [
             'full-stack',
             'csharp',
-            'dotnet',
+            'csharp-dotnet',
             'umbraco-cms',
             'mvc',
             'azure',
             'react',
             'typescript',
-            'api-bridge',
         ],
 
         domain: 'Corporate Services / Financial Ecosystem',

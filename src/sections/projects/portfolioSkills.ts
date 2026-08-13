@@ -14,6 +14,7 @@ const frontendSkills: PortfolioSkill[] = [
     { id: 'html', label: 'HTML' },
     { id: 'css', label: 'CSS' },
     { id: 'scss', label: 'SCSS' },
+    { id: 'yjs', label: 'Yjs' },
     { id: 'material-ui', label: 'Material UI' },
     { id: 'responsive-web-design', label: 'Responsive Web Design' },
     { id: 'eq-design-system', label: 'EQ Design System' },
@@ -27,7 +28,9 @@ const backendAndDataSkills: PortfolioSkill[] = [
     { id: 'aspnet-mvc', label: 'ASP.NET MVC' },
     { id: 'entity-framework-core', label: 'Entity Framework Core' },
     { id: 'rest-api', label: 'REST APIs' },
+    { id: 'restful-api', label: 'RESTful APIs' },
     { id: 'microsoft-sql-server', label: 'Microsoft SQL Server' },
+    { id: 'sql-server', label: 'SQL Server' },
     { id: 't-sql', label: 'T-SQL' },
     { id: 'postgresql', label: 'PostgreSQL' },
     { id: 'sqlite', label: 'SQLite' },
@@ -46,6 +49,7 @@ const cloudCmsTestingAndDeliverySkills: PortfolioSkill[] = [
     { id: 'jenkins', label: 'Jenkins' },
     { id: 'new-relic', label: 'New Relic' },
     { id: 'mkdocs', label: 'MkDocs' },
+    { id: 'atdd', label: 'ATDD' },
 ];
 
 const architectureAndResearchSkills: PortfolioSkill[] = [
@@ -93,6 +97,8 @@ const motionAndRealTimeGraphicsSkills: PortfolioSkill[] = [
     { id: 'post-processing', label: 'Post-Processing' },
 ];
 
+const aiSkills: PortfolioSkill[] = [{ id: 'llm', label: 'LLM' }];
+
 export const portfolioSkills: PortfolioSkill[] = [
     ...coreDisciplineSkills,
     ...frontendSkills,
@@ -102,4 +108,5 @@ export const portfolioSkills: PortfolioSkill[] = [
     ...iotAndSecuritySkills,
     ...searchAndObservabilitySkills,
     ...motionAndRealTimeGraphicsSkills,
+    ...aiSkills,
 ];
