@@ -3,6 +3,22 @@ import { clamp01 } from '../../utils/animation';
 import { seeded } from './constellationConstants';
 
 /**
+ * Constellation canvases are alpha masks whose visible colour comes from the
+ * material. Keeping them out of the sRGB/mipmap upload path also avoids
+ * corrupt sampling on some Android ANGLE drivers (notably Galaxy devices).
+ */
+function createCanvasMaskTexture(canvas: HTMLCanvasElement): THREE.Texture {
+    const texture = new THREE.CanvasTexture(canvas);
+
+    texture.colorSpace = THREE.NoColorSpace;
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+
+    return texture;
+}
+
+/**
  * Creates a star-glow texture: a radial gradient core with 4-point
  * diffraction spikes and fainter 45-degree secondary spikes.
  */
@@ -61,10 +77,7 @@ export function createStarTexture(): THREE.Texture {
         context.globalAlpha = 1;
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-
-    return texture;
+    return createCanvasMaskTexture(canvas);
 }
 
 /**
@@ -152,12 +165,7 @@ export function createFogTexture(): THREE.Texture {
         context.globalCompositeOperation = 'source-over';
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-
-    return texture;
+    return createCanvasMaskTexture(canvas);
 }
 
 /**
@@ -196,10 +204,5 @@ export function createLineBlurTexture(): THREE.Texture {
         context.putImageData(image, 0, 0);
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-
-    return texture;
+    return createCanvasMaskTexture(canvas);
 }

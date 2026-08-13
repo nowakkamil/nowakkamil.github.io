@@ -3,6 +3,20 @@ import type { ResponsiveConfig } from '../../app/responsiveConfig';
 
 const LABEL_FONT_FAMILY = 'Urbanist';
 
+function createCanvasLabelTexture(canvas: HTMLCanvasElement): THREE.Texture {
+    const texture = new THREE.CanvasTexture(canvas);
+
+    // These near-white canvases act as opacity masks and are tinted by their
+    // SpriteMaterial. Avoid sRGB texture allocation and mipmap generation on
+    // mobile ANGLE drivers, where they can produce vertical sampling streaks.
+    texture.colorSpace = THREE.NoColorSpace;
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+
+    return texture;
+}
+
 /**
  * Renders a single-line skill-category label (e.g. "Front-End")
  * into a CanvasTexture.
@@ -44,12 +58,7 @@ export function createLabelTexture(
         context.restore();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-
-    return texture;
+    return createCanvasLabelTexture(canvas);
 }
 
 /**
@@ -99,12 +108,7 @@ export function createProjectLabelTexture(
         context.restore();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-
-    return texture;
+    return createCanvasLabelTexture(canvas);
 }
 
 /**
