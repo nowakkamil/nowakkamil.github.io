@@ -1,7 +1,11 @@
 import { type PortfolioProject } from './portfolioConstellation';
 import { preloadImage } from '../../utils/assetLoaders';
 import { portfolioSkills } from './portfolioSkills';
-import { PROJECT_PREVIEW_IMAGE_SIZES, projectImagesById } from './projectImageAssets';
+import {
+    PROJECT_DETAILS_IMAGE_SIZES,
+    PROJECT_PREVIEW_IMAGE_SIZES,
+    projectImagesById,
+} from './projectImageAssets';
 
 const withProjectScreenshots = (projects: PortfolioProject[]): PortfolioProject[] =>
     projects.map((project) => ({
@@ -43,6 +47,16 @@ export const preloadAdjacentProjectScreenshots = (project: PortfolioProject): vo
             preloadImage(candidate.screenshot, PROJECT_PREVIEW_IMAGE_SIZES);
         }
     });
+};
+
+export const preloadAdjacentProjectDetails = async (project: PortfolioProject): Promise<void> => {
+    const adjacentScreenshots = getAdjacentProjects(project, portfolioProjects).flatMap(
+        (candidate) => (candidate.detailsScreenshot ? [candidate.detailsScreenshot] : []),
+    );
+
+    await Promise.allSettled(
+        adjacentScreenshots.map((source) => preloadImage(source, PROJECT_DETAILS_IMAGE_SIZES)),
+    );
 };
 
 const frontEndProjects: PortfolioProject[] = [

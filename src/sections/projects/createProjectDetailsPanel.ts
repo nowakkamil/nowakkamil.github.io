@@ -18,6 +18,7 @@ import type { PortfolioProject } from './portfolioConstellation';
 import formatSkillLabel from './formatSkillLabel';
 import { constellations, getConstellationColorRgb } from './constellations';
 import { PROJECT_DETAILS_IMAGE_SIZES } from './projectImageAssets';
+import { preloadAdjacentProjectDetails } from './portfolioProjects';
 
 const DETAILS_CONTENT_DURATION = 0.22;
 const DETAILS_CONTENT_STAGGER = 0.02;
@@ -58,6 +59,7 @@ const createProjectDetailsPanel = (
     let swipeDistance = 0;
     let canSwipeClose = false;
     let returnFocusTarget: HTMLElement | undefined;
+    let screenshotProject: PortfolioProject | null = null;
 
     const resetSwipe = (): void => {
         swipeStartX = undefined;
@@ -133,36 +135,38 @@ const createProjectDetailsPanel = (
         scheduleScreenshotLoaded(requestId);
     };
 
-    const prepareScreenshotSwap = async (
-        requestId: number,
-        source: ResponsiveImageSource,
-    ): Promise<void> => {
-        try {
-            await preloadImage(source, PROJECT_DETAILS_IMAGE_SIZES);
-        } catch {
-            if (
-                requestId !== screenshotRequestId ||
-                screenshot.dataset.expectedSrc !== source.src
-            ) {
-                return;
-            }
-
-            clearResponsiveImageSource(screenshot);
-            screenshot.alt = '';
-            screenshotFrame.classList.remove('is-loaded');
-            screenshotFrame.hidden = true;
-            return;
-        }
-
+    const commitScreenshotSwap = (requestId: number, source: ResponsiveImageSource): void => {
         if (requestId !== screenshotRequestId || screenshot.dataset.expectedSrc !== source.src) {
             return;
         }
 
         applyResponsiveImageSource(screenshot, source, PROJECT_DETAILS_IMAGE_SIZES);
+    };
 
-        if (screenshot.complete && screenshot.naturalWidth > 0) {
-            void revealScreenshotWhenDecoded(requestId);
-        }
+    const prepareScreenshotSwap = (requestId: number, source: ResponsiveImageSource): void => {
+        preloadImage(source, PROJECT_DETAILS_IMAGE_SIZES).then(
+            () => {
+                if (
+                    requestId === screenshotRequestId &&
+                    screenshot.dataset.expectedSrc === source.src
+                ) {
+                    commitScreenshotSwap(requestId, source);
+                }
+            },
+            () => {
+                if (
+                    requestId !== screenshotRequestId ||
+                    screenshot.dataset.expectedSrc !== source.src
+                ) {
+                    return;
+                }
+
+                clearResponsiveImageSource(screenshot);
+                screenshot.alt = '';
+                screenshotFrame.classList.remove('is-loaded');
+                screenshotFrame.hidden = true;
+            },
+        );
     };
 
     panel.className = 'project-details';
@@ -259,15 +263,23 @@ const createProjectDetailsPanel = (
             return;
         }
 
-        screenshotFrame.classList.remove('is-loaded');
+        const hasVisibleScreenshot =
+            screenshot.complete &&
+            screenshot.naturalWidth > 0 &&
+            screenshotFrame.classList.contains('is-loaded');
+
+        if (!hasVisibleScreenshot) {
+            screenshotFrame.classList.remove('is-loaded');
+        }
         screenshotFrame.hidden = false;
-        void prepareScreenshotSwap(requestId, nextScreenshot);
+        prepareScreenshotSwap(requestId, nextScreenshot);
     };
 
     const showScreenshot = (project: PortfolioProject): void => {
         screenshotRequestId += 1;
         const requestId = screenshotRequestId;
         const screenshotSrc = project.detailsScreenshot;
+        screenshotProject = screenshotSrc ? project : null;
 
         if (!screenshotSrc) {
             clearResponsiveImageSource(screenshot);
@@ -624,13 +636,24 @@ const createProjectDetailsPanel = (
         screenshotFrame.classList.remove('is-loaded');
         screenshotFrame.hidden = true;
     });
-    screenshot.addEventListener('load', () => {
+    const handleScreenshotLoad = async (): Promise<void> => {
         if (screenshot.getAttribute('src') !== screenshot.dataset.expectedSrc) {
             return;
         }
 
-        void revealScreenshotWhenDecoded(screenshotRequestId);
-    });
+        const requestId = screenshotRequestId;
+        const expectedSrc = screenshot.dataset.expectedSrc;
+
+        await revealScreenshotWhenDecoded(requestId);
+
+        if (
+            requestId === screenshotRequestId &&
+            screenshotProject?.detailsScreenshot?.src === expectedSrc
+        ) {
+            await preloadAdjacentProjectDetails(screenshotProject);
+        }
+    };
+    screenshot.addEventListener('load', handleScreenshotLoad);
     const handleKeyDown = (event: KeyboardEvent): void => {
         if (panel.hidden || panel.getAttribute('aria-hidden') === 'true') {
             return;
@@ -673,7 +696,6 @@ const createProjectDetailsPanel = (
         screenshotRequestId += 1;
         gsap.ticker.remove(commitPanelVisible);
         gsap.ticker.remove(commitScreenshotLoaded);
-
         window.removeEventListener('keydown', handleKeyDown);
         world.removePortfolioProjectSelectionListener(handleProjectSelection);
         previousButton.removeEventListener('click', showPreviousProject);
@@ -684,6 +706,7 @@ const createProjectDetailsPanel = (
         panel.removeEventListener('touchmove', handleTouchMove);
         panel.removeEventListener('touchend', handleTouchEnd);
         panel.removeEventListener('touchcancel', resetSwipe);
+        screenshot.removeEventListener('load', handleScreenshotLoad);
 
         panel.remove();
     };
