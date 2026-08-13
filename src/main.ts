@@ -319,6 +319,7 @@ try {
         await yieldToMainThread();
         await loadProjectInteractions();
         await yieldToMainThread();
+        await loadContactFeatures();
     };
 
     const revealLoadedPage = (): void => {
@@ -384,9 +385,6 @@ try {
     gsap.ticker.add(updateWorld);
     animateNavigation();
     world.startIntroReveal(() => {
-        window.setTimeout(() => {
-            loadContactFeatures();
-        }, 0);
         sectionTransitions.releaseSmootherAtTop();
         navigation.setReady();
         scrollCue.setReady();
