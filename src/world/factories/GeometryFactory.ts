@@ -25,29 +25,6 @@ export function createCloudParticleGeometry(count: number): THREE.BufferGeometry
     return geometry;
 }
 
-export function createCloudParticleGeometryFromData(
-    positions: Float32Array,
-    randoms: Float32Array,
-): THREE.BufferGeometry {
-    const count = positions.length / 3;
-    if (randoms.length !== count) {
-        throw new Error('Cloud particle geometry attributes have mismatched counts');
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage),
-    );
-    geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
-    geometry.setAttribute(
-        'morphFactor',
-        new THREE.BufferAttribute(new Float32Array(count), 1).setUsage(THREE.DynamicDrawUsage),
-    );
-
-    return geometry;
-}
-
 function createCloudParticlePositions(count: number, minRadius = 5, maxRadius = 40): Float32Array {
     const positions = new Float32Array(count * 3);
 

@@ -1,14 +1,9 @@
 export type SceneMorphTargetKey = 'name' | 'experience' | 'education' | 'projects' | 'tunnel';
 
 export interface SceneGeometryRequest {
-    mainCloudCount: number;
+    cloudPositions: Float32Array;
     floatingTextCount: number;
     ellipsisCount: number;
-}
-
-export interface MainCloudGeometryData {
-    position: Float32Array;
-    random: Float32Array;
 }
 
 export interface FloatingTextGeometryData {
@@ -18,7 +13,6 @@ export interface FloatingTextGeometryData {
 }
 
 export interface SceneGeometryData {
-    mainCloud: MainCloudGeometryData;
     floatingText: FloatingTextGeometryData;
     shapeTargets: Record<SceneMorphTargetKey, Float32Array>;
     ellipsisTargets: Record<'cloud' | SceneMorphTargetKey, Float32Array>;

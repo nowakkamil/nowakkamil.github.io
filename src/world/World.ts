@@ -30,7 +30,7 @@ import { SceneContentSystem } from './systems/SceneContentSystem';
 import { SelectiveBloomSystem } from './systems/SelectiveBloomSystem';
 import { ShaderUniformSystem } from './systems/ShaderUniformSystem';
 import type { ShootingStarSystem } from './systems/ShootingStarSystem';
-import { createCloudParticleGeometryFromData } from './factories/GeometryFactory';
+import { createCloudParticleGeometry } from './factories/GeometryFactory';
 import {
     createBloomCompositePassMaterial,
     createColoredLightMaterial,
@@ -39,7 +39,6 @@ import {
 import { createColoredLightMesh } from './factories/SceneObjectFactory';
 import { compileShaderMaterials } from './rendering/compileShaderMaterials';
 import { generateSceneGeometry } from './workers/generateSceneGeometry';
-import type { MainCloudGeometryData } from './workers/sceneGeometryTypes';
 import type {
     PortfolioConstellation,
     PortfolioProject,
@@ -719,7 +718,9 @@ export class World {
         initialViewportSize: { width: number; height: number },
         onSceneBuildStart?: () => void,
     ): Promise<void> {
+        this.createMainCloudParticles();
         const sceneGeometry = generateSceneGeometry(
+            this.mainCloudPositions,
             this.responsiveConfig.particles,
             onSceneBuildStart,
         );
@@ -738,8 +739,6 @@ export class World {
         this.addColoredLight();
 
         const [generated] = await Promise.all([sceneGeometry, shootingStars]);
-        await yieldToMainThread();
-        this.createMainCloudParticles(generated.mainCloud);
 
         await yieldToMainThread();
         this.contentSystem = new SceneContentSystem({
@@ -939,8 +938,8 @@ export class World {
             config.introParticleControl;
     }
 
-    private createMainCloudParticles(data: MainCloudGeometryData): void {
-        const geometry = createCloudParticleGeometryFromData(data.position, data.random);
+    private createMainCloudParticles(): void {
+        const geometry = createCloudParticleGeometry(this.responsiveConfig.particles.main);
         const particleMaterial = createMainParticleMaterial();
         particleMaterial.uniforms.uTunnelBokehSizeScale.value =
             this.responsiveConfig.particles.tunnelBokehSizeScale;
