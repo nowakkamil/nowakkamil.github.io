@@ -142,18 +142,8 @@ try {
         });
         return cursorInitialization;
     };
-    const initializeCursorFromPointer = (): void => {
-        window.removeEventListener('pointermove', initializeCursorFromPointer);
-        window.removeEventListener('pointerdown', initializeCursorFromPointer);
-        initializeCursor();
-    };
     if (responsiveConfig.hasFinePointer) {
-        window.addEventListener('pointermove', initializeCursorFromPointer, {
-            passive: true,
-        });
-        window.addEventListener('pointerdown', initializeCursorFromPointer, {
-            passive: true,
-        });
+        await initializeCursor();
     }
 
     const smootherContentElement = smoother.content() as HTMLElement;
