@@ -13,10 +13,9 @@ import type {
     PortfolioProject,
     PortfolioProjectPreviewState,
 } from './sections/projects/portfolioConstellation';
-import { createIntroTextAnimation } from './sections/transitions/createSectionTextAnimations';
 import { createSectionTransitions } from './sections/transitions/createSectionTransitions';
-import { initSmoother } from './app/initSmoother';
 import { sectionSelectors } from './sections/sectionIds';
+import { yieldToMainThread } from './utils/yieldToMainThread';
 
 declare global {
     interface Window {
@@ -27,8 +26,14 @@ declare global {
     }
 }
 
+const experienceLayoutClass = 'startup-layout-staged-experience';
+const contactLayoutClass = 'startup-layout-staged-contact';
+const documentElement = document.documentElement;
+documentElement.classList.add(experienceLayoutClass, contactLayoutClass);
+
 const smoothWrapper = document.querySelector<HTMLElement>('#smooth-wrapper');
 const contactTabs = document.querySelector<HTMLElement>('.contact-tabs');
+const experienceSection = document.querySelector<HTMLElement>(sectionSelectors.experience);
 const introFontReady =
     document.fonts?.load('300 1.8rem Urbanist').catch(() => []) ?? Promise.resolve([]);
 
@@ -44,6 +49,16 @@ setLoadingPhase('preparing');
 const slowConnectionTimeout = window.setTimeout(() => {
     setLoadingPhase('slow');
 }, 12_000);
+
+const releaseStagedLayout = async (
+    className: string,
+    element: HTMLElement | null,
+): Promise<void> => {
+    documentElement.classList.remove(className);
+    await yieldToMainThread();
+    element?.getBoundingClientRect();
+    await yieldToMainThread();
+};
 
 try {
     setLoadingPhase('assets');
@@ -73,12 +88,18 @@ try {
         throw new Error('Canvas .webgl not found');
     }
 
-    const responsiveConfig = refreshResponsiveConfig(window.innerWidth, canvas.clientHeight);
+    const initialViewportSize = {
+        width: Math.max(1, canvas.clientWidth),
+        height: Math.max(1, canvas.clientHeight),
+    };
+    const responsiveConfig = refreshResponsiveConfig(window.innerWidth, initialViewportSize.height);
 
     const world = new World(canvas, responsiveConfig, {
+        initialViewportSize,
         onSceneBuildStart: () => setLoadingPhase('scene'),
     });
     await world.ready;
+    await yieldToMainThread();
 
     if (import.meta.env.DEV) {
         const { initDebugGui } = await import('./debug/initDebugGui');
@@ -88,11 +109,18 @@ try {
 
     setLoadingPhase('finalizing');
     await introFontReady;
-    document.documentElement.classList.add('intro-font-ready');
+    documentElement.classList.add('intro-font-ready');
+    await yieldToMainThread();
+
+    await releaseStagedLayout(experienceLayoutClass, experienceSection);
+    await releaseStagedLayout(contactLayoutClass, contactTabs);
 
     const soundControls = initSoundControls(responsiveConfig.reducedMotion);
+    await yieldToMainThread();
+    const { initSmoother } = await import('./app/initSmoother');
     const smoother = initSmoother(responsiveConfig);
     smoother.paused(true);
+    await yieldToMainThread();
 
     let cursor: { update: (delta: number, elapsed: number) => void } | undefined;
     let cursorInitialization: Promise<void> | undefined;
@@ -169,7 +197,6 @@ try {
         },
     });
     const skipLink = document.querySelector<HTMLAnchorElement>('.skip-link');
-    const experienceSection = document.querySelector<HTMLElement>(sectionSelectors.experience);
     const experienceNavigationLink = document.querySelector<HTMLAnchorElement>(
         `[data-scroll="${sectionSelectors.experience}"]`,
     );
@@ -221,37 +248,66 @@ try {
         activateSkipLink();
     });
 
+    const { createIntroTextAnimation } =
+        await import('./sections/transitions/createSectionTextAnimations');
     createIntroTextAnimation(responsiveConfig);
+    await yieldToMainThread();
     sectionTransitions.initScrollTriggers();
-    const initializeRemainingSections = async (): Promise<void> => {
-        const experienceAnimationsModule = import('./sections/experience/initExperienceAnimations');
-        const projectModules = Promise.all([
-            import('./sections/projects/createProjectPreviewCard'),
-            import('./sections/projects/createProjectDetailsPanel'),
-        ]);
-        const projectPreparation = world.preparePortfolioConstellation();
+    await yieldToMainThread();
+
+    const loadContactFeatures = createFeatureLoader('contact interactions', async () => {
         const contactTextAnimationModule =
             import('./sections/transitions/createContactTextAnimation');
         const contactTabsModule = import('./sections/contact/contactTabs');
         const contactFormModule = import('./sections/contact/contactForm');
         const recommendationWallModule = import('./sections/contact/initRecommendationWallEvents');
+        const [
+            ,
+            ,
+            { createContactTextAnimation },
+            { initContactTabs },
+            { initContactForm },
+            { initRecommendationWallEvents },
+        ] = await Promise.all([
+            world.ready,
+            sectionTransitions.initContactInteractions(),
+            contactTextAnimationModule,
+            contactTabsModule,
+            contactFormModule,
+            recommendationWallModule,
+        ]);
+        initContactTabs();
+        initContactForm();
+        initRecommendationWallEvents(responsiveConfig);
+        createContactTextAnimation(contactTabs, responsiveConfig, smoother);
+    });
 
+    const initializeRemainingSections = async (): Promise<void> => {
         const loadExperienceAnimations = createFeatureLoader('experience animations', async () => {
-            const { initExperienceAnimations } = await experienceAnimationsModule;
+            const { initExperienceAnimations } =
+                await import('./sections/experience/initExperienceAnimations');
             initExperienceAnimations(responsiveConfig);
         });
 
         const loadProjectInteractions = createFeatureLoader('project interactions', async () => {
-            await projectPreparation;
+            const projectModules = Promise.all([
+                import('./sections/projects/createProjectPreviewCard'),
+                import('./sections/projects/createProjectDetailsPanel'),
+            ]);
+
+            await world.preparePortfolioConstellation();
+            await yieldToMainThread();
             const [{ default: createProjectPreviewCard }, { default: createProjectDetailsPanel }] =
                 await projectModules;
 
             projectPreviewCard = createProjectPreviewCard(world, responsiveConfig);
+            await yieldToMainThread();
             projectDetailsPanel = createProjectDetailsPanel(
                 world,
                 responsiveConfig,
                 selectedProject,
             );
+            await yieldToMainThread();
             world.setPortfolioProjectPreviewHandler((state) => {
                 projectPreviewCard?.update(state);
                 sectionTransitions.setProjectSelected(Boolean(state.selectedProject));
@@ -259,31 +315,10 @@ try {
         });
         loadProjectFeatures = loadProjectInteractions;
 
-        const loadContactFeatures = createFeatureLoader('contact interactions', async () => {
-            const [
-                ,
-                ,
-                { createContactTextAnimation },
-                { initContactTabs },
-                { initContactForm },
-                { initRecommendationWallEvents },
-            ] = await Promise.all([
-                world.ready,
-                sectionTransitions.initContactInteractions(),
-                contactTextAnimationModule,
-                contactTabsModule,
-                contactFormModule,
-                recommendationWallModule,
-            ]);
-            initContactTabs();
-            initContactForm();
-            initRecommendationWallEvents(responsiveConfig);
-            createContactTextAnimation(contactTabs, responsiveConfig, smoother);
-        });
-
         await loadExperienceAnimations();
+        await yieldToMainThread();
         await loadProjectInteractions();
-        await loadContactFeatures();
+        await yieldToMainThread();
     };
 
     const revealLoadedPage = (): void => {
@@ -340,6 +375,7 @@ try {
 
     await initializeRemainingSections();
     ScrollTrigger.refresh();
+    await yieldToMainThread();
     world.prepareForReveal();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
@@ -348,12 +384,16 @@ try {
     gsap.ticker.add(updateWorld);
     animateNavigation();
     world.startIntroReveal(() => {
+        window.setTimeout(() => {
+            loadContactFeatures();
+        }, 0);
         sectionTransitions.releaseSmootherAtTop();
         navigation.setReady();
         scrollCue.setReady();
         scrollCue.reveal();
     });
 } catch (error) {
+    documentElement.classList.remove(experienceLayoutClass, contactLayoutClass);
     console.error('Failed to initialize the portfolio experience', error);
     window.__portfolioStartup?.fail();
 } finally {

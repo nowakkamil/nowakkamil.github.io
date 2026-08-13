@@ -47,6 +47,11 @@ body::after {
     pointer-events: none;
 }
 
+html.startup-layout-staged-experience #experience,
+html.startup-layout-staged-contact .contact-tabs {
+    content-visibility: hidden;
+}
+
 ul {
     list-style-type: none;
 }

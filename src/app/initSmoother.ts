@@ -1,6 +1,9 @@
+import gsap from 'gsap';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
 import type { ResponsiveConfig } from './responsiveConfig';
+
+gsap.registerPlugin(ScrollSmoother);
 
 export function initSmoother(config: ResponsiveConfig) {
     const smoothScrollingEnabled = !config.reducedMotion;

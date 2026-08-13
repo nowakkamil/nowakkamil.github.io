@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { ResponsiveConfig } from '../../app/responsiveConfig';
 import { clamp01 } from '../../utils/animation';
+import { yieldToMainThread } from '../../utils/yieldToMainThread';
 import {
     CONSTELLATION_CAMERA_FADE_FAR,
     CONSTELLATION_CAMERA_FADE_NEAR,
@@ -238,11 +239,16 @@ export class PortfolioConstellation {
     }
 
     public async prepare(renderer: THREE.WebGLRenderer): Promise<void> {
+        await yieldToMainThread();
         this.initialize();
+
         for (const texture of this.textures) {
             renderer.initTexture(texture);
+            await yieldToMainThread();
         }
+
         await renderer.compileAsync(this.group, this.camera, this.scene);
+        await yieldToMainThread();
     }
 
     public setConstellationScrollProgress(progress: number): void {

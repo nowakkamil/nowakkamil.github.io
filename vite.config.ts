@@ -28,11 +28,6 @@ export default defineConfig({
                             test: /node_modules[\\/](?:three|meshline)(?:[\\/]|$)/,
                             priority: 20,
                         },
-                        {
-                            name: 'gsap',
-                            test: /node_modules[\\/]gsap(?:[\\/]|$)/,
-                            priority: 20,
-                        },
                     ],
                 },
             },

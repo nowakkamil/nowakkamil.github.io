@@ -7,15 +7,13 @@ import type {
 import SceneGeometryWorker from './sceneGeometry.worker?worker';
 
 export const generateSceneGeometry = (
-    cloudPositions: Float32Array,
     particleCounts: ResponsiveConfig['particles'],
     onAssetsReady?: () => void,
 ): Promise<SceneGeometryData> =>
     new Promise((resolve, reject) => {
         const worker = new SceneGeometryWorker();
-        const workerCloudPositions = cloudPositions.slice();
         const request: SceneGeometryRequest = {
-            cloudPositions: workerCloudPositions,
+            mainCloudCount: particleCounts.main,
             floatingTextCount: particleCounts.floatingText,
             ellipsisCount: particleCounts.ellipsis,
         };
@@ -37,5 +35,5 @@ export const generateSceneGeometry = (
             worker.terminate();
             reject(new Error(event.message || 'Scene geometry worker failed'));
         };
-        worker.postMessage(request, [workerCloudPositions.buffer]);
+        worker.postMessage(request);
     });

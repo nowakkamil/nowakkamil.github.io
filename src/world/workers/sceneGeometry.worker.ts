@@ -4,6 +4,7 @@ import regularFontUrl from '../../assets/fonts/Urbanist_Regular.typeface.json?ur
 import italicFontUrl from '../../assets/fonts/Urbanist_Italic.typeface.json?url';
 import { loadFontAsset } from '../loadFontAsset';
 import {
+    createCloudParticleGeometry,
     createFloatingTextParticleGeometry,
     createTextMorphPositions,
     createTopDownGalaxyParticlePositions,
@@ -34,6 +35,8 @@ const getFloatAttribute = (geometry: THREE.BufferGeometry, name: string): Float3
 
 const collectTransferables = (data: SceneGeometryData): Transferable[] => {
     const arrays: Float32Array[] = [
+        data.mainCloud.position,
+        data.mainCloud.random,
         data.floatingText.position,
         data.floatingText.offset,
         data.floatingText.start,
@@ -47,13 +50,15 @@ const collectTransferables = (data: SceneGeometryData): Transferable[] => {
 workerScope.onmessage = (event) => {
     (async () => {
         try {
-            const { cloudPositions, floatingTextCount, ellipsisCount } = event.data;
+            const { mainCloudCount, floatingTextCount, ellipsisCount } = event.data;
             const [regularFont, italicFont] = await Promise.all([
                 loadFontAsset(regularFontUrl, 'regular Urbanist'),
                 loadFontAsset(italicFontUrl, 'italic Urbanist'),
             ]);
             workerScope.postMessage({ ok: true, phase: 'assets-ready' }, []);
 
+            const cloudGeometry = createCloudParticleGeometry(mainCloudCount);
+            const cloudPositions = getFloatAttribute(cloudGeometry, 'position');
             const floatingGeometry = createFloatingTextParticleGeometry(
                 regularFont,
                 italicFont,
@@ -80,11 +85,16 @@ workerScope.onmessage = (event) => {
                 tunnel: createTopDownGalaxyParticlePositions(ellipsisCount, 29.2, 2, 71),
             };
             const data: SceneGeometryData = {
+                mainCloud: {
+                    position: cloudPositions,
+                    random: getFloatAttribute(cloudGeometry, 'aRandom'),
+                },
                 floatingText,
                 shapeTargets,
                 ellipsisTargets,
             };
 
+            cloudGeometry.dispose();
             floatingGeometry.dispose();
             workerScope.postMessage({ ok: true, data }, collectTransferables(data));
         } catch (error) {

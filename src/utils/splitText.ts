@@ -1,4 +1,7 @@
+import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
+
+gsap.registerPlugin(SplitText);
 
 type SplitTextTarget = string | Element | Element[];
 type LineSplitAnimationFactory = (lines: HTMLElement[]) => gsap.core.Animation | void;

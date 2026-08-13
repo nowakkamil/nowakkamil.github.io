@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { yieldToMainThread } from '../utils/yieldToMainThread';
 import gsap from 'gsap';
 import { AfterimagePass } from 'three/addons/postprocessing/AfterimagePass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -29,7 +30,7 @@ import { SceneContentSystem } from './systems/SceneContentSystem';
 import { SelectiveBloomSystem } from './systems/SelectiveBloomSystem';
 import { ShaderUniformSystem } from './systems/ShaderUniformSystem';
 import type { ShootingStarSystem } from './systems/ShootingStarSystem';
-import { createCloudParticleGeometry } from './factories/GeometryFactory';
+import { createCloudParticleGeometryFromData } from './factories/GeometryFactory';
 import {
     createBloomCompositePassMaterial,
     createColoredLightMaterial,
@@ -37,6 +38,8 @@ import {
 } from './factories/MaterialFactory';
 import { createColoredLightMesh } from './factories/SceneObjectFactory';
 import { compileShaderMaterials } from './rendering/compileShaderMaterials';
+import { generateSceneGeometry } from './workers/generateSceneGeometry';
+import type { MainCloudGeometryData } from './workers/sceneGeometryTypes';
 import type {
     PortfolioConstellation,
     PortfolioProject,
@@ -49,6 +52,7 @@ type CameraController = 'intro' | 'projects' | 'contact';
 type CameraOwner = CameraController | 'contact-loop';
 
 interface WorldInitializationCallbacks {
+    initialViewportSize?: { width: number; height: number };
     onSceneBuildStart?: () => void;
 }
 
@@ -106,7 +110,7 @@ export class World {
     private readonly shaderUniforms = new ComponentStore<ShaderUniformComponent>();
     private readonly sceneStates = new ComponentStore<SceneStateComponent>();
 
-    private readonly fadeOverlaySystem: FadeOverlaySystem;
+    private fadeOverlaySystem!: FadeOverlaySystem;
     private readonly morphSystem: MorphSystem;
     private readonly raycasterSystem: RaycasterSystem;
     private readonly renderSystem: RenderSystem;
@@ -161,7 +165,8 @@ export class World {
         initializationCallbacks: WorldInitializationCallbacks = {},
     ) {
         this.responsiveConfig = responsiveConfig;
-        const initialViewportSize = getRendererViewportSize(canvas);
+        const initialViewportSize =
+            initializationCallbacks.initialViewportSize ?? getRendererViewportSize(canvas);
         this.renderer = new THREE.WebGLRenderer({
             canvas,
             antialias: true,
@@ -210,14 +215,6 @@ export class World {
             this.camera,
             this.responsiveConfig.camera,
         );
-        this.fadeOverlaySystem = new FadeOverlaySystem(
-            this.scene,
-            this.camera,
-            this.entities,
-            this.fadeOverlays,
-            this.responsiveConfig,
-        );
-
         this.sceneState = this.sceneStates.add(this.entities.create(), {
             scrollProgress: 0,
             backgroundParticlesVisibility: 0,
@@ -241,33 +238,12 @@ export class World {
             this.resolveReady = resolve;
         });
 
-        this.addColoredLight();
-        this.createMainCloudParticles();
-        this.contentSystem = new SceneContentSystem({
-            scene: this.scene,
-            camera: this.camera,
-            entities: this.entities,
-            positions: this.positions,
-            morphs: this.morphs,
-            renderables: this.renderables,
-            raycastInteractions: this.raycastInteractions,
-            shaderUniforms: this.shaderUniforms,
-            mainCloudEntity: this.mainCloudEntity,
-            mainCloudPositions: this.mainCloudPositions,
-            mainCloudMorphFactor: this.mainCloudMorphFactor,
-            particleCounts: this.responsiveConfig.particles,
-            getScrollProgress: () => this.sceneState.scrollProgress,
-            onSceneBuildStart: initializationCallbacks.onSceneBuildStart,
-        });
-        void this.init3d().catch((error) => {
-            console.error('Failed to initialise ECS world', error);
-            this.resolveReady();
-        });
-
-        window.addEventListener('resize', this.requestResize, {
-            passive: true,
-        });
-        this.resize();
+        void this.init3d(initialViewportSize, initializationCallbacks.onSceneBuildStart).catch(
+            (error) => {
+                console.error('Failed to initialise ECS world', error);
+                this.resolveReady();
+            },
+        );
     }
 
     public update(delta: number, elapsed: number): void {
@@ -308,8 +284,8 @@ export class World {
         this.resize();
     };
 
-    public resize = (): void => {
-        const { width, height } = getRendererViewportSize(this.renderer.domElement);
+    public resize = (viewportSize = getRendererViewportSize(this.renderer.domElement)): void => {
+        const { width, height } = viewportSize;
         const devicePixelRatio = window.devicePixelRatio || 1;
         const viewportChanged =
             width !== this.rendererViewportWidth || height !== this.rendererViewportHeight;
@@ -739,13 +715,93 @@ export class World {
         this.renderer.dispose();
     }
 
-    private async init3d(): Promise<void> {
-        await Promise.all([this.contentSystem.initialize(), this.prepareShootingStars()]);
+    private async init3d(
+        initialViewportSize: { width: number; height: number },
+        onSceneBuildStart?: () => void,
+    ): Promise<void> {
+        const sceneGeometry = generateSceneGeometry(
+            this.responsiveConfig.particles,
+            onSceneBuildStart,
+        );
+        const shootingStars = this.prepareShootingStars();
+
+        await yieldToMainThread();
+        this.fadeOverlaySystem = new FadeOverlaySystem(
+            this.scene,
+            this.camera,
+            this.entities,
+            this.fadeOverlays,
+            this.responsiveConfig,
+        );
+
+        await yieldToMainThread();
+        this.addColoredLight();
+
+        const [generated] = await Promise.all([sceneGeometry, shootingStars]);
+        await yieldToMainThread();
+        this.createMainCloudParticles(generated.mainCloud);
+
+        await yieldToMainThread();
+        this.contentSystem = new SceneContentSystem({
+            scene: this.scene,
+            camera: this.camera,
+            entities: this.entities,
+            positions: this.positions,
+            morphs: this.morphs,
+            renderables: this.renderables,
+            raycastInteractions: this.raycastInteractions,
+            shaderUniforms: this.shaderUniforms,
+            mainCloudEntity: this.mainCloudEntity,
+            mainCloudPositions: this.mainCloudPositions,
+            mainCloudMorphFactor: this.mainCloudMorphFactor,
+            ambientParticleCount: this.responsiveConfig.particles.ambient,
+            getScrollProgress: () => this.sceneState.scrollProgress,
+        });
+        this.resize(initialViewportSize);
+        window.addEventListener('resize', this.requestResize, {
+            passive: true,
+        });
+
+        await yieldToMainThread();
+        await this.contentSystem.initialize(generated);
+        await yieldToMainThread();
         await this.renderer.compileAsync(this.scene, this.camera);
+        await yieldToMainThread();
         await this.compilePostprocessingShaders();
+        await yieldToMainThread();
         this.selectiveBloomSystem.prepare(this.renderer);
-        this.finalComposer.render();
+        await this.prepareInitialComposerFrame();
         this.resolveReady();
+    }
+
+    private async prepareInitialComposerFrame(): Promise<void> {
+        const currentRenderTarget = this.renderer.getRenderTarget();
+
+        try {
+            for (let index = 0; index < this.finalComposer.passes.length; index += 1) {
+                const pass = this.finalComposer.passes[index];
+                if (!pass.enabled) {
+                    continue;
+                }
+
+                pass.renderToScreen =
+                    this.finalComposer.renderToScreen &&
+                    this.finalComposer.isLastEnabledPass(index);
+                pass.render(
+                    this.renderer,
+                    this.finalComposer.writeBuffer,
+                    this.finalComposer.readBuffer,
+                    0,
+                    false,
+                );
+                if (pass.needsSwap) {
+                    this.finalComposer.swapBuffers();
+                }
+                await yieldToMainThread();
+            }
+        } finally {
+            this.renderer.setRenderTarget(currentRenderTarget);
+        }
     }
 
     private async compilePostprocessingShaders(): Promise<void> {
@@ -883,8 +939,8 @@ export class World {
             config.introParticleControl;
     }
 
-    private createMainCloudParticles(): void {
-        const geometry = createCloudParticleGeometry(this.responsiveConfig.particles.main);
+    private createMainCloudParticles(data: MainCloudGeometryData): void {
+        const geometry = createCloudParticleGeometryFromData(data.position, data.random);
         const particleMaterial = createMainParticleMaterial();
         particleMaterial.uniforms.uTunnelBokehSizeScale.value =
             this.responsiveConfig.particles.tunnelBokehSizeScale;

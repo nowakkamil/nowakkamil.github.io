@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import type { ResponsiveConfig } from '../../app/responsiveConfig';
-
 import type { ComponentStore } from '../ecs/ComponentStore';
 import type { Entity } from '../ecs/Entity';
 import type { EntityManager } from '../ecs/EntityManager';
@@ -23,9 +21,13 @@ import {
 } from '../factories/MaterialFactory';
 import { MorphTargets } from './MorphTargets';
 import { createCollapseTransitionField } from '../../utils/morph';
-import { generateSceneGeometry } from '../workers/generateSceneGeometry';
-import type { FloatingTextGeometryData, SceneMorphTargetKey } from '../workers/sceneGeometryTypes';
+import type {
+    FloatingTextGeometryData,
+    SceneGeometryData,
+    SceneMorphTargetKey,
+} from '../workers/sceneGeometryTypes';
 import { BLOOM_LAYER, type TextBloomState } from './SelectiveBloomSystem';
+import { yieldToMainThread } from '../../utils/yieldToMainThread';
 
 interface SceneContentSystemOptions {
     scene: THREE.Scene;
@@ -39,9 +41,8 @@ interface SceneContentSystemOptions {
     mainCloudEntity: Entity;
     mainCloudPositions: Float32Array;
     mainCloudMorphFactor: THREE.BufferAttribute;
-    particleCounts: ResponsiveConfig['particles'];
+    ambientParticleCount: number;
     getScrollProgress: () => number;
-    onSceneBuildStart?: () => void;
 }
 
 const isTunnelTarget = (key: string): boolean => key === 'tunnel';
@@ -92,23 +93,20 @@ export class SceneContentSystem implements System {
         };
     }
 
-    public async initialize(): Promise<void> {
+    public async initialize(generated: SceneGeometryData): Promise<void> {
         if (this.initialized) {
             return;
         }
         this.initialized = true;
 
-        const { mainCloudPositions, particleCounts } = this.options;
+        const { mainCloudPositions } = this.options;
 
         performance.mark('ecs-content-load-start');
 
         this.createFloatingParticles();
-        const generated = await generateSceneGeometry(
-            mainCloudPositions,
-            particleCounts,
-            this.options.onSceneBuildStart,
-        );
+        await yieldToMainThread();
         this.createSeparateFloatingParticles(generated.floatingText);
+        await yieldToMainThread();
         this.targets.setShape('cloud', mainCloudPositions);
         this.targets.setEllipsis('cloud', generated.ellipsisTargets.cloud);
 
@@ -126,7 +124,9 @@ export class SceneContentSystem implements System {
         }
 
         this.registerFirstMorph();
+        await yieldToMainThread();
         this.createEllipsis();
+        await yieldToMainThread();
         if (this.pendingMorph) {
             const { fromKey, toKey, progress } = this.pendingMorph;
             this.morphToShape(fromKey, toKey, progress);
@@ -342,7 +342,7 @@ export class SceneContentSystem implements System {
 
     private createFloatingParticles(): void {
         const entity = this.addPoints(
-            createAmbientFloatingParticlesGeometry(this.options.particleCounts.ambient),
+            createAmbientFloatingParticlesGeometry(this.options.ambientParticleCount),
             createAmbientFloatingParticlesMaterial(),
             { bindBackgroundVisibility: true },
         );
