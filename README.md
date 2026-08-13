@@ -42,9 +42,9 @@ React is part of my professional stack, but this project does not need a large c
 
 ## Quality audit
 
-| Performance | Accessibility | Best practices | SEO | Agentic browsing |
-| :---: | :---: | :---: | :---: | :---: |
-| **97** | **100** | **100** | **100** | **3/3** |
+| Performance | Accessibility | Best practices |   SEO   | Agentic browsing |
+| :---------: | :-----------: | :------------: | :-----: | :--------------: |
+|   **97**    |    **100**    |    **100**     | **100** |     **3/3**      |
 
 Results captured on **13 August 2026 at 19:34 GMT+2** from an initial single-page desktop load. The audit used Lighthouse 13.4.0, Chromium 151 and custom throttling.
 

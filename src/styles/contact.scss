@@ -6,32 +6,34 @@ $contact-panel-height: min(65svh, 32rem);
 $contact-content-scrollbar-gutter: 15px;
 $contact-content-end-inset: calc(0.75rem + $contact-content-scrollbar-gutter);
 
-body:has(.contact-tabs:not([aria-hidden='true'])) {
-    .nav {
-        &__link-wrapper-container {
-            isolation: isolate;
+.nav__link-wrapper-container {
+    isolation: isolate;
 
-            &::before {
-                content: '';
-                position: absolute;
-                left: 50%;
-                z-index: -1;
-                width: calc(100% + 4rem);
-                height: 6.5rem;
-                transform: translateX(-50%);
-                filter: blur(1.25rem);
-                pointer-events: none;
-                top: -1.5rem;
-                background: linear-gradient(
-                    to bottom,
-                    rgb(0 0 0 / 92%) 0%,
-                    rgb(0 0 0 / 72%) 34%,
-                    rgb(0 0 0 / 34%) 66%,
-                    transparent 100%
-                );
-            }
-        }
+    &::before {
+        content: '';
+        position: absolute;
+        top: -1.5rem;
+        left: 50%;
+        z-index: -1;
+        width: calc(100% + 4rem);
+        height: 6.5rem;
+        background: linear-gradient(
+            to bottom,
+            rgb(0 0 0 / 92%) 0%,
+            rgb(0 0 0 / 72%) 34%,
+            rgb(0 0 0 / 34%) 66%,
+            transparent 100%
+        );
+        filter: blur(1.25rem);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
+        will-change: opacity;
     }
+}
+
+body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::before {
+    opacity: 1;
 }
 
 .contact-tabs {
@@ -48,36 +50,12 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
     text-align: center;
     color: rgb(255 255 255 / 94%);
     background: none;
-
-    &[aria-hidden='true'] {
-        visibility: hidden;
-    }
+    will-change: opacity, transform;
 
     &:not([aria-hidden='true']) {
-        visibility: visible;
-
         .contact-tabs__footer .social-links {
-            isolation: isolate;
-            position: relative;
-
             &::before {
-                content: '';
-                position: absolute;
-                left: 50%;
-                z-index: -1;
-                width: calc(100% + 4rem);
-                height: 6.5rem;
-                transform: translateX(-50%);
-                filter: blur(1.25rem);
-                pointer-events: none;
-                bottom: -1.5rem;
-                background: linear-gradient(
-                    to top,
-                    rgb(0 0 0 / 92%) 0%,
-                    rgb(0 0 0 / 72%) 34%,
-                    rgb(0 0 0 / 34%) 66%,
-                    transparent 100%
-                );
+                opacity: 1;
             }
         }
 
@@ -245,6 +223,33 @@ body:has(.contact-tabs:not([aria-hidden='true'])) {
         margin: 0;
         transform: translateX(-50%);
         pointer-events: auto;
+
+        .social-links {
+            isolation: isolate;
+            position: relative;
+
+            &::before {
+                content: '';
+                position: absolute;
+                bottom: -1.5rem;
+                left: 50%;
+                z-index: -1;
+                width: calc(100% + 4rem);
+                height: 6.5rem;
+                background: linear-gradient(
+                    to top,
+                    rgb(0 0 0 / 92%) 0%,
+                    rgb(0 0 0 / 72%) 34%,
+                    rgb(0 0 0 / 34%) 66%,
+                    transparent 100%
+                );
+                filter: blur(1.25rem);
+                opacity: 0;
+                pointer-events: none;
+                transform: translateX(-50%);
+                will-change: opacity;
+            }
+        }
     }
 
     form {

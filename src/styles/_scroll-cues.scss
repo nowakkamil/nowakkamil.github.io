@@ -57,16 +57,12 @@
     gap: 0.52rem;
     color: rgb(255 255 255 / 58%);
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
     will-change: opacity, transform;
-    transition:
-        opacity 420ms ease,
-        visibility 420ms;
+    transition: opacity 420ms ease;
 
     &.is-visible.has-active-cursor {
         opacity: 1;
-        visibility: visible;
     }
 
     &__star {
@@ -104,13 +100,11 @@
         transform: translate3d(-50%, 0.65rem, 0);
         transition:
             opacity 420ms ease,
-            transform 420ms ease,
-            visibility 420ms;
+            transform 420ms ease;
     }
 
     .project-cue.is-visible {
         opacity: 1;
-        visibility: visible;
         transform: translate3d(-50%, 0, 0);
     }
 

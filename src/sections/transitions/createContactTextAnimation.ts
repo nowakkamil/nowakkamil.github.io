@@ -63,7 +63,7 @@ export const createContactTextAnimation = (
         }
 
         gsap.to(socialLinks, {
-            autoAlpha: enabled ? 1 : 0,
+            opacity: enabled ? 1 : 0,
             y: enabled ? (config.reducedMotion ? 0 : useCompactMotion ? '-0.5rem' : '-1.3rem') : 0,
             ...(enabled &&
                 !config.reducedMotion && {
@@ -97,7 +97,7 @@ export const createContactTextAnimation = (
         element.inert = true;
     });
     setContactUiEnabled(false);
-    gsap.set(socialLinks, { autoAlpha: 0, y: 0 });
+    gsap.set(socialLinks, { opacity: 0, y: 0 });
 
     contactTimeline = gsap.timeline({
         onUpdate: syncContactUi,

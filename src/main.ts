@@ -334,29 +334,29 @@ try {
     introLink?.classList.add('active');
 
     const useCompactMotion = responsiveConfig.isCompact || responsiveConfig.hasCoarsePointer;
-    const animateNavigation = (): void => {
-        gsap.fromTo(
-            links,
-            {
-                y: reduceMotion || responsiveConfig.isMobile ? 0 : '-2vh',
+    const navigationAnimation = gsap.fromTo(
+        links,
+        {
+            opacity: 0,
+            y: reduceMotion || responsiveConfig.isMobile ? 0 : '-2vh',
+            willChange: 'transform, opacity',
+        },
+        {
+            opacity: (_, link: HTMLElement) => (link.classList.contains('active') ? 0.9 : 0.55),
+            y: 0,
+            stagger: {
+                each: reduceMotion ? 0 : 0.5,
             },
-            {
-                opacity: (_, link: HTMLElement) => (link.classList.contains('active') ? 0.9 : 0.5),
-                y: 0,
-                stagger: {
-                    each: reduceMotion ? 0 : 0.5,
-                },
-                duration: reduceMotion ? 0.01 : useCompactMotion ? 0.65 : 1,
-                ease: 'sine',
-                delay: reduceMotion ? 0 : 1,
-                onComplete: () =>
-                    links.forEach((element) => {
-                        element.removeAttribute('style');
-                        return element.classList.add('animated');
-                    }),
+            duration: reduceMotion ? 0.01 : useCompactMotion ? 0.65 : 1,
+            ease: 'sine',
+            delay: reduceMotion ? 0 : 1,
+            paused: true,
+            onComplete: () => {
+                links.forEach((element) => element.classList.add('animated'));
+                gsap.set(links, { clearProps: 'opacity,transform,willChange' });
             },
-        );
-    };
+        },
+    );
 
     const updateWorld = (time: number, deltaTime: number): void => {
         const deltaSeconds = deltaTime / 1000;
@@ -373,7 +373,7 @@ try {
     window.__portfolioStartup?.succeed();
 
     gsap.ticker.add(updateWorld);
-    animateNavigation();
+    navigationAnimation.play();
     world.startIntroReveal(() => {
         sectionTransitions.releaseSmootherAtTop();
         navigation.setReady();

@@ -301,9 +301,9 @@
                 gap: 0.52rem;
                 color: rgb(255 255 255 / 58%);
                 opacity: 0;
-                visibility: hidden;
                 pointer-events: none;
                 transform: none;
+                will-change: opacity, transform;
             }
 
             .project-cue__star {
@@ -341,12 +341,8 @@
                 display: grid;
                 min-height: 100svh;
                 opacity: 0;
-                visibility: hidden;
                 pointer-events: none;
-            }
-
-            .contact-tabs:not([aria-hidden='true']) {
-                visibility: visible;
+                will-change: opacity, transform;
             }
 
             .scroll-cue {
@@ -1431,7 +1427,7 @@
             </svg>
         </div>
 
-        <div class="project-cue">
+        <div class="project-cue" aria-hidden="true">
             <span class="project-cue__star">✦</span>
             <span class="project-cue__label">Select a project star to learn more</span>
         </div>
@@ -1678,14 +1674,34 @@
         <div class="cursor-sound-label" aria-hidden="true" hidden>
             <span class="cursor-sound-label__content">Click to enable sound</span>
         </div>
-        <button
-            class="sound-toggle"
-            type="button"
-            aria-label="Enable sound"
-            aria-pressed="false"
-            data-sound-state="disabled"
-        >
-            <span class="sound-toggle__indicator" aria-hidden="true"></span>
-        </button>
+        <div class="sound-controls">
+            <p class="music-attribution">
+                Music:
+                <a
+                    href="https://www.scottbuckley.com.au/library/titan/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    “Titan” by Scott Buckley
+                </a>
+                —
+                <a
+                    href="https://creativecommons.org/licenses/by/4.0/"
+                    target="_blank"
+                    rel="noopener noreferrer license"
+                >
+                    CC BY 4.0
+                </a>
+            </p>
+            <button
+                class="sound-toggle"
+                type="button"
+                aria-label="Enable sound"
+                aria-pressed="false"
+                data-sound-state="disabled"
+            >
+                <span class="sound-toggle__indicator" aria-hidden="true"></span>
+            </button>
+        </div>
     </body>
 </html>
