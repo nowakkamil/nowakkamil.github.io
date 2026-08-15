@@ -36,6 +36,8 @@ export interface PortfolioProject {
 
 export type ProjectSelectionHandler = (project: PortfolioProject) => void;
 
+export type ConstellationPlane = THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+
 export interface PortfolioProjectPreviewState {
     isProjectPanelBoundaryActive: boolean;
     activeProject?: PortfolioProject;
@@ -66,10 +68,10 @@ export interface SkillVisual {
     starMaterial: THREE.PointsMaterial;
     lineMaterials: THREE.MeshBasicMaterial[];
     lineTintMaterials: THREE.MeshBasicMaterial[];
-    fogMaterials: THREE.SpriteMaterial[];
-    fogSprites: THREE.Sprite[];
-    labelMaterial?: THREE.SpriteMaterial;
-    labelSprite?: THREE.Sprite;
+    fogMaterials: THREE.MeshBasicMaterial[];
+    fogSprites: ConstellationPlane[];
+    labelMaterial?: THREE.MeshBasicMaterial;
+    labelSprite?: ConstellationPlane;
     projectStars: ProjectStarVisual[];
     stars: THREE.Points;
     lines: THREE.Group;
@@ -86,10 +88,10 @@ export interface ProjectStarVisual {
     project: PortfolioProject;
     skillId: string;
     entity: THREE.Group;
-    hitTarget: THREE.Sprite;
-    touchHitTarget: THREE.Sprite;
-    labelMaterial?: THREE.SpriteMaterial;
-    labelSprite?: THREE.Sprite;
+    hitTarget: ConstellationPlane;
+    touchHitTarget: ConstellationPlane;
+    labelMaterial?: THREE.MeshBasicMaterial;
+    labelSprite?: ConstellationPlane;
     labelScale?: THREE.Vector2;
     labelBaseScale?: THREE.Vector2;
     labelOffset?: THREE.Vector3;

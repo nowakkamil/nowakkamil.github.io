@@ -1,34 +1,3 @@
-.cursor-sound-label {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 2147483647;
-    pointer-events: none;
-    user-select: none;
-    visibility: hidden;
-    opacity: 0;
-    will-change: transform, opacity;
-
-    &__content {
-        display: block;
-        padding: 0.28rem 0.44rem;
-        border: 0;
-        border-radius: 999px;
-        background: rgb(0 0 0 / 88%);
-        color: #fff;
-        font-size: 0.6rem;
-        font-weight: 300;
-        line-height: 1;
-        letter-spacing: 0.075em;
-        text-shadow:
-            0 0 0.35rem rgb(255 255 255 / 18%),
-            0 0 0.8rem rgb(158 239 255 / 12%);
-        white-space: nowrap;
-        will-change: transform;
-        backdrop-filter: blur(0.35rem);
-    }
-}
-
 .sound-controls {
     position: fixed;
     right: calc(0.9rem + env(safe-area-inset-right, 0px));
@@ -231,10 +200,6 @@
 }
 
 @media (hover: none), (pointer: coarse) {
-    .cursor-sound-label {
-        display: none;
-    }
-
     .sound-toggle {
         width: 2.5rem;
         height: 2.5rem;

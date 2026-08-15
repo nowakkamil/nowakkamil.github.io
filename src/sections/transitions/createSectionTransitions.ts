@@ -35,6 +35,7 @@ type SectionTransitionsOptions = {
     config: ResponsiveConfig;
     contactTabs: HTMLElement | null;
     scrollCue: ScrollCue;
+    setProjectCursorCueVisible: (visible: boolean) => void;
     updateSoundCursorLabel: (progress: number) => void;
     cancelNavigationScroll: () => void;
     projectPreviewCard: ProjectPanel;
@@ -47,6 +48,7 @@ export const createSectionTransitions = ({
     config,
     contactTabs,
     scrollCue,
+    setProjectCursorCueVisible,
     updateSoundCursorLabel,
     cancelNavigationScroll,
     projectPreviewCard,
@@ -57,7 +59,6 @@ export const createSectionTransitions = ({
     const experienceTransition = config.isMobile
         ? MOBILE_EXPERIENCE_TRANSITION
         : EXPERIENCE_TRANSITION;
-    const projectCue = document.querySelector<HTMLElement>('.project-cue');
     let isProjectCueVisible = false;
     let hasProjectBeenSelected = false;
     let projectCueProgress = 0;
@@ -91,12 +92,12 @@ export const createSectionTransitions = ({
             progress >= PROJECTS_TRANSITION.constellationRevealStart &&
             progress <= PROJECTS_TRANSITION.panelBoundaryEnd;
 
-        if (!projectCue || shouldShow === isProjectCueVisible) {
+        if (shouldShow === isProjectCueVisible) {
             return;
         }
 
         isProjectCueVisible = shouldShow;
-        projectCue.classList.toggle('is-visible', shouldShow);
+        setProjectCursorCueVisible(shouldShow);
     };
 
     const setProjectSelected = (selected: boolean): void => {

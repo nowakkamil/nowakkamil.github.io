@@ -46,6 +46,7 @@ import {
 } from './constellationTextureFactory';
 import type {
     BoundaryPoint,
+    ConstellationPlane,
     Constellation,
     InteractionTarget,
     PortfolioConstellationOptions,
@@ -624,7 +625,7 @@ export class PortfolioConstellation {
         const activeProjectStar = this.projectStars[this.activeProjectIndex];
 
         for (const projectStar of skill.projectStars) {
-            const material = projectStar.hitTarget.material as THREE.SpriteMaterial;
+            const material = projectStar.hitTarget.material;
             const basePosition = projectStar.entity.userData.basePosition as THREE.Vector3;
             const { targetScale, targetOpacity } = getProjectStarVisualTargets(
                 projectStar,
@@ -846,7 +847,7 @@ export class PortfolioConstellation {
         }
 
         const labelTexture = createLabelTexture(label, this.responsiveConfig);
-        const labelMaterial = new THREE.SpriteMaterial({
+        const labelMaterial = new THREE.MeshBasicMaterial({
             map: labelTexture,
             color: skill.fogColor.clone().lerp(new THREE.Color(0xffffff), 0.68),
             transparent: true,
@@ -854,8 +855,9 @@ export class PortfolioConstellation {
             depthTest: false,
             depthWrite: false,
             toneMapped: false,
+            side: THREE.DoubleSide,
         });
-        const labelSprite = new THREE.Sprite(labelMaterial);
+        const labelSprite = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), labelMaterial);
         const authoredLabelScale = this.responsiveConfig.isMobile ? 2.08 : 2.62;
         const labelScale = authoredLabelScale * this.responsiveConfig.constellation.labelScale;
         const labelRowY = 0.3 - (this.responsiveConfig.isMobile ? 3.25 : 4.25);
@@ -902,15 +904,16 @@ export class PortfolioConstellation {
         projectStars.forEach((projectStar, index) => {
             const project = projectStar.project;
             const labelTexture = createProjectLabelTexture(project.label, this.responsiveConfig);
-            const material = new THREE.SpriteMaterial({
+            const material = new THREE.MeshBasicMaterial({
                 map: labelTexture,
                 transparent: true,
                 opacity: 0.42 * this.reveal,
                 depthTest: false,
                 depthWrite: false,
                 toneMapped: false,
+                side: THREE.DoubleSide,
             });
-            const sprite = new THREE.Sprite(material);
+            const sprite = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
             const labelImage = labelTexture.image as HTMLCanvasElement;
             const labelScaleVector = new THREE.Vector2(
                 labelScale,
@@ -959,7 +962,7 @@ export class PortfolioConstellation {
             const project = projects[index];
             const offset = index * 3;
             const entity = new THREE.Group();
-            const hitMaterial = new THREE.SpriteMaterial({
+            const hitMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffffff,
                 map: starTexture,
                 transparent: true,
@@ -968,16 +971,18 @@ export class PortfolioConstellation {
                 depthWrite: false,
                 blending: THREE.AdditiveBlending,
                 toneMapped: false,
+                side: THREE.DoubleSide,
             });
-            const hitTarget = new THREE.Sprite(hitMaterial);
-            const touchHitMaterial = new THREE.SpriteMaterial({
+            const hitTarget = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hitMaterial);
+            const touchHitMaterial = new THREE.MeshBasicMaterial({
                 transparent: true,
                 opacity: 0,
                 depthTest: false,
                 depthWrite: false,
                 toneMapped: false,
+                side: THREE.DoubleSide,
             });
-            const touchHitTarget = new THREE.Sprite(touchHitMaterial);
+            const touchHitTarget = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), touchHitMaterial);
 
             touchHitMaterial.colorWrite = false;
 
@@ -1088,9 +1093,9 @@ export class PortfolioConstellation {
         center: THREE.Vector3,
         texture: THREE.Texture,
         color: THREE.Color,
-    ): { materials: THREE.SpriteMaterial[]; sprites: THREE.Sprite[] } {
+    ): { materials: THREE.MeshBasicMaterial[]; sprites: ConstellationPlane[] } {
         const mobile = this.responsiveConfig.isMobile;
-        const broadMaterial = new THREE.SpriteMaterial({
+        const broadMaterial = new THREE.MeshBasicMaterial({
             color: color.clone().multiplyScalar(1.05),
             map: texture,
             transparent: true,
@@ -1099,8 +1104,9 @@ export class PortfolioConstellation {
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             toneMapped: false,
+            side: THREE.DoubleSide,
         });
-        const coreMaterial = new THREE.SpriteMaterial({
+        const coreMaterial = new THREE.MeshBasicMaterial({
             color: color.clone().lerp(new THREE.Color(0xf5fbff), 0.32),
             map: texture,
             transparent: true,
@@ -1109,9 +1115,10 @@ export class PortfolioConstellation {
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             toneMapped: false,
+            side: THREE.DoubleSide,
         });
-        const broad = new THREE.Sprite(broadMaterial);
-        const core = new THREE.Sprite(coreMaterial);
+        const broad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), broadMaterial);
+        const core = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), coreMaterial);
         const authoredBroadScale = mobile ? 11.4 : 15.2;
         const authoredCoreScale = mobile ? 7.4 : 9.8;
         const broadScale = authoredBroadScale * this.responsiveConfig.constellation.fogScale;
@@ -1127,7 +1134,7 @@ export class PortfolioConstellation {
             center.z - 0.18,
         );
         broad.scale.set(broadScale, broadScale * broadAspect, 1);
-        broad.material.rotation = (seeded(skill.id.length + 59) - 0.5) * 0.9;
+        broad.rotation.z = (seeded(skill.id.length + 59) - 0.5) * 0.9;
         broad.renderOrder = 3;
         broad.userData.baseScale = new THREE.Vector2(broadScale, broadScale * broadAspect);
         broad.userData.authoredBaseScale = new THREE.Vector2(
@@ -1144,7 +1151,7 @@ export class PortfolioConstellation {
             center.z - 0.08,
         );
         core.scale.set(coreScale, coreScale * coreAspect, 1);
-        core.material.rotation = (seeded(skill.id.length + 83) - 0.5) * 1.2;
+        core.rotation.z = (seeded(skill.id.length + 83) - 0.5) * 1.2;
         core.renderOrder = 4;
         core.userData.baseScale = new THREE.Vector2(coreScale, coreScale * coreAspect);
         core.userData.authoredBaseScale = new THREE.Vector2(
@@ -1232,7 +1239,7 @@ export class PortfolioConstellation {
         }
     }
 
-    private updateFogSpriteScale(sprite: THREE.Sprite, multiplier: number): void {
+    private updateFogSpriteScale(sprite: ConstellationPlane, multiplier: number): void {
         const baseScale = sprite.userData.baseScale as THREE.Vector2 | undefined;
 
         if (!baseScale) {
@@ -1410,7 +1417,7 @@ export class PortfolioConstellation {
                 projectStar.entity.position.copy(
                     projectStar.entity.userData.basePosition as THREE.Vector3,
                 );
-                const material = projectStar.hitTarget.material as THREE.SpriteMaterial;
+                const material = projectStar.hitTarget.material;
                 material.opacity =
                     (selectedStar
                         ? PROJECT_STAR_SELECTED_OPACITY

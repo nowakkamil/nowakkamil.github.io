@@ -47,17 +47,43 @@ export class CursorSystem {
     private readonly orbitMaterial = CursorSystem.createMaterial(0xffffff, 0.72);
     private readonly glowMaterial = CursorSystem.createMaterial(0xffffff, 0.22);
     private readonly satelliteMaterial = CursorSystem.createMaterial(0xffffff, 0.9);
-    private readonly cursorLabel?: HTMLElement;
-    private readonly projectCue?: HTMLElement;
+    private projectCueSprite?: THREE.Sprite;
+    private soundCueSprite?: THREE.Sprite;
+    private readonly scrollCueGroup = new THREE.Group();
+    private readonly scrollCueOutlineMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        opacity: 0.52,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+        toneMapped: false,
+    });
+    private readonly scrollCueDotMaterial = CursorSystem.createMaterial(0xffffff, 0.8);
+    private readonly scrollCuePrimarySatelliteMaterial = CursorSystem.createMaterial(
+        0xffffff,
+        0.78,
+    );
+    private readonly scrollCueSecondarySatelliteMaterial = CursorSystem.createMaterial(
+        0xffffff,
+        0.56,
+    );
+    private scrollCueDot?: THREE.Mesh;
+    private scrollCuePrimarySatellite?: THREE.Mesh;
+    private scrollCueSecondarySatellite?: THREE.Mesh;
+    private scrollCuePathPoints: THREE.Vector3[] = [];
+    private scrollCuePathDistances: number[] = [];
+    private scrollCuePathLength = 0;
+    private projectCueRequestedVisible = false;
+    private soundCueRequestedVisible = false;
+    private projectCueTargetOpacity = 0;
+    private soundCueTargetOpacity = 0;
+    private scrollCueVisibility = 0;
+    private scrollCueTargetVisibility = 0;
     private readonly autoScroll?: CursorAutoScrollController;
     private readonly wakePoints = new Float32Array(WAKE_POINT_COUNT * 2);
     private readonly wakeVertices = new Float32Array(WAKE_POINT_COUNT * 2 * 3);
     private wake?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
     private wakePositionAttribute?: THREE.BufferAttribute;
-    private readonly setLabelX?: (value: number) => void;
-    private readonly setLabelY?: (value: number) => void;
-    private readonly setProjectCueX?: (value: number) => void;
-    private readonly setProjectCueY?: (value: number) => void;
     private readonly setCoreX?: (value: number) => void;
     private readonly setCoreY?: (value: number) => void;
     private readonly setOrbitX?: (value: number) => void;
@@ -86,18 +112,9 @@ export class CursorSystem {
     private lastPointerTarget: EventTarget | null = null;
     private htmlCursorHandoffPending = false;
 
-    constructor(
-        cursorLabel?: HTMLElement,
-        projectCue?: HTMLElement,
-        autoScroll?: CursorAutoScrollController,
-    ) {
-        this.cursorLabel = cursorLabel;
-        this.projectCue = projectCue;
+    constructor(autoScroll?: CursorAutoScrollController) {
         this.autoScroll = autoScroll;
         if (!this.enabled) {
-            if (this.cursorLabel) {
-                this.cursorLabel.hidden = true;
-            }
             return;
         }
 
@@ -113,6 +130,9 @@ export class CursorSystem {
         document.body.appendChild(this.renderer.domElement);
 
         this.createCursor();
+        this.projectCueSprite = this.createCueSprite('✦', 'Select a project star to learn more');
+        this.soundCueSprite = this.createCueSprite('♫', 'Click to enable sound');
+        this.createMouseScrollCue();
         this.resize();
 
         const coreDuration = this.reducedMotion ? 0.01 : 0.08;
@@ -133,23 +153,6 @@ export class CursorSystem {
             duration: orbitDuration,
             ease: 'power3.out',
         });
-        if (this.cursorLabel) {
-            this.setLabelX = gsap.quickSetter(this.cursorLabel, 'x', 'px') as (
-                value: number,
-            ) => void;
-            this.setLabelY = gsap.quickSetter(this.cursorLabel, 'y', 'px') as (
-                value: number,
-            ) => void;
-        }
-        if (this.projectCue) {
-            this.setProjectCueX = gsap.quickSetter(this.projectCue, 'x', 'px') as (
-                value: number,
-            ) => void;
-            this.setProjectCueY = gsap.quickSetter(this.projectCue, 'y', 'px') as (
-                value: number,
-            ) => void;
-        }
-
         this.takeOverFromHtmlCursor();
 
         window.addEventListener('pointermove', this.handlePointerMove, {
@@ -198,8 +201,8 @@ export class CursorSystem {
         const pointerY = Number(htmlCursor?.dataset.pointerY);
 
         if (htmlCursor && Number.isFinite(pointerX) && Number.isFinite(pointerY)) {
-            const x = pointerX - window.innerWidth * 0.5;
-            const y = window.innerHeight * 0.5 - pointerY;
+            const x = pointerX - document.documentElement.clientWidth * 0.5;
+            const y = document.documentElement.clientHeight * 0.5 - pointerY;
             this.active = true;
             this.core.position.set(x, y, 0);
             this.orbit.position.set(x, y, 0);
@@ -208,7 +211,6 @@ export class CursorSystem {
             if (!this.htmlCursorHandoffPending) {
                 this.setCursorLabelActive(true);
             }
-            this.updateCursorLabelPosition();
         }
 
         if (!this.htmlCursorHandoffPending) {
@@ -254,11 +256,16 @@ export class CursorSystem {
             }
         }
 
+        this.updateScrollCueFade(delta);
+        this.updateMouseScrollCue(elapsed);
+        this.updateCueFades(delta);
+
         if (this.htmlCursorHandoffPending) {
             this.setCursorLabelActive(true);
         }
 
-        this.updateCursorLabelPosition();
+        this.updateCuePosition(this.projectCueSprite);
+        this.updateCuePosition(this.soundCueSprite);
         this.renderer.render(this.scene, this.camera);
 
         if (this.htmlCursorHandoffPending) {
@@ -267,24 +274,271 @@ export class CursorSystem {
         }
     }
 
-    private updateCursorLabelPosition(): void {
-        if (!this.active) {
+    private setCursorLabelActive(active: boolean): void {
+        this.syncCueVisibility(active);
+    }
+
+    public setProjectCueVisible(visible: boolean): void {
+        this.projectCueRequestedVisible = visible;
+        this.syncCueVisibility(this.active);
+    }
+
+    public setSoundCueVisible(visible: boolean): void {
+        this.soundCueRequestedVisible = visible;
+        this.syncCueVisibility(this.active);
+    }
+
+    public setScrollCueVisibility(visibility: number): void {
+        this.scrollCueTargetVisibility = THREE.MathUtils.clamp(visibility, 0, 1);
+        if (this.scrollCueTargetVisibility > 0.001) {
+            this.scrollCueGroup.visible = true;
+        }
+    }
+
+    private syncCueVisibility(active: boolean): void {
+        const showProject = active && this.projectCueRequestedVisible;
+        const showSound = active && !showProject && this.soundCueRequestedVisible;
+
+        this.projectCueTargetOpacity = showProject ? 1 : 0;
+        this.soundCueTargetOpacity = showSound ? 1 : 0;
+
+        if (showProject && this.projectCueSprite) {
+            this.projectCueSprite.visible = true;
+        }
+        if (showSound && this.soundCueSprite) {
+            this.soundCueSprite.visible = true;
+        }
+    }
+
+    private updateCueFades(delta: number): void {
+        const damping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * 10);
+        this.updateCueFade(this.projectCueSprite, this.projectCueTargetOpacity, damping);
+        this.updateCueFade(this.soundCueSprite, this.soundCueTargetOpacity, damping);
+    }
+
+    private updateCueFade(sprite: THREE.Sprite | undefined, target: number, damping: number): void {
+        if (!sprite) {
             return;
         }
 
-        if (this.cursorLabel && !this.cursorLabel.hidden) {
-            this.setLabelX?.(this.core.position.x + window.innerWidth * 0.5 + 26);
-            this.setLabelY?.(window.innerHeight * 0.5 - this.core.position.y - 9);
+        const material = sprite.material as THREE.SpriteMaterial;
+        material.opacity = THREE.MathUtils.lerp(material.opacity, target, damping);
+        if (target <= 0 && material.opacity < 0.01) {
+            material.opacity = 0;
+            sprite.visible = false;
         }
-        this.setProjectCueX?.(this.core.position.x + window.innerWidth * 0.5 + 28);
-        this.setProjectCueY?.(window.innerHeight * 0.5 - this.core.position.y - 9);
     }
 
-    private setCursorLabelActive(active: boolean): void {
-        if (this.cursorLabel && !this.cursorLabel.hidden) {
-            this.cursorLabel.style.visibility = active ? 'visible' : 'hidden';
+    private updateCuePosition(sprite?: THREE.Sprite): void {
+        if (!this.active || !sprite?.visible) {
+            return;
         }
-        this.projectCue?.classList.toggle('has-active-cursor', active);
+
+        const cursorRadius = 19.5 * this.ring.scale.x;
+        const cursorGap = 12;
+        sprite.position.set(
+            this.core.position.x + cursorRadius + cursorGap + sprite.scale.x * 0.5,
+            this.core.position.y,
+            2,
+        );
+    }
+
+    private createCueSprite(symbol: string, label: string): THREE.Sprite | undefined {
+        const pixelRatio = 2;
+        const height = 26;
+        const horizontalPadding = 9;
+        const symbolGap = 6;
+        const symbolFont = '14px sans-serif';
+        const labelFont = '300 12px Urbanist, sans-serif';
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) {
+            return;
+        }
+
+        context.font = symbolFont;
+        const symbolWidth = context.measureText(symbol).width;
+        context.font = labelFont;
+        const labelWidth = context.measureText(label).width;
+        const width = Math.ceil(horizontalPadding * 2 + symbolWidth + symbolGap + labelWidth);
+        canvas.width = width * pixelRatio;
+        canvas.height = height * pixelRatio;
+        context.scale(pixelRatio, pixelRatio);
+        context.clearRect(0, 0, width, height);
+        const glassGradient = context.createLinearGradient(0, 0, 0, height);
+        glassGradient.addColorStop(0, 'rgba(18, 20, 26, 0.58)');
+        glassGradient.addColorStop(0.5, 'rgba(5, 6, 10, 0.48)');
+        glassGradient.addColorStop(1, 'rgba(0, 0, 0, 0.56)');
+        context.fillStyle = glassGradient;
+        context.beginPath();
+        context.roundRect(0, 0, width, height, height * 0.5);
+        context.fill();
+        context.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+        context.lineWidth = 1;
+        context.beginPath();
+        context.roundRect(0.5, 0.5, width - 1, height - 1, height * 0.5 - 0.5);
+        context.stroke();
+        context.strokeStyle = 'rgba(255, 255, 255, 0.035)';
+        context.lineWidth = 1;
+        context.beginPath();
+        context.roundRect(1.5, 1.5, width - 3, height - 3, height * 0.5 - 1.5);
+        context.stroke();
+        context.fillStyle = 'rgba(255, 255, 255, 0.82)';
+        context.font = symbolFont;
+        context.textBaseline = 'middle';
+        context.fillText(symbol, horizontalPadding, height * 0.5);
+        context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        context.font = labelFont;
+        context.fillText(label, horizontalPadding + symbolWidth + symbolGap, height * 0.5);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = false;
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            opacity: 0,
+            transparent: true,
+            depthTest: false,
+            depthWrite: false,
+            toneMapped: false,
+        });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(width, height, 1);
+        sprite.visible = false;
+        this.scene.add(sprite);
+        return sprite;
+    }
+
+    private createMouseScrollCue(): void {
+        const points: THREE.Vector3[] = [];
+        const halfWidth = 19;
+        const halfHeight = 31;
+        const radius = 18;
+        const cornerSegments = 8;
+        const addCorner = (centerX: number, centerY: number, startAngle: number): void => {
+            for (let index = 0; index <= cornerSegments; index++) {
+                const angle = startAngle + (index / cornerSegments) * Math.PI * 0.5;
+                points.push(
+                    new THREE.Vector3(
+                        centerX + Math.cos(angle) * radius,
+                        centerY + Math.sin(angle) * radius,
+                        0,
+                    ),
+                );
+            }
+        };
+
+        addCorner(halfWidth - radius, halfHeight - radius, 0);
+        addCorner(-halfWidth + radius, halfHeight - radius, Math.PI * 0.5);
+        addCorner(-halfWidth + radius, -halfHeight + radius, Math.PI);
+        addCorner(halfWidth - radius, -halfHeight + radius, Math.PI * 1.5);
+
+        const outlineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const outline = new THREE.LineLoop(outlineGeometry, this.scrollCueOutlineMaterial);
+        const dot = new THREE.Mesh(new THREE.CircleGeometry(2, 16), this.scrollCueDotMaterial);
+        dot.scale.y = 1.8;
+        const primarySatellite = new THREE.Mesh(
+            new THREE.CircleGeometry(1.45, 16),
+            this.scrollCuePrimarySatelliteMaterial,
+        );
+        const secondarySatellite = new THREE.Mesh(
+            new THREE.CircleGeometry(0.95, 16),
+            this.scrollCueSecondarySatelliteMaterial,
+        );
+        dot.position.z = 1;
+        primarySatellite.position.z = 1;
+        secondarySatellite.position.z = 1;
+        this.scrollCueGroup.add(outline, dot, primarySatellite, secondarySatellite);
+        this.scrollCueGroup.visible = false;
+        this.scene.add(this.scrollCueGroup);
+        this.scrollCueDot = dot;
+        this.scrollCuePrimarySatellite = primarySatellite;
+        this.scrollCueSecondarySatellite = secondarySatellite;
+        this.scrollCuePathPoints = points;
+        this.scrollCuePathDistances = [0];
+        for (let index = 1; index <= points.length; index++) {
+            const previous = points[index - 1];
+            const current = points[index % points.length];
+            this.scrollCuePathLength += previous.distanceTo(current);
+            this.scrollCuePathDistances.push(this.scrollCuePathLength);
+        }
+    }
+
+    private updateScrollCueFade(delta: number): void {
+        const fadeRate = this.scrollCueTargetVisibility > this.scrollCueVisibility ? 3.5 : 9;
+        const damping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * fadeRate);
+        this.scrollCueVisibility = THREE.MathUtils.lerp(
+            this.scrollCueVisibility,
+            this.scrollCueTargetVisibility,
+            damping,
+        );
+        this.scrollCueOutlineMaterial.opacity = 0.52 * this.scrollCueVisibility;
+
+        if (this.scrollCueTargetVisibility <= 0 && this.scrollCueVisibility < 0.01) {
+            this.scrollCueVisibility = 0;
+            this.scrollCueGroup.visible = false;
+        }
+    }
+
+    private updateMouseScrollCue(elapsed: number): void {
+        const dot = this.scrollCueDot;
+        if (!this.scrollCueGroup.visible || !dot) {
+            return;
+        }
+
+        if (this.reducedMotion) {
+            dot.position.y = 18;
+            this.setScrollCueSatellitePosition(this.scrollCuePrimarySatellite, 0);
+            this.setScrollCueSatellitePosition(this.scrollCueSecondarySatellite, 0.5);
+            this.scrollCueDotMaterial.opacity = 0.72 * this.scrollCueVisibility;
+            this.scrollCuePrimarySatelliteMaterial.opacity = 0.78 * this.scrollCueVisibility;
+            this.scrollCueSecondarySatelliteMaterial.opacity = 0.56 * this.scrollCueVisibility;
+            return;
+        }
+
+        const progress = (elapsed % 1.8) / 1.8;
+        const easedProgress = progress * progress * (3 - 2 * progress);
+        dot.position.y = THREE.MathUtils.lerp(18, -2, easedProgress);
+        this.scrollCueDotMaterial.opacity =
+            Math.sin(progress * Math.PI) * 0.82 * this.scrollCueVisibility;
+        const orbitProgress = (elapsed % 5.8) / 5.8;
+        this.setScrollCueSatellitePosition(this.scrollCuePrimarySatellite, orbitProgress);
+        this.setScrollCueSatellitePosition(
+            this.scrollCueSecondarySatellite,
+            (orbitProgress + 0.5) % 1,
+        );
+        this.scrollCuePrimarySatelliteMaterial.opacity = 0.78 * this.scrollCueVisibility;
+        this.scrollCueSecondarySatelliteMaterial.opacity = 0.56 * this.scrollCueVisibility;
+    }
+
+    private setScrollCueSatellitePosition(
+        satellite: THREE.Mesh | undefined,
+        progress: number,
+    ): void {
+        if (!satellite || this.scrollCuePathLength <= 0) {
+            return;
+        }
+
+        const targetDistance = progress * this.scrollCuePathLength;
+        let segmentIndex = 1;
+        while (
+            segmentIndex < this.scrollCuePathDistances.length - 1 &&
+            this.scrollCuePathDistances[segmentIndex] < targetDistance
+        ) {
+            segmentIndex++;
+        }
+        const segmentStart = this.scrollCuePathDistances[segmentIndex - 1];
+        const segmentEnd = this.scrollCuePathDistances[segmentIndex];
+        const segmentProgress =
+            segmentEnd > segmentStart
+                ? (targetDistance - segmentStart) / (segmentEnd - segmentStart)
+                : 0;
+        const start = this.scrollCuePathPoints[segmentIndex - 1];
+        const end = this.scrollCuePathPoints[segmentIndex % this.scrollCuePathPoints.length];
+        satellite.position.lerpVectors(start, end, segmentProgress);
+        satellite.position.z = 1;
     }
 
     private createCursor(): void {
@@ -572,10 +826,10 @@ export class CursorSystem {
             controller.setPosition(nextPosition);
         }
 
-        const anchorX = this.panAnchorClientX - window.innerWidth * 0.5;
-        const anchorY = window.innerHeight * 0.5 - this.panAnchorClientY;
-        const pointerX = this.pointerClientX - window.innerWidth * 0.5;
-        const pointerY = window.innerHeight * 0.5 - this.pointerClientY;
+        const anchorX = this.panAnchorClientX - document.documentElement.clientWidth * 0.5;
+        const anchorY = document.documentElement.clientHeight * 0.5 - this.panAnchorClientY;
+        const pointerX = this.pointerClientX - document.documentElement.clientWidth * 0.5;
+        const pointerY = document.documentElement.clientHeight * 0.5 - this.pointerClientY;
         this.panLinePositions[0] = anchorX;
         this.panLinePositions[1] = anchorY;
         this.panLinePositions[2] = -0.5;
@@ -612,8 +866,8 @@ export class CursorSystem {
         this.pointerClientX = event.clientX;
         this.pointerClientY = event.clientY;
 
-        const x = event.clientX - window.innerWidth * 0.5;
-        const y = window.innerHeight * 0.5 - event.clientY;
+        const x = event.clientX - document.documentElement.clientWidth * 0.5;
+        const y = document.documentElement.clientHeight * 0.5 - event.clientY;
         this.core.position.set(x, y, 0);
         this.orbit.position.set(x, y, 0);
         this.panAnchor.position.set(x, y, 0);
@@ -702,8 +956,8 @@ export class CursorSystem {
             this.setNativeScrollbarActive(false);
         }
 
-        const x = event.clientX - window.innerWidth * 0.5;
-        const y = window.innerHeight * 0.5 - event.clientY;
+        const x = event.clientX - document.documentElement.clientWidth * 0.5;
+        const y = document.documentElement.clientHeight * 0.5 - event.clientY;
         this.pointerClientX = event.clientX;
         this.pointerClientY = event.clientY;
 
@@ -940,8 +1194,8 @@ export class CursorSystem {
             return;
         }
 
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = document.documentElement.clientWidth;
+        const height = document.documentElement.clientHeight;
         this.renderer.setSize(width, height, false);
         this.camera.left = -width * 0.5;
         this.camera.right = width * 0.5;
@@ -950,6 +1204,8 @@ export class CursorSystem {
         this.camera.near = -10;
         this.camera.far = 10;
         this.camera.updateProjectionMatrix();
+        const scrollCueBottom = THREE.MathUtils.clamp(height * 0.06, 32, 72);
+        this.scrollCueGroup.position.set(0, -height * 0.5 + scrollCueBottom + 31, 0);
 
         if (this.panning) {
             this.panAnchor.position.set(

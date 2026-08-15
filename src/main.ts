@@ -115,14 +115,26 @@ try {
     await releaseStagedLayout(experienceLayoutClass, experienceSection);
     await releaseStagedLayout(contactLayoutClass, contactTabs);
 
-    const soundControls = initSoundControls(responsiveConfig.reducedMotion);
+    let soundCursorCueVisible = true;
+    let scrollCursorCueVisibility = 0;
+    let cursor:
+        | {
+              setProjectCueVisible: (visible: boolean) => void;
+              setScrollCueVisibility: (visibility: number) => void;
+              setSoundCueVisible: (visible: boolean) => void;
+              update: (delta: number, elapsed: number) => void;
+          }
+        | undefined;
+    const soundControls = initSoundControls((visible) => {
+        soundCursorCueVisible = visible;
+        cursor?.setSoundCueVisible(visible);
+    });
     await yieldToMainThread();
     const { initSmoother } = await import('./app/initSmoother');
     const smoother = initSmoother(responsiveConfig);
     smoother.paused(true);
     await yieldToMainThread();
 
-    let cursor: { update: (delta: number, elapsed: number) => void } | undefined;
     let cursorInitialization: Promise<void> | undefined;
     const initializeCursor = (): Promise<void> => {
         if (cursorInitialization) {
@@ -130,15 +142,13 @@ try {
         }
 
         cursorInitialization = import('./world/systems/CursorSystem').then(({ CursorSystem }) => {
-            cursor = new CursorSystem(
-                soundControls.cursorLabel,
-                document.querySelector<HTMLElement>('.project-cue') ?? undefined,
-                {
-                    getPosition: () => smoother.scrollTop(),
-                    setPosition: (position) => smoother.scrollTop(position),
-                    getMaxPosition: () => getScrollSmootherMaxScroll(smoother),
-                },
-            );
+            cursor = new CursorSystem({
+                getPosition: () => smoother.scrollTop(),
+                setPosition: (position) => smoother.scrollTop(position),
+                getMaxPosition: () => getScrollSmootherMaxScroll(smoother),
+            });
+            cursor.setSoundCueVisible(soundCursorCueVisible);
+            cursor.setScrollCueVisibility(scrollCursorCueVisibility);
         });
         return cursorInitialization;
     };
@@ -170,13 +180,17 @@ try {
         void loadProjectFeatures?.();
     });
 
-    const scrollCue = createScrollCue(reduceMotion);
+    const scrollCue = createScrollCue((visibility) => {
+        scrollCursorCueVisibility = visibility;
+        cursor?.setScrollCueVisibility(visibility);
+    });
     const sectionTransitions = createSectionTransitions({
         world,
         smoother,
         config: responsiveConfig,
         contactTabs,
         scrollCue,
+        setProjectCursorCueVisible: (visible) => cursor?.setProjectCueVisible(visible),
         updateSoundCursorLabel: soundControls.updateCursorLabel,
         cancelNavigationScroll: navigation.cancelActiveScroll,
         projectPreviewCard: {

@@ -1,5 +1,3 @@
-import gsap from 'gsap';
-
 import { rangeProgress, smoothstep } from '../utils/animation';
 import { createCachedAssetLoader } from '../utils/assetLoaders';
 
@@ -19,11 +17,7 @@ const loadBackgroundAudioUrl = createCachedAssetLoader('background audio', async
     return loadSource();
 });
 
-export const initSoundControls = (reducedMotion: boolean) => {
-    const cursorLabel = document.querySelector<HTMLElement>('.cursor-sound-label');
-    const cursorLabelContent = cursorLabel?.querySelector<HTMLElement>(
-        '.cursor-sound-label__content',
-    );
+export const initSoundControls = (setCursorCueVisible: (visible: boolean) => void = () => {}) => {
     const button = document.querySelector<HTMLButtonElement>('.sound-toggle');
     const audio = new Audio();
     const requiresExplicitSoundControl = window.matchMedia(
@@ -35,9 +29,8 @@ export const initSoundControls = (reducedMotion: boolean) => {
     audio.volume = 0.28;
 
     let hasStarted = false;
-    let labelDismissed = false;
-    let labelScrollControlled = false;
-    let isCursorAudioCueVisible = !labelDismissed;
+    let cueDismissed = false;
+    let isCursorAudioCueVisible = true;
     let isUnavailable = false;
 
     const setButtonState = (state: SoundState): void => {
@@ -60,54 +53,20 @@ export const initSoundControls = (reducedMotion: boolean) => {
         );
     };
 
-    const dismissCursorLabel = (immediate = false): void => {
+    const dismissCursorCue = (): void => {
         isCursorAudioCueVisible = false;
-        labelDismissed = true;
-        if (!cursorLabel) {
-            return;
-        }
-
-        gsap.killTweensOf(cursorLabel);
-        if (cursorLabelContent) {
-            gsap.killTweensOf(cursorLabelContent);
-        }
-        if (immediate || reducedMotion) {
-            cursorLabel.hidden = true;
-            cursorLabel.style.opacity = '0';
-            return;
-        }
-
-        gsap.to(cursorLabel, {
-            opacity: 0,
-            duration: 0.24,
-            ease: 'power2.out',
-            onComplete: () => {
-                cursorLabel.hidden = true;
-            },
-        });
+        cueDismissed = true;
+        setCursorCueVisible(false);
     };
 
     const updateCursorLabel = (progress: number): void => {
-        if (!cursorLabel || cursorLabel.hidden || labelDismissed) {
+        if (cueDismissed) {
             return;
-        }
-
-        if (progress > 0.001 && !labelScrollControlled) {
-            labelScrollControlled = true;
-            gsap.killTweensOf(cursorLabel);
         }
 
         const visibility = 1 - smoothstep(rangeProgress(progress, 0, 0.14));
         isCursorAudioCueVisible = visibility > 0.02;
-
-        gsap.set(cursorLabel, {
-            opacity: visibility * 0.68,
-        });
-        if (cursorLabelContent) {
-            gsap.set(cursorLabelContent, {
-                y: (1 - visibility) * 12,
-            });
-        }
+        setCursorCueVisible(isCursorAudioCueVisible);
     };
 
     const syncButtonState = (): void => {
@@ -131,7 +90,7 @@ export const initSoundControls = (reducedMotion: boolean) => {
         isUnavailable = true;
         console.error('Background audio is unavailable', error);
         syncButtonState();
-        dismissCursorLabel(true);
+        dismissCursorCue();
         document.removeEventListener('pointerdown', handleInitialSoundGesture);
     };
 
@@ -148,7 +107,7 @@ export const initSoundControls = (reducedMotion: boolean) => {
             await audio.play();
             hasStarted = true;
             syncButtonState();
-            dismissCursorLabel(true);
+            dismissCursorCue();
             document.removeEventListener('pointerdown', handleInitialSoundGesture);
         } catch (error) {
             if (!audio.src || audio.error) {
@@ -168,7 +127,7 @@ export const initSoundControls = (reducedMotion: boolean) => {
             return;
         }
 
-        playSound();
+        void playSound();
     };
 
     function handleInitialSoundGesture(event: PointerEvent): void {
@@ -179,34 +138,8 @@ export const initSoundControls = (reducedMotion: boolean) => {
         if (target instanceof Node && button?.contains(target)) {
             return;
         }
-
-        if (!cursorLabel || !isCursorAudioCueVisible) {
-            return;
-        }
-        const cueStyle = getComputedStyle(cursorLabel);
-        if (
-            cursorLabel.hidden ||
-            cueStyle.visibility !== 'visible' ||
-            Number.parseFloat(cueStyle.opacity) <= 0.02
-        ) {
-            return;
-        }
-
-        playSound();
-    }
-
-    if (cursorLabel) {
-        cursorLabel.hidden = labelDismissed;
-        if (!labelDismissed) {
-            gsap.set(cursorLabel, { opacity: 0 });
-            if (cursorLabelContent) {
-                gsap.set(cursorLabelContent, { y: 0 });
-            }
-            gsap.to(cursorLabel, {
-                opacity: 0.68,
-                duration: reducedMotion ? 0 : 0.32,
-                ease: 'power2.out',
-            });
+        if (isCursorAudioCueVisible) {
+            void playSound();
         }
     }
 
@@ -220,10 +153,8 @@ export const initSoundControls = (reducedMotion: boolean) => {
     if (!requiresExplicitSoundControl) {
         document.addEventListener('pointerdown', handleInitialSoundGesture, { passive: true });
     }
+    setCursorCueVisible(isCursorAudioCueVisible);
     syncButtonState();
 
-    return {
-        cursorLabel: cursorLabel ?? undefined,
-        updateCursorLabel,
-    };
+    return { updateCursorLabel };
 };
