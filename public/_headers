@@ -4,6 +4,10 @@
 /og.png
   Cache-Control: public, max-age=86400, must-revalidate
 
+/Kamil-Nowak-CV.pdf
+  X-Robots-Tag: noindex
+  Cache-Control: public, max-age=3600, must-revalidate
+
 https://:project.pages.dev/*
   X-Robots-Tag: noindex
 
