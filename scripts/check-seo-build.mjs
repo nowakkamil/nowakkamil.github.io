@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
-import path from 'node:path';
+import path, { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 
 const scriptsDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptsDirectory, '..');
@@ -138,12 +139,24 @@ const knownRoutes = new Set([...sitemapRoutes, '/privacy']);
 for (const [route, html] of checkedHtml) {
     for (const match of html.matchAll(/<a\b[^>]*href=(?:"([^"]*)"|'([^']*)')[^>]*>/gi)) {
         const href = match[1] ?? match[2] ?? '';
+
         if (!href.startsWith('/') || href.startsWith('//')) {
             continue;
         }
+
         const targetPath = new URL(href, siteOrigin).pathname;
-        if (!knownRoutes.has(targetPath)) {
-            fail(`${route}: internal link points to unknown route ${targetPath}`);
+
+        const publicFilePath = join(
+            process.cwd(),
+            'public',
+            decodeURIComponent(targetPath).replace(/^\/+/, ''),
+        );
+
+        const isKnownRoute = knownRoutes.has(targetPath);
+        const isPublicFile = existsSync(publicFilePath);
+
+        if (!isKnownRoute && !isPublicFile) {
+            fail(`${route}: internal link points to unknown target ${targetPath}`);
         }
     }
 }
