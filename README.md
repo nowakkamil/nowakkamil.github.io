@@ -58,8 +58,7 @@ The perfect sweep is a small but meaningful achievement for a visually complex p
 
 <p align="center">
   <sub>
-    <strong>Audit snapshot</strong> · 20 August 2026 at 20:52 GMT+2 · Lighthouse 13.4.0 · Chromium 151<br>
-    Initial single-page desktop load · Custom throttling
+    <strong>Audit snapshot</strong> · 20 August 2026 at 20:52 GMT+2 · Lighthouse 13.4.0 · Chromium 151 · Initial single-page desktop load · Custom throttling
   </sub>
 </p>
 
