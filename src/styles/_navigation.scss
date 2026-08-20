@@ -1,0 +1,92 @@
+@use './responsive';
+
+.nav__link-wrapper-container {
+    position: fixed;
+    top: 2vh;
+    display: flex;
+    flex-direction: row;
+    gap: clamp(2rem, 1.4vw + 2rem, 4rem);
+}
+
+.nav {
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 1000;
+
+    &__link {
+        display: block;
+
+        &.animated {
+            opacity: 0.55;
+            transition:
+                opacity 200ms ease-in-out,
+                scale 300ms ease-in-out;
+
+            &.active {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+nav ul {
+    display: flex;
+    transform: translateX(-50%);
+    padding-right: 2em;
+    margin: 0;
+}
+
+nav a {
+    list-style: none;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.9rem;
+    opacity: 0;
+    color: white;
+}
+
+@include responsive.down('mobile') {
+    .nav {
+        left: 0;
+        width: 100%;
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .nav__link-wrapper-container {
+        position: static;
+        width: 100%;
+        padding: 0 max(0.35rem, env(safe-area-inset-right)) 0
+            max(0.35rem, env(safe-area-inset-left));
+        justify-content: center;
+        gap: clamp(0.5rem, 3vw, 1rem);
+        transform: none;
+    }
+
+    .nav__link-wrapper {
+        min-width: 0;
+    }
+
+    .nav .nav__link,
+    .nav .nav__link.animated {
+        min-height: 44px;
+        padding: 0.65rem clamp(0.18rem, 1vw, 0.4rem) 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(0.67rem, 2.8vw, 0.82rem);
+        line-height: 1.15;
+        letter-spacing: 0.035em;
+        text-align: center;
+    }
+}
+
+@media (pointer: coarse) {
+    .nav .nav__link {
+        min-width: 44px;
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+}

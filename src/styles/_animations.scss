@@ -1,0 +1,39 @@
+@keyframes emphasis-gradient-shift {
+    from {
+        background-position: 0% 50%;
+    }
+
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes sound-level-center {
+    from {
+        transform: scaleY(0.56);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes sound-level-outer {
+    from {
+        transform: scaleY(0.34);
+    }
+
+    to {
+        transform: scaleY(0.88);
+    }
+}
+
+@keyframes navigation-link-gradient-shift {
+    from {
+        background-position: 0% 50%;
+    }
+
+    to {
+        background-position: 200% 50%;
+    }
+}

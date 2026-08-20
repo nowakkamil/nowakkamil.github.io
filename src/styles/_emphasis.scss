@@ -1,0 +1,20 @@
+@use './gradients' as *;
+
+@mixin text($font-weight) {
+    display: inline-block;
+    font-style: italic;
+    font-weight: $font-weight;
+    letter-spacing: 0.015em;
+    color: transparent;
+    background: $emphasis-gradient;
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    background-clip: text;
+    filter: drop-shadow(0 0 6px rgb(130 235 255 / 30%));
+    animation: emphasis-gradient-shift 5s ease-in-out infinite alternate;
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+        background-position: 50% 50%;
+    }
+}

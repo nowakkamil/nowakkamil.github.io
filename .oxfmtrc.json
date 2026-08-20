@@ -1,0 +1,21 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 100,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "ignorePatterns": [
+        "dist/**",
+        "coverage/**",
+        "node_modules/**",
+        ".codeatlas/**",
+        ".continue/**",
+        ".pnpm-store/**",
+        "outputs/**",
+        "functions/generated/**",
+        "emails/dist/**",
+        "emails/signature/signature.preview.html"
+    ]
+}

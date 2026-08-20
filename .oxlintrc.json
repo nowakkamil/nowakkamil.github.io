@@ -1,0 +1,25 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "ignorePatterns": [".codeatlas/**", ".continue/**", ".pnpm-store/**", "outputs/**"],
+    "plugins": ["typescript", "unicorn", "oxc"],
+    "categories": {
+        "correctness": "error"
+    },
+    "rules": {
+        "curly": ["error", "all"],
+        "no-unused-vars": "error",
+        "no-unused-private-class-members": "error",
+        "no-useless-assignment": "warn",
+        "prefer-arrow-callback": [
+            "error",
+            {
+                "allowNamedFunctions": true,
+                "allowUnboundThis": true
+            }
+        ],
+        "arrow-body-style": ["error", "as-needed"]
+    },
+    "env": {
+        "builtin": true
+    }
+}

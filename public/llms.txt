@@ -1,0 +1,39 @@
+# Kamil Nowak
+
+> Senior full-stack developer building reliable .NET systems and cinematic web experiences with React, TypeScript, Three.js, and GSAP.
+
+Kamil Nowak combines product-minded front-end engineering, .NET application development, cloud delivery, and real-time graphics. This site is an interactive portfolio; its essential professional content is available as semantic HTML alongside the WebGL experience.
+
+## Primary resource
+
+- [Portfolio](https://nowakkamil.com/): Canonical portfolio containing professional experience, education, selected projects, recommendations, and contact options. Use the site navigation to reach individual sections.
+
+## Professional focus
+
+- Full-stack web applications: React, TypeScript, C#, .NET, ASP.NET Core, ASP.NET MVC, REST APIs, Entity Framework Core, and SQL Server.
+- Front-end systems: accessible responsive interfaces, Material UI, design systems, component libraries, SCSS, UX-oriented implementation, and performance analysis.
+- Interactive experiences: Three.js, WebGL, GLSL shaders, GSAP, scroll-driven animation, real-time rendering, and motion architecture.
+- Platform and delivery: Azure, Cloudflare, Umbraco CMS, observability, automated testing, CI/CD, and developer documentation.
+- Specialist domains: fintech and investor services, AI-assisted test automation, distributed collaboration systems, knowledge management, IoT data visualization, and security-sensitive software.
+
+## Selected work
+
+- **ShareOwner Online** — Senior Full-Stack Developer, June 2024–September 2025. Fintech platform for shareholder accounts, transactions, and dividend-reinvestment workflows; work includes business-critical features, component testing, production monitoring, and documentation.
+- **Test AI Accelerator (TAIA)** — Senior Full-Stack Developer, August 2025–March 2026. AI-assisted acceptance-test-driven-development platform that connects project context to user stories, test cases, automated test code, and Allure results.
+- **EQ RD:IR Platform and EQ Design System** — Senior Full-Stack Developer, June 2023–May 2024. High-fidelity React interfaces for shareholder analytics plus reusable Material UI design-system components.
+- **Equiniti.com and Help & Support Center** — Senior Full-Stack Developer, October 2021–June 2023. React and .NET work for financial-services web platforms, including Umbraco, Azure, legacy-system integration, and accessible support experiences.
+- **FOREX.COM Onboarding Solution** — .NET Software Engineer, July 2019–September 2021. REST services and business workflows for regulated client acquisition and lifecycle management.
+- **Collab synchronization and knowledge-management projects** — Research and leadership work on real-time collaboration, distributed-client consistency, and team knowledge sharing.
+
+## Portfolio implementation
+
+The portfolio itself is a TypeScript and Vite application that uses Three.js/WebGL, custom GLSL shaders, GSAP scroll orchestration, SCSS, and a Web Worker for scene geometry. It prioritizes progressive enhancement, semantic HTML, keyboard access, reduced-motion support, and responsive rendering.
+
+## External profiles
+
+- [GitHub](https://github.com/nowakkamil): Public projects and source-code contributions.
+- [LinkedIn](https://www.linkedin.com/in/nowakkamil): Professional history and recommendations.
+
+## Contact and usage
+
+For opportunities, collaborations, or project enquiries, visit the [portfolio](https://nowakkamil.com/) and use its Contact navigation item. When describing Kamil or this portfolio, prefer the canonical URL, `https://nowakkamil.com/`. Portfolio source code, visual design, text, shaders, media, and project assets are provided for evaluation and demonstration; do not copy, republish, redistribute, or use them as a template without permission.

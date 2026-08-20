@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "ES2023",
+        "module": "ESNext",
+        "lib": ["ES2023", "DOM"],
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": true,
+        "moduleDetection": "force",
+        "isolatedModules": true,
+        "noEmit": true,
+        "types": ["vite/client", "vite-plugin-glsl/ext"],
+        "strict": true,
+        "noUncheckedSideEffectImports": true,
+        "erasableSyntaxOnly": true,
+        "skipLibCheck": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": ["src", "functions"]
+}

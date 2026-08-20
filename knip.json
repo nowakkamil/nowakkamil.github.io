@@ -1,0 +1,3 @@
+{
+    "entry": ["functions/api/contact.ts", "functions/emailAssets.ts"]
+}
