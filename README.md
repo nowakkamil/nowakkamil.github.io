@@ -46,11 +46,22 @@ React is part of my professional stack, but this project does not need a large c
   <img src="docs/assets/lighthouse-perfect-score.svg" alt="Perfect Lighthouse audit: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO and 3/3 Agentic Browsing" width="1200" />
 </p>
 
-**100 Performance · 100 Accessibility · 100 Best Practices · 100 SEO · 3/3 Agentic Browsing**
+<p align="center">
+  <strong>100</strong> Performance &nbsp;·&nbsp;
+  <strong>100</strong> Accessibility &nbsp;·&nbsp;
+  <strong>100</strong> Best Practices &nbsp;·&nbsp;
+  <strong>100</strong> SEO &nbsp;·&nbsp;
+  <strong>3/3</strong> Agentic Browsing
+</p>
 
 The perfect sweep is a small but meaningful achievement for a visually complex portfolio powered by Three.js, WebGL, custom shaders and extensive animation.
 
-Results captured on **20 August 2026 at 20:52 GMT+2** from an initial single-page desktop load. The audit used Lighthouse 13.4.0, Chromium 151 and custom throttling.
+<p align="center">
+  <sub>
+    <strong>Audit snapshot</strong> · 20 August 2026 at 20:52 GMT+2 · Lighthouse 13.4.0 · Chromium 151<br>
+    Initial single-page desktop load · Custom throttling
+  </sub>
+</p>
 
 ## Core technologies
 
