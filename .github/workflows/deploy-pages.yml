@@ -3,7 +3,7 @@ name: Deploy GitHub Pages Redirect
 on:
     push:
         branches:
-            - dev/master
+            - main
     workflow_dispatch:
 
 permissions:
