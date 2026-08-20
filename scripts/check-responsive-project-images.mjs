@@ -15,6 +15,7 @@ const expectedGeneratedFiles = new Set(['manifest.json']);
 const ids = new Set();
 
 const fail = (message) => failures.push(message);
+const expectedSourceFormat = (filename) => path.extname(filename).slice(1).toLowerCase();
 
 const validateVariants = async ({ entry, variants, format, filenamePrefix }) => {
     const widths = new Set();
@@ -69,7 +70,8 @@ for (const entry of manifest) {
     }
     ids.add(entry.id);
 
-    const sourcePath = path.join(projectsDirectory, `${entry.id}.png`);
+    const sourceFilename = entry.sourceFilename ?? `${entry.id}.png`;
+    const sourcePath = path.join(projectsDirectory, sourceFilename);
     let sourceStats;
     let sourceMetadata;
     try {
@@ -91,6 +93,14 @@ for (const entry of manifest) {
         fail(
             `${entry.id}: source dimensions changed (${sourceMetadata.width}x${sourceMetadata.height}, manifest ${entry.width}x${entry.height})`,
         );
+    }
+    if (sourceMetadata.format !== expectedSourceFormat(sourceFilename)) {
+        fail(
+            `${entry.id}: source extension implies ${expectedSourceFormat(sourceFilename)}, received ${sourceMetadata.format}`,
+        );
+    }
+    if (entry.previewVariants.length === 0) {
+        fail(`${entry.id}: missing responsive preview variants`);
     }
 
     await validateVariants({
@@ -124,14 +134,9 @@ for (const entry of manifest) {
     }
 }
 
-for (const fallback of [
-    'previews/groupware-knowledge-platform.webp',
-    'previews/kvl-security-device.webp',
-]) {
-    try {
-        await sharp(path.join(projectsDirectory, fallback)).metadata();
-    } catch (error) {
-        fail(`Missing compact fallback ${fallback}: ${error.message}`);
+for (const requiredId of ['groupware-knowledge-platform', 'kvl-security-device']) {
+    if (!ids.has(requiredId)) {
+        fail(`Manifest is missing required project ${requiredId}`);
     }
 }
 

@@ -17,7 +17,9 @@ const loadBackgroundAudioUrl = createCachedAssetLoader('background audio', async
     return loadSource();
 });
 
-export const initSoundControls = (setCursorCueVisible: (visible: boolean) => void = () => {}) => {
+export const initSoundControls = (
+    setCursorCueVisibility: (visibility: number) => void = () => {},
+) => {
     const button = document.querySelector<HTMLButtonElement>('.sound-toggle');
     const audio = new Audio();
     const requiresExplicitSoundControl = window.matchMedia(
@@ -56,7 +58,7 @@ export const initSoundControls = (setCursorCueVisible: (visible: boolean) => voi
     const dismissCursorCue = (): void => {
         isCursorAudioCueVisible = false;
         cueDismissed = true;
-        setCursorCueVisible(false);
+        setCursorCueVisibility(0);
     };
 
     const updateCursorLabel = (progress: number): void => {
@@ -66,7 +68,7 @@ export const initSoundControls = (setCursorCueVisible: (visible: boolean) => voi
 
         const visibility = 1 - smoothstep(rangeProgress(progress, 0, 0.14));
         isCursorAudioCueVisible = visibility > 0.02;
-        setCursorCueVisible(isCursorAudioCueVisible);
+        setCursorCueVisibility(visibility);
     };
 
     const syncButtonState = (): void => {
@@ -153,7 +155,7 @@ export const initSoundControls = (setCursorCueVisible: (visible: boolean) => voi
     if (!requiresExplicitSoundControl) {
         document.addEventListener('pointerdown', handleInitialSoundGesture, { passive: true });
     }
-    setCursorCueVisible(isCursorAudioCueVisible);
+    setCursorCueVisibility(1);
     syncButtonState();
 
     return { updateCursorLabel };

@@ -4,6 +4,9 @@ import { createHttpContactSubmissionService } from './httpContactSubmissionServi
 
 const TURNSTILE_SCRIPT_URL =
     'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const TURNSTILE_STARTUP_TIMEOUT_MS = 8_000;
+const TURNSTILE_SUBMISSION_TIMEOUT_MS = 15_000;
+const TURNSTILE_TOKEN_MAX_AGE_MS = 270_000;
 
 interface TurnstileApi {
     render(
@@ -12,6 +15,7 @@ interface TurnstileApi {
             sitekey: string;
             action: string;
             appearance: 'interaction-only';
+            execution: 'execute';
             theme: 'dark';
             size: 'flexible';
             callback: (token: string) => void;
@@ -20,6 +24,9 @@ interface TurnstileApi {
             'timeout-callback': () => void;
         },
     ): string;
+    execute(container: HTMLElement): void;
+    isExpired(widgetId: string): boolean;
+    remove(widgetId: string): void;
     reset(widgetId: string): void;
 }
 
@@ -30,65 +37,259 @@ declare global {
 }
 
 let turnstileApiPromise: Promise<TurnstileApi> | undefined;
+let pendingTurnstileScript: HTMLScriptElement | undefined;
+let cancelPendingTurnstileApiLoad: (() => void) | undefined;
 
 const loadTurnstileApi = (): Promise<TurnstileApi> => {
     if (window.turnstile) {
         return Promise.resolve(window.turnstile);
     }
 
-    turnstileApiPromise ??= new Promise((resolve, reject) => {
+    if (!turnstileApiPromise) {
         const script = document.createElement('script');
-        script.src = TURNSTILE_SCRIPT_URL;
-        script.async = true;
-        script.defer = true;
-        script.addEventListener('load', () => {
-            if (window.turnstile) {
-                resolve(window.turnstile);
-            } else {
-                reject(new Error('Turnstile API unavailable'));
-            }
+        let cancelLoad = (): void => undefined;
+        const apiPromise = new Promise<TurnstileApi>((resolve, reject) => {
+            cancelLoad = () => reject(new Error('Turnstile API load cancelled'));
+            script.src = TURNSTILE_SCRIPT_URL;
+            script.async = true;
+            script.defer = true;
+            script.addEventListener('load', () => {
+                if (window.turnstile) {
+                    resolve(window.turnstile);
+                } else {
+                    reject(new Error('Turnstile API unavailable'));
+                }
+            });
+            script.addEventListener('error', () => reject(new Error('Turnstile API unavailable')));
+            document.head.append(script);
         });
-        script.addEventListener('error', () => reject(new Error('Turnstile API unavailable')));
-        document.head.append(script);
-    });
+
+        turnstileApiPromise = apiPromise;
+        pendingTurnstileScript = script;
+        cancelPendingTurnstileApiLoad = cancelLoad;
+
+        void apiPromise.then(
+            () => {
+                if (turnstileApiPromise === apiPromise) {
+                    pendingTurnstileScript = undefined;
+                    cancelPendingTurnstileApiLoad = undefined;
+                }
+            },
+            () => {
+                script.remove();
+                if (turnstileApiPromise === apiPromise) {
+                    turnstileApiPromise = undefined;
+                    pendingTurnstileScript = undefined;
+                    cancelPendingTurnstileApiLoad = undefined;
+                }
+            },
+        );
+    }
 
     return turnstileApiPromise;
 };
 
+const cancelTurnstileApiLoad = (): void => {
+    if (window.turnstile || !pendingTurnstileScript) {
+        return;
+    }
+
+    pendingTurnstileScript.remove();
+    cancelPendingTurnstileApiLoad?.();
+};
+
+const waitWithTimeout = async <T>(
+    promise: Promise<T>,
+    timeoutMs: number,
+    fallback: T,
+): Promise<T> => {
+    let timeoutId = 0;
+    const timeout = new Promise<T>((resolve) => {
+        timeoutId = window.setTimeout(() => resolve(fallback), timeoutMs);
+    });
+
+    try {
+        return await Promise.race([promise, timeout]);
+    } finally {
+        window.clearTimeout(timeoutId);
+    }
+};
+
 const createTurnstileController = (container: HTMLElement) => {
     let token = '';
-    let widgetId: string | undefined;
+    let tokenIssuedAt = 0;
+    let widget: { api: TurnstileApi; id: string } | undefined;
+    let widgetInitialization: Promise<{ api: TurnstileApi; id: string } | undefined> | undefined;
+    let activeChallenge: Promise<string> | undefined;
+    let resolveActiveChallenge: ((responseToken: string) => void) | undefined;
+    let widgetGeneration = 0;
+    let needsReset = false;
+    let suspended = false;
     const sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
     const clearToken = (): void => {
         token = '';
+        tokenIssuedAt = 0;
     };
 
-    if (sitekey) {
-        void loadTurnstileApi()
+    const settleActiveChallenge = (responseToken: string): void => {
+        resolveActiveChallenge?.(responseToken);
+        resolveActiveChallenge = undefined;
+        activeChallenge = undefined;
+    };
+
+    const handleChallengeFailure = (generation: number): void => {
+        if (generation !== widgetGeneration) {
+            return;
+        }
+
+        clearToken();
+        needsReset = true;
+        settleActiveChallenge('');
+    };
+
+    const initializeWidget = (): Promise<{ api: TurnstileApi; id: string } | undefined> => {
+        if (!sitekey || suspended) {
+            return Promise.resolve(undefined);
+        }
+        if (widget) {
+            return Promise.resolve(widget);
+        }
+        if (widgetInitialization) {
+            return widgetInitialization;
+        }
+
+        const generation = ++widgetGeneration;
+        widgetInitialization = loadTurnstileApi()
             .then((turnstile) => {
-                widgetId = turnstile.render(container, {
+                if (suspended || generation !== widgetGeneration) {
+                    return undefined;
+                }
+
+                const id = turnstile.render(container, {
                     sitekey,
                     action: 'contact',
                     appearance: 'interaction-only',
+                    execution: 'execute',
                     theme: 'dark',
                     size: 'flexible',
                     callback: (responseToken) => {
+                        if (generation !== widgetGeneration) {
+                            return;
+                        }
+
                         token = responseToken;
+                        tokenIssuedAt = Date.now();
+                        needsReset = false;
+                        settleActiveChallenge(responseToken);
                     },
-                    'error-callback': clearToken,
-                    'expired-callback': clearToken,
-                    'timeout-callback': clearToken,
+                    'error-callback': () => handleChallengeFailure(generation),
+                    'expired-callback': () => handleChallengeFailure(generation),
+                    'timeout-callback': () => handleChallengeFailure(generation),
                 });
+                widget = { api: turnstile, id };
+                return widget;
             })
-            .catch(clearToken);
-    }
+            .catch(() => undefined)
+            .finally(() => {
+                widgetInitialization = undefined;
+            });
+
+        return widgetInitialization;
+    };
+
+    const hasFreshToken = (): boolean => {
+        if (!token || Date.now() - tokenIssuedAt >= TURNSTILE_TOKEN_MAX_AGE_MS) {
+            return false;
+        }
+
+        try {
+            return !widget?.api.isExpired(widget.id);
+        } catch {
+            return true;
+        }
+    };
+
+    const requestToken = async (): Promise<string> => {
+        if (hasFreshToken()) {
+            return token;
+        }
+        if (token) {
+            clearToken();
+            needsReset = true;
+        }
+        if (activeChallenge) {
+            return activeChallenge;
+        }
+
+        const initializedWidget = await initializeWidget();
+        if (!initializedWidget) {
+            return '';
+        }
+        if (hasFreshToken()) {
+            return token;
+        }
+        if (activeChallenge) {
+            return activeChallenge;
+        }
+
+        if (needsReset) {
+            initializedWidget.api.reset(initializedWidget.id);
+            needsReset = false;
+        }
+
+        const challenge = new Promise<string>((resolve) => {
+            resolveActiveChallenge = resolve;
+        });
+        activeChallenge = challenge;
+
+        try {
+            initializedWidget.api.execute(container);
+        } catch {
+            handleChallengeFailure(widgetGeneration);
+        }
+
+        return challenge;
+    };
+
+    const suspend = (): void => {
+        suspended = true;
+        clearToken();
+        settleActiveChallenge('');
+        cancelTurnstileApiLoad();
+
+        if (!widget) {
+            return;
+        }
+
+        const currentWidget = widget;
+        widget = undefined;
+        widgetGeneration += 1;
+        needsReset = false;
+        currentWidget.api.remove(currentWidget.id);
+    };
 
     return {
-        getToken: (): string => token,
+        prepareForStartup: async (): Promise<void> => {
+            suspended = false;
+            const responseToken = await waitWithTimeout(
+                requestToken(),
+                TURNSTILE_STARTUP_TIMEOUT_MS,
+                '',
+            );
+            if (!responseToken) {
+                suspend();
+            }
+        },
+        getTokenForSubmission: async (): Promise<string> => {
+            suspended = false;
+            return waitWithTimeout(requestToken(), TURNSTILE_SUBMISSION_TIMEOUT_MS, '');
+        },
         reset: (): void => {
             clearToken();
-            if (widgetId && window.turnstile) {
-                window.turnstile.reset(widgetId);
+            settleActiveChallenge('');
+            if (widget) {
+                widget.api.reset(widget.id);
+                needsReset = false;
             }
         },
     };
@@ -154,7 +355,7 @@ interface ContactFormState {
     status: ContactFormStatus;
 }
 
-export const initContactForm = (): void => {
+export const initContactForm = async (): Promise<void> => {
     const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
     const statusRegion = form?.querySelector<HTMLElement>('[data-contact-form-status]');
     const nameControl = form?.elements.namedItem('name');
@@ -380,8 +581,9 @@ export const initContactForm = (): void => {
         setFormStatus('submitting');
 
         try {
+            const turnstileToken = await turnstile.getTokenForSubmission();
             const result = await submissionService.submit(message, {
-                turnstileToken: turnstile.getToken(),
+                turnstileToken,
                 website: honeypotControl.value,
             });
             turnstile.reset();
@@ -391,4 +593,6 @@ export const initContactForm = (): void => {
             setFormStatus('server-failure');
         }
     });
+
+    await turnstile.prepareForStartup();
 };

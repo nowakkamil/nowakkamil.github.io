@@ -16,17 +16,16 @@ const projectConfigs = [
     { id: 'bachelors-thesis', detailWidths: [] },
     {
         id: 'equiniti-design-system',
+        sourceFilename: 'equiniti-design-system.webp',
         previewLossless: true,
     },
     { id: 'equiniti-website' },
     { id: 'help-and-support', detailWidths: [] },
+    { id: 'groupware-knowledge-platform' },
     { id: 'interactive-3d-portfolio' },
     { id: 'intouch', detailWidths: [] },
     { id: 'it-services' },
-    {
-        id: 'kvl-security-device',
-        generatePreview: false,
-    },
+    { id: 'kvl-security-device', sourceFilename: 'kvl-security-device.webp' },
     { id: 'masters-thesis' },
     { id: 'onboarding-solution' },
     { id: 'power-analyser', detailWidths: [] },
@@ -100,7 +99,8 @@ const createVariant = async ({
 };
 
 for (const config of projectConfigs) {
-    const sourcePath = path.join(projectsDirectory, `${config.id}.png`);
+    const sourceFilename = config.sourceFilename ?? `${config.id}.png`;
+    const sourcePath = path.join(projectsDirectory, sourceFilename);
     const sourceStats = await fs.stat(sourcePath);
     const metadata = await sharp(sourcePath).metadata();
 
@@ -109,9 +109,7 @@ for (const config of projectConfigs) {
     }
 
     const previewVariants = [];
-    for (const width of (config.generatePreview === false ? [] : previewWidths).filter(
-        (candidate) => candidate < metadata.width,
-    )) {
+    for (const width of previewWidths.filter((candidate) => candidate < metadata.width)) {
         const variant = await createVariant({
             sourcePath,
             id: config.id,
@@ -152,6 +150,7 @@ for (const config of projectConfigs) {
 
     manifest.push({
         id: config.id,
+        sourceFilename,
         width: metadata.width,
         height: metadata.height,
         originalBytes: sourceStats.size,

@@ -1,6 +1,7 @@
 [
     {
         "id": "abb-cynk-portal",
+        "sourceFilename": "abb-cynk-portal.png",
         "width": 3839,
         "height": 2159,
         "originalBytes": 4097470,
@@ -37,6 +38,7 @@
     },
     {
         "id": "bachelors-thesis",
+        "sourceFilename": "bachelors-thesis.png",
         "width": 1920,
         "height": 1080,
         "originalBytes": 94428,
@@ -66,6 +68,7 @@
     },
     {
         "id": "equiniti-design-system",
+        "sourceFilename": "equiniti-design-system.webp",
         "width": 3200,
         "height": 2400,
         "originalBytes": 78328,
@@ -108,6 +111,7 @@
     },
     {
         "id": "equiniti-website",
+        "sourceFilename": "equiniti-website.png",
         "width": 2193,
         "height": 1232,
         "originalBytes": 1452125,
@@ -144,6 +148,7 @@
     },
     {
         "id": "help-and-support",
+        "sourceFilename": "help-and-support.png",
         "width": 3840,
         "height": 2160,
         "originalBytes": 397422,
@@ -172,7 +177,45 @@
         "detailVariants": []
     },
     {
+        "id": "groupware-knowledge-platform",
+        "sourceFilename": "groupware-knowledge-platform.png",
+        "width": 1920,
+        "height": 1080,
+        "originalBytes": 25545,
+        "previewEncoding": "webp-quality-100",
+        "previewVariants": [
+            {
+                "filename": "groupware-knowledge-platform-480.webp",
+                "width": 480,
+                "height": 270,
+                "bytes": 4084
+            },
+            {
+                "filename": "groupware-knowledge-platform-768.webp",
+                "width": 768,
+                "height": 432,
+                "bytes": 7678
+            },
+            {
+                "filename": "groupware-knowledge-platform-1200.webp",
+                "width": 1200,
+                "height": 675,
+                "bytes": 14822
+            }
+        ],
+        "detailEncoding": "png-lossless",
+        "detailVariants": [
+            {
+                "filename": "groupware-knowledge-platform-detail-1600.png",
+                "width": 1600,
+                "height": 900,
+                "bytes": 44193
+            }
+        ]
+    },
+    {
         "id": "interactive-3d-portfolio",
+        "sourceFilename": "interactive-3d-portfolio.png",
         "width": 3839,
         "height": 2159,
         "originalBytes": 4939199,
@@ -209,6 +252,7 @@
     },
     {
         "id": "intouch",
+        "sourceFilename": "intouch.png",
         "width": 1792,
         "height": 1194,
         "originalBytes": 400295,
@@ -238,6 +282,7 @@
     },
     {
         "id": "it-services",
+        "sourceFilename": "it-services.png",
         "width": 1920,
         "height": 1080,
         "originalBytes": 693232,
@@ -274,11 +319,31 @@
     },
     {
         "id": "kvl-security-device",
+        "sourceFilename": "kvl-security-device.webp",
         "width": 1774,
         "height": 887,
         "originalBytes": 46730,
         "previewEncoding": "webp-quality-100",
-        "previewVariants": [],
+        "previewVariants": [
+            {
+                "filename": "kvl-security-device-480.webp",
+                "width": 480,
+                "height": 240,
+                "bytes": 26998
+            },
+            {
+                "filename": "kvl-security-device-768.webp",
+                "width": 768,
+                "height": 384,
+                "bytes": 52734
+            },
+            {
+                "filename": "kvl-security-device-1200.webp",
+                "width": 1200,
+                "height": 600,
+                "bytes": 95434
+            }
+        ],
         "detailEncoding": "png-lossless",
         "detailVariants": [
             {
@@ -297,6 +362,7 @@
     },
     {
         "id": "masters-thesis",
+        "sourceFilename": "masters-thesis.png",
         "width": 2193,
         "height": 1232,
         "originalBytes": 845097,
@@ -333,6 +399,7 @@
     },
     {
         "id": "onboarding-solution",
+        "sourceFilename": "onboarding-solution.png",
         "width": 2193,
         "height": 1232,
         "originalBytes": 222853,
@@ -369,6 +436,7 @@
     },
     {
         "id": "power-analyser",
+        "sourceFilename": "power-analyser.png",
         "width": 1920,
         "height": 1080,
         "originalBytes": 83156,
@@ -398,6 +466,7 @@
     },
     {
         "id": "shareowner-online",
+        "sourceFilename": "shareowner-online.png",
         "width": 2146,
         "height": 1206,
         "originalBytes": 170211,
@@ -427,6 +496,7 @@
     },
     {
         "id": "taia-accelerator",
+        "sourceFilename": "taia-accelerator.png",
         "width": 3840,
         "height": 2160,
         "originalBytes": 401775,

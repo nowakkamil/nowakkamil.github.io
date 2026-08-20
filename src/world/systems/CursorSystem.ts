@@ -75,7 +75,7 @@ export class CursorSystem {
     private scrollCuePathDistances: number[] = [];
     private scrollCuePathLength = 0;
     private projectCueRequestedVisible = false;
-    private soundCueRequestedVisible = false;
+    private soundCueRequestedVisibility = 0;
     private projectCueTargetOpacity = 0;
     private soundCueTargetOpacity = 0;
     private scrollCueVisibility = 0;
@@ -287,8 +287,8 @@ export class CursorSystem {
         this.syncCueVisibility(this.active);
     }
 
-    public setSoundCueVisible(visible: boolean): void {
-        this.soundCueRequestedVisible = visible;
+    public setSoundCueVisibility(visibility: number): void {
+        this.soundCueRequestedVisibility = THREE.MathUtils.clamp(visibility, 0, 1);
         this.syncCueVisibility(this.active);
     }
 
@@ -304,23 +304,26 @@ export class CursorSystem {
 
     private syncCueVisibility(active: boolean): void {
         const showProject = active && this.projectCueRequestedVisible;
-        const showSound = active && !showProject && this.soundCueRequestedVisible;
+        const soundVisibility = active && !showProject ? this.soundCueRequestedVisibility : 0;
 
         this.projectCueTargetOpacity = showProject ? 1 : 0;
-        this.soundCueTargetOpacity = showSound ? 1 : 0;
+        this.soundCueTargetOpacity = soundVisibility;
 
         if (showProject && this.projectCueSprite) {
             this.projectCueSprite.visible = true;
         }
-        if (showSound && this.soundCueSprite) {
+        if (soundVisibility > 0.001 && this.soundCueSprite) {
             this.soundCueSprite.visible = true;
         }
     }
 
     private updateCueFades(delta: number): void {
-        const damping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * 10);
-        this.updateCueFade(this.projectCueSprite, this.projectCueTargetOpacity, damping);
-        this.updateCueFade(this.soundCueSprite, this.soundCueTargetOpacity, damping);
+        const projectDamping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * 10);
+        const soundOpacity = this.soundCueSprite?.material.opacity ?? 0;
+        const soundFadeRate = this.soundCueTargetOpacity > soundOpacity ? 2.5 : 10;
+        const soundDamping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * soundFadeRate);
+        this.updateCueFade(this.projectCueSprite, this.projectCueTargetOpacity, projectDamping);
+        this.updateCueFade(this.soundCueSprite, this.soundCueTargetOpacity, soundDamping);
     }
 
     private updateCueFade(sprite: THREE.Sprite | undefined, target: number, damping: number): void {

@@ -117,19 +117,19 @@ try {
         { className: contactLayoutClass, element: contactTabs },
     ]);
 
-    let soundCursorCueVisible = true;
+    let soundCursorCueVisibility = 1;
     let scrollCursorCueVisibility = 0;
     let cursor:
         | {
               setProjectCueVisible: (visible: boolean) => void;
               setScrollCueVisibility: (visibility: number) => void;
-              setSoundCueVisible: (visible: boolean) => void;
+              setSoundCueVisibility: (visibility: number) => void;
               update: (delta: number, elapsed: number) => void;
           }
         | undefined;
-    const soundControls = initSoundControls((visible) => {
-        soundCursorCueVisible = visible;
-        cursor?.setSoundCueVisible(visible);
+    const soundControls = initSoundControls((visibility) => {
+        soundCursorCueVisibility = visibility;
+        cursor?.setSoundCueVisibility(visibility);
     });
     await yieldToMainThread();
     const { initSmoother } = await import('./app/initSmoother');
@@ -149,7 +149,7 @@ try {
                 setPosition: (position) => smoother.scrollTop(position),
                 getMaxPosition: () => getScrollSmootherMaxScroll(smoother),
             });
-            cursor.setSoundCueVisible(soundCursorCueVisible);
+            cursor.setSoundCueVisibility(soundCursorCueVisibility);
             cursor.setScrollCueVisibility(scrollCursorCueVisibility);
         });
         return cursorInitialization;
@@ -284,7 +284,7 @@ try {
             recommendationWallModule,
         ]);
         initContactTabs();
-        initContactForm();
+        await initContactForm();
         initRecommendationWallEvents(responsiveConfig);
         createContactTextAnimation(contactTabs, responsiveConfig, smoother);
     });
