@@ -2,6 +2,7 @@ const loadingLabels = {
     preparing: 'Preparing experience…',
     assets: 'Loading visual assets…',
     scene: 'Building the 3D scene…',
+    verification: 'Completing security check…',
     finalizing: 'Finalizing the experience…',
     slow: 'Still loading — slower connections may take longer',
 } as const;
