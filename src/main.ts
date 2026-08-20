@@ -31,16 +31,17 @@ const contactLayoutClass = 'startup-layout-staged-contact';
 const documentElement = document.documentElement;
 documentElement.classList.add(experienceLayoutClass, contactLayoutClass);
 
+const waitForInitialLoaderPaint = (): Promise<void> =>
+    new Promise((resolve) => {
+        requestAnimationFrame(() => window.setTimeout(resolve, 0));
+    });
+
 const smoothWrapper = document.querySelector<HTMLElement>('#smooth-wrapper');
 const contactTabs = document.querySelector<HTMLElement>('.contact-tabs');
 const experienceSection = document.querySelector<HTMLElement>(sectionSelectors.experience);
 const introFontReady =
     document.fonts?.load('300 1.8rem Urbanist').catch(() => []) ?? Promise.resolve([]);
 const allFontsReady = document.fonts?.ready.catch(() => undefined) ?? Promise.resolve(undefined);
-
-if (smoothWrapper && contactTabs) {
-    smoothWrapper.after(contactTabs);
-}
 
 const loadingScreen = document.querySelector<HTMLElement>('#loading-screen');
 const { setLoadingPhase, finish: finishLoadingPhases } =
@@ -50,6 +51,12 @@ setLoadingPhase('preparing');
 const slowConnectionTimeout = window.setTimeout(() => {
     setLoadingPhase('slow');
 }, 12_000);
+
+await waitForInitialLoaderPaint();
+
+if (smoothWrapper && contactTabs) {
+    smoothWrapper.after(contactTabs);
+}
 
 const releaseStagedLayouts = async (
     layouts: readonly { className: string; element: HTMLElement | null }[],
