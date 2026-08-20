@@ -42,6 +42,8 @@ React is part of my professional stack, but this project does not need a large c
 
 ## Quality audit ✨
 
+The perfect sweep is a small but meaningful achievement for a visually complex portfolio powered by Three.js, WebGL, custom shaders and extensive animation.
+
 <p align="center">
   <img src="docs/assets/lighthouse-perfect-score.svg" alt="Perfect Lighthouse audit: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO and 3/3 Agentic Browsing" width="1200" />
 </p>
@@ -53,8 +55,6 @@ React is part of my professional stack, but this project does not need a large c
   <strong>100</strong> SEO &nbsp;·&nbsp;
   <strong>3/3</strong> Agentic Browsing
 </p>
-
-The perfect sweep is a small but meaningful achievement for a visually complex portfolio powered by Three.js, WebGL, custom shaders and extensive animation.
 
 <p align="center">
   <sub>
