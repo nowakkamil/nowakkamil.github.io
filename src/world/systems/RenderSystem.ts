@@ -30,7 +30,9 @@ export class RenderSystem implements System {
                 continue;
             }
 
-            attribute.array.set(position.current);
+            if (attribute.array !== position.current) {
+                attribute.array.set(position.current);
+            }
             attribute.needsUpdate = true;
             position.dirty = false;
         }

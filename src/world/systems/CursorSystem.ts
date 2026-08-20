@@ -9,6 +9,7 @@ const WAKE_POINT_COUNT = 14;
 const WAKE_FADE_SECONDS = 0.6;
 const PAN_DEAD_ZONE = 18;
 const PAN_MAX_SPEED = 12800;
+const SCROLL_CUE_REVEAL_OFFSET = 16;
 const CORE_IDLE_COLOR = new THREE.Color(0xffffff);
 const CORE_HOVER_COLOR = new THREE.Color(0.72, 0.52, 1);
 
@@ -79,6 +80,7 @@ export class CursorSystem {
     private soundCueTargetOpacity = 0;
     private scrollCueVisibility = 0;
     private scrollCueTargetVisibility = 0;
+    private scrollCueBaseY = 0;
     private readonly autoScroll?: CursorAutoScrollController;
     private readonly wakePoints = new Float32Array(WAKE_POINT_COUNT * 2);
     private readonly wakeVertices = new Float32Array(WAKE_POINT_COUNT * 2 * 3);
@@ -111,6 +113,7 @@ export class CursorSystem {
     private wakeWarmupFrames = 0;
     private lastPointerTarget: EventTarget | null = null;
     private htmlCursorHandoffPending = false;
+    private scrollCueInitialized = false;
 
     constructor(autoScroll?: CursorAutoScrollController) {
         this.autoScroll = autoScroll;
@@ -132,7 +135,8 @@ export class CursorSystem {
         this.createCursor();
         this.projectCueSprite = this.createCueSprite('✦', 'Select a project star to learn more');
         this.soundCueSprite = this.createCueSprite('♫', 'Click to enable sound');
-        this.createMouseScrollCue();
+        // Scroll-cue geometry is created lazily on first reveal to keep it
+        // out of the startup / TBT critical path (see ensureScrollCueInitialized).
         this.resize();
 
         const coreDuration = this.reducedMotion ? 0.01 : 0.08;
@@ -291,6 +295,9 @@ export class CursorSystem {
     public setScrollCueVisibility(visibility: number): void {
         this.scrollCueTargetVisibility = THREE.MathUtils.clamp(visibility, 0, 1);
         if (this.scrollCueTargetVisibility > 0.001) {
+            // Lazily build geometry the first time the cue becomes visible,
+            // keeping THREE allocations out of the startup long-task window.
+            this.ensureScrollCueInitialized();
             this.scrollCueGroup.visible = true;
         }
     }
@@ -411,6 +418,14 @@ export class CursorSystem {
         return sprite;
     }
 
+    private ensureScrollCueInitialized(): void {
+        if (this.scrollCueInitialized) {
+            return;
+        }
+        this.scrollCueInitialized = true;
+        this.createMouseScrollCue();
+    }
+
     private createMouseScrollCue(): void {
         const points: THREE.Vector3[] = [];
         const halfWidth = 19;
@@ -467,6 +482,9 @@ export class CursorSystem {
     }
 
     private updateScrollCueFade(delta: number): void {
+        if (!this.scrollCueInitialized && this.scrollCueTargetVisibility <= 0) {
+            return;
+        }
         const fadeRate = this.scrollCueTargetVisibility > this.scrollCueVisibility ? 3.5 : 9;
         const damping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * fadeRate);
         this.scrollCueVisibility = THREE.MathUtils.lerp(
@@ -475,6 +493,8 @@ export class CursorSystem {
             damping,
         );
         this.scrollCueOutlineMaterial.opacity = 0.52 * this.scrollCueVisibility;
+        this.scrollCueGroup.position.y =
+            this.scrollCueBaseY - (1 - this.scrollCueVisibility) * SCROLL_CUE_REVEAL_OFFSET;
 
         if (this.scrollCueTargetVisibility <= 0 && this.scrollCueVisibility < 0.01) {
             this.scrollCueVisibility = 0;
@@ -1205,7 +1225,12 @@ export class CursorSystem {
         this.camera.far = 10;
         this.camera.updateProjectionMatrix();
         const scrollCueBottom = THREE.MathUtils.clamp(height * 0.06, 32, 72);
-        this.scrollCueGroup.position.set(0, -height * 0.5 + scrollCueBottom + 31, 0);
+        this.scrollCueBaseY = -height * 0.5 + scrollCueBottom + 31;
+        this.scrollCueGroup.position.set(
+            0,
+            this.scrollCueBaseY - (1 - this.scrollCueVisibility) * SCROLL_CUE_REVEAL_OFFSET,
+            0,
+        );
 
         if (this.panning) {
             this.panAnchor.position.set(

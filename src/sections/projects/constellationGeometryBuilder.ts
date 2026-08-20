@@ -43,54 +43,82 @@ export function createProjectEdges(
 }
 
 /**
- * Creates a flat quad (ribbon) geometry for a single constellation line
- * segment with a given half-width. UVs run along the length so the blur
- * texture fades toward both endpoints.
+ * Creates one ribbon buffer for every edge in a material layer. UVs restart
+ * for each quad so the blur texture still fades toward every endpoint.
  */
 function createLineRibbonGeometry(
-    start: THREE.Vector3,
-    end: THREE.Vector3,
+    edges: readonly (readonly [number, number])[],
+    starPositions: Float32Array,
     width: number,
 ): THREE.BufferGeometry {
-    const direction = end.clone().sub(start);
-    const normal = new THREE.Vector3(-direction.y, direction.x, 0);
-
-    if (normal.lengthSq() < 0.0001) {
-        normal.set(1, 0, 0);
-    } else {
-        normal.normalize();
-    }
-
+    const positions = new Float32Array(edges.length * 12);
+    const uvs = new Float32Array(edges.length * 8);
+    const indices = new Uint16Array(edges.length * 6);
     const halfWidth = width * 0.5;
-    const offset = normal.multiplyScalar(halfWidth);
-    const positions = new Float32Array([
-        start.x + offset.x,
-        start.y + offset.y,
-        start.z,
-        start.x - offset.x,
-        start.y - offset.y,
-        start.z,
-        end.x + offset.x,
-        end.y + offset.y,
-        end.z,
-        end.x - offset.x,
-        end.y - offset.y,
-        end.z,
-    ]);
-    const uvs = new Float32Array([0, 1, 0, 0, 1, 1, 1, 0]);
+
+    edges.forEach(([from, to], edgeIndex) => {
+        const fromOffset = from * 3;
+        const toOffset = to * 3;
+        const startX = starPositions[fromOffset];
+        const startY = starPositions[fromOffset + 1];
+        const startZ = starPositions[fromOffset + 2];
+        const endX = starPositions[toOffset];
+        const endY = starPositions[toOffset + 1];
+        const endZ = starPositions[toOffset + 2];
+        const directionX = endX - startX;
+        const directionY = endY - startY;
+        const directionLength = Math.hypot(directionX, directionY);
+        const normalX = directionLength < 0.01 ? 1 : -directionY / directionLength;
+        const normalY = directionLength < 0.01 ? 0 : directionX / directionLength;
+        const offsetX = normalX * halfWidth;
+        const offsetY = normalY * halfWidth;
+        const positionOffset = edgeIndex * 12;
+        const uvOffset = edgeIndex * 8;
+        const indexOffset = edgeIndex * 6;
+        const vertexOffset = edgeIndex * 4;
+
+        positions[positionOffset] = startX + offsetX;
+        positions[positionOffset + 1] = startY + offsetY;
+        positions[positionOffset + 2] = startZ;
+        positions[positionOffset + 3] = startX - offsetX;
+        positions[positionOffset + 4] = startY - offsetY;
+        positions[positionOffset + 5] = startZ;
+        positions[positionOffset + 6] = endX + offsetX;
+        positions[positionOffset + 7] = endY + offsetY;
+        positions[positionOffset + 8] = endZ;
+        positions[positionOffset + 9] = endX - offsetX;
+        positions[positionOffset + 10] = endY - offsetY;
+        positions[positionOffset + 11] = endZ;
+
+        uvs[uvOffset] = 0;
+        uvs[uvOffset + 1] = 1;
+        uvs[uvOffset + 2] = 0;
+        uvs[uvOffset + 3] = 0;
+        uvs[uvOffset + 4] = 1;
+        uvs[uvOffset + 5] = 1;
+        uvs[uvOffset + 6] = 1;
+        uvs[uvOffset + 7] = 0;
+
+        indices[indexOffset] = vertexOffset;
+        indices[indexOffset + 1] = vertexOffset + 1;
+        indices[indexOffset + 2] = vertexOffset + 2;
+        indices[indexOffset + 3] = vertexOffset + 1;
+        indices[indexOffset + 4] = vertexOffset + 3;
+        indices[indexOffset + 5] = vertexOffset + 2;
+    });
+
     const geometry = new THREE.BufferGeometry();
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    geometry.setIndex([0, 1, 2, 1, 3, 2]);
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
     return geometry;
 }
 
 /**
- * Builds a `THREE.Group` of ribbon meshes for all provided edges.
- * Each edge gets three overlapping quads: a broad colour veil, a bright
- * white core, and an optional narrow colour-tint overlay.
+ * Builds a `THREE.Group` with one mesh per ribbon layer. Each layer contains
+ * all edge quads in a single buffer, preserving the same overlaps and UVs.
  */
 export function createLineRibbons(
     edges: readonly (readonly [number, number])[],
@@ -102,37 +130,32 @@ export function createLineRibbons(
     isMobile = false,
 ): THREE.Group {
     const group = new THREE.Group();
+    if (edges.length === 0) {
+        return group;
+    }
     const veilWidth = isMobile ? 0.26 : 0.34;
     const coreWidth = isMobile ? 0.085 : 0.11;
 
-    for (const [from, to] of edges) {
-        const fromOffset = from * 3;
-        const toOffset = to * 3;
-        const start = new THREE.Vector3(
-            starPositions[fromOffset],
-            starPositions[fromOffset + 1],
-            starPositions[fromOffset + 2],
-        );
-        const end = new THREE.Vector3(
-            starPositions[toOffset],
-            starPositions[toOffset + 1],
-            starPositions[toOffset + 2],
-        );
-        const veil = new THREE.Mesh(createLineRibbonGeometry(start, end, veilWidth), veilMaterial);
-        const core = new THREE.Mesh(createLineRibbonGeometry(start, end, coreWidth), coreMaterial);
+    const veil = new THREE.Mesh(
+        createLineRibbonGeometry(edges, starPositions, veilWidth),
+        veilMaterial,
+    );
+    const core = new THREE.Mesh(
+        createLineRibbonGeometry(edges, starPositions, coreWidth),
+        coreMaterial,
+    );
 
-        veil.renderOrder = 4;
-        core.renderOrder = 5;
-        group.add(veil, core);
+    veil.renderOrder = 4;
+    core.renderOrder = 5;
+    group.add(veil, core);
 
-        if (tintMaterial && tintWidth) {
-            const tint = new THREE.Mesh(
-                createLineRibbonGeometry(start, end, tintWidth),
-                tintMaterial,
-            );
-            tint.renderOrder = 6;
-            group.add(tint);
-        }
+    if (tintMaterial && tintWidth) {
+        const tint = new THREE.Mesh(
+            createLineRibbonGeometry(edges, starPositions, tintWidth),
+            tintMaterial,
+        );
+        tint.renderOrder = 6;
+        group.add(tint);
     }
 
     return group;

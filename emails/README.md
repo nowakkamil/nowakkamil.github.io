@@ -27,7 +27,7 @@ This command validates and compiles the MJML, publishes the signature images, an
 - `functions/generated/customer-message-dark.ts` — HTML imported by the contact function;
 - `public/email/` — published signature images.
 
-The email build also runs as part of `npm run build` and `npm test`.
+Email generation is intentionally separate from the production site build and tests.
 
 ## Variables
 

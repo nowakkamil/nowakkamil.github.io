@@ -20,6 +20,8 @@ export class SelectiveBloomSystem {
     private readonly composer: EffectComposer;
     private readonly bloomPass: UnrealBloomPass;
     private pixelRatio = 0;
+    private width = 0;
+    private height = 0;
     private strengthScaleValue = 1;
 
     constructor(
@@ -31,6 +33,7 @@ export class SelectiveBloomSystem {
     ) {
         this.camera = camera;
         this.composer = new EffectComposer(renderer);
+        this.pixelRatio = renderer.getPixelRatio();
         this.composer.renderToScreen = false;
         this.composer.addPass(new RenderPass(scene, camera));
         this.bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.5, 0.5, 0.4);
@@ -119,11 +122,21 @@ export class SelectiveBloomSystem {
     }
 
     public setSize(width: number, height: number, pixelRatio: number): void {
-        if (this.pixelRatio !== pixelRatio) {
+        const pixelRatioChanged = this.pixelRatio !== pixelRatio;
+        const sizeChanged = this.width !== width || this.height !== height;
+
+        if (!pixelRatioChanged && !sizeChanged) {
+            return;
+        }
+        if (pixelRatioChanged) {
             this.composer.setPixelRatio(pixelRatio);
             this.pixelRatio = pixelRatio;
         }
-        this.composer.setSize(width, height);
+        if (sizeChanged) {
+            this.composer.setSize(width, height);
+            this.width = width;
+            this.height = height;
+        }
     }
 
     private renderBloomLayer(

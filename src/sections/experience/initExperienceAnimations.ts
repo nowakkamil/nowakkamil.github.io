@@ -10,8 +10,9 @@ export const initExperienceAnimations = (config: ResponsiveConfig): void => {
 
     const rows = gsap.utils.toArray<HTMLElement>('.experience__row').map((row) => ({
         row,
-        splitElements: gsap.utils.toArray<HTMLElement>(
-            '.experience__period, .experience__organization, .experience__role, .experience__desc',
+        splitElements: gsap.utils.toArray<HTMLElement>('.experience__desc', row),
+        headerTargets: gsap.utils.toArray<HTMLElement>(
+            '.experience__period, .experience__organization, .experience__role',
             row,
         ),
         categoryTargets: gsap.utils.toArray<HTMLElement>('.experience__category', row),
@@ -35,13 +36,8 @@ export const initExperienceAnimations = (config: ResponsiveConfig): void => {
         (lines) => {
             animationContext?.revert();
             animationContext = gsap.context(() => {
-                rows.forEach(({ row, categoryTargets }) => {
+                rows.forEach(({ row, headerTargets, categoryTargets }) => {
                     const rowLines = lines.filter((line) => row.contains(line));
-                    const headerTargets = rowLines.filter((line) =>
-                        line.closest(
-                            '.experience__period, .experience__organization, .experience__role',
-                        ),
-                    );
                     const descTargets = rowLines.filter((line) =>
                         line.closest('.experience__desc'),
                     );

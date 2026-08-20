@@ -205,6 +205,7 @@ export function createFloatingTextMaterial(scrollProgress: number): THREE.Shader
 export function createEllipsisMaterial(geometry: THREE.BufferGeometry): THREE.ShaderMaterial {
     geometry.computeBoundingBox();
     const box = geometry.boundingBox ?? new THREE.Box3();
+    geometry.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
     const center = box.getCenter(new THREE.Vector3());
     const radius = box.getSize(new THREE.Vector3()).length() * 0.5;
     const positionAttribute = geometry.getAttribute('position') as THREE.BufferAttribute;

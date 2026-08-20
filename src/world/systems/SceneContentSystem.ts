@@ -462,9 +462,13 @@ export class SceneContentSystem implements System {
         const entity = entities.create();
         const positionAttribute = geometry.getAttribute('position') as THREE.BufferAttribute;
 
+        if (!geometry.boundingSphere) {
+            geometry.computeBoundingSphere();
+        }
+
         scene.add(points);
         positions.add(entity, {
-            current: new Float32Array(positionAttribute.array),
+            current: positionAttribute.array as Float32Array,
             dirty: false,
         });
         renderables.add(entity, { object: points });

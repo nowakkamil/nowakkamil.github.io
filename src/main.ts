@@ -36,6 +36,7 @@ const contactTabs = document.querySelector<HTMLElement>('.contact-tabs');
 const experienceSection = document.querySelector<HTMLElement>(sectionSelectors.experience);
 const introFontReady =
     document.fonts?.load('300 1.8rem Urbanist').catch(() => []) ?? Promise.resolve([]);
+const allFontsReady = document.fonts?.ready.catch(() => undefined) ?? Promise.resolve(undefined);
 
 if (smoothWrapper && contactTabs) {
     smoothWrapper.after(contactTabs);
@@ -50,13 +51,12 @@ const slowConnectionTimeout = window.setTimeout(() => {
     setLoadingPhase('slow');
 }, 12_000);
 
-const releaseStagedLayout = async (
-    className: string,
-    element: HTMLElement | null,
+const releaseStagedLayouts = async (
+    layouts: readonly { className: string; element: HTMLElement | null }[],
 ): Promise<void> => {
-    documentElement.classList.remove(className);
+    layouts.forEach(({ className }) => documentElement.classList.remove(className));
     await yieldToMainThread();
-    element?.getBoundingClientRect();
+    layouts.forEach(({ element }) => element?.getBoundingClientRect());
     await yieldToMainThread();
 };
 
@@ -108,12 +108,14 @@ try {
     }
 
     setLoadingPhase('finalizing');
-    await introFontReady;
+    await Promise.all([introFontReady, allFontsReady]);
     documentElement.classList.add('intro-font-ready');
     await yieldToMainThread();
 
-    await releaseStagedLayout(experienceLayoutClass, experienceSection);
-    await releaseStagedLayout(contactLayoutClass, contactTabs);
+    await releaseStagedLayouts([
+        { className: experienceLayoutClass, element: experienceSection },
+        { className: contactLayoutClass, element: contactTabs },
+    ]);
 
     let soundCursorCueVisible = true;
     let scrollCursorCueVisibility = 0;
@@ -252,11 +254,12 @@ try {
         activateSkipLink();
     });
 
-    const { createIntroTextAnimation } =
-        await import('./sections/transitions/createSectionTextAnimations');
+    const [{ createIntroTextAnimation }, { initExperienceAnimations }] = await Promise.all([
+        import('./sections/transitions/createSectionTextAnimations'),
+        import('./sections/experience/initExperienceAnimations'),
+    ]);
     createIntroTextAnimation(responsiveConfig);
-    await yieldToMainThread();
-    sectionTransitions.initScrollTriggers();
+    initExperienceAnimations(responsiveConfig);
     await yieldToMainThread();
 
     const loadContactFeatures = createFeatureLoader('contact interactions', async () => {
@@ -287,12 +290,6 @@ try {
     });
 
     const initializeRemainingSections = async (): Promise<void> => {
-        const loadExperienceAnimations = createFeatureLoader('experience animations', async () => {
-            const { initExperienceAnimations } =
-                await import('./sections/experience/initExperienceAnimations');
-            initExperienceAnimations(responsiveConfig);
-        });
-
         const loadProjectInteractions = createFeatureLoader('project interactions', async () => {
             const projectModules = Promise.all([
                 import('./sections/projects/createProjectPreviewCard'),
@@ -319,8 +316,6 @@ try {
         });
         loadProjectFeatures = loadProjectInteractions;
 
-        await loadExperienceAnimations();
-        await yieldToMainThread();
         await loadProjectInteractions();
         await yieldToMainThread();
         await loadContactFeatures();
@@ -379,6 +374,7 @@ try {
     };
 
     await initializeRemainingSections();
+    sectionTransitions.initScrollTriggers();
     ScrollTrigger.refresh();
     await yieldToMainThread();
     world.prepareForReveal();

@@ -93,10 +93,10 @@ export class World {
     private responsiveConfig: ResponsiveConfig;
     private coloredLightMaterial: THREE.ShaderMaterial | undefined;
     private rendererPixelRatio = 0;
+    private bloomPixelRatio = 0;
     private finalPixelRatio = 0;
     private rendererViewportWidth = 0;
     private rendererViewportHeight = 0;
-    private devicePixelRatio = 0;
     private resizePending = false;
     private mainCloudMaterial!: THREE.ShaderMaterial;
 
@@ -173,8 +173,16 @@ export class World {
             stencil: false,
             powerPreference: 'high-performance',
         });
-        this.renderer.setPixelRatio(
-            Math.min(window.devicePixelRatio, this.responsiveConfig.renderer.pixelRatioCap),
+        const initialDevicePixelRatio = window.devicePixelRatio || 1;
+        const initialRendererPixelRatio = Math.min(
+            initialDevicePixelRatio,
+            this.responsiveConfig.renderer.pixelRatioCap,
+        );
+        this.renderer.setPixelRatio(initialRendererPixelRatio);
+        this.rendererPixelRatio = initialRendererPixelRatio;
+        this.bloomPixelRatio = Math.min(
+            initialDevicePixelRatio,
+            this.responsiveConfig.renderer.bloomPixelRatioCap,
         );
         this.renderer.setClearColor(0x000000, 1);
 
@@ -196,6 +204,7 @@ export class World {
         this.bloomCompositePass = createBloomCompositePassMaterial();
         this.bloomCompositePass.uniforms.bloomTexture.value = this.selectiveBloomSystem.texture;
         this.finalComposer = new EffectComposer(this.renderer);
+        this.finalPixelRatio = initialRendererPixelRatio;
         this.finalComposer.addPass(baseRenderPass);
         this.finalComposer.addPass(this.bloomCompositePass);
         this.afterimagePass = new AfterimagePass(0);
@@ -286,18 +295,6 @@ export class World {
     public resize = (viewportSize = getRendererViewportSize(this.renderer.domElement)): void => {
         const { width, height } = viewportSize;
         const devicePixelRatio = window.devicePixelRatio || 1;
-        const viewportChanged =
-            width !== this.rendererViewportWidth || height !== this.rendererViewportHeight;
-        const pixelRatioChanged = devicePixelRatio !== this.devicePixelRatio;
-
-        if (!viewportChanged && !pixelRatioChanged) {
-            return;
-        }
-
-        this.rendererViewportWidth = width;
-        this.rendererViewportHeight = height;
-        this.devicePixelRatio = devicePixelRatio;
-
         const nextResponsiveConfig = refreshResponsiveConfig(window.innerWidth, height);
         const rendererPixelRatio = Math.min(
             devicePixelRatio,
@@ -307,6 +304,18 @@ export class World {
             devicePixelRatio,
             nextResponsiveConfig.renderer.bloomPixelRatioCap,
         );
+        const viewportChanged =
+            width !== this.rendererViewportWidth || height !== this.rendererViewportHeight;
+        const rendererPixelRatioChanged = rendererPixelRatio !== this.rendererPixelRatio;
+        const bloomPixelRatioChanged = bloomPixelRatio !== this.bloomPixelRatio;
+
+        if (!viewportChanged && !rendererPixelRatioChanged && !bloomPixelRatioChanged) {
+            return;
+        }
+
+        this.rendererViewportWidth = width;
+        this.rendererViewportHeight = height;
+        this.bloomPixelRatio = bloomPixelRatio;
 
         this.responsiveConfig = nextResponsiveConfig;
         this.updateMainCloudResponsiveStyle();
@@ -336,11 +345,13 @@ export class World {
         }
         this.applyColoredLightResponsiveConfig(nextResponsiveConfig.coloredLight);
 
-        if (this.rendererPixelRatio !== rendererPixelRatio) {
+        if (rendererPixelRatioChanged) {
             this.renderer.setPixelRatio(rendererPixelRatio);
             this.rendererPixelRatio = rendererPixelRatio;
         }
-        this.renderer.setSize(width, height, false);
+        if (viewportChanged) {
+            this.renderer.setSize(width, height, false);
+        }
         this.selectiveBloomSystem.setStrengthScale(
             nextResponsiveConfig.renderer.bloomPassStrengthScale,
         );
@@ -349,7 +360,9 @@ export class World {
             this.finalComposer.setPixelRatio(rendererPixelRatio);
             this.finalPixelRatio = rendererPixelRatio;
         }
-        this.finalComposer.setSize(width, height);
+        if (viewportChanged) {
+            this.finalComposer.setSize(width, height);
+        }
         this.camera.fov = nextResponsiveConfig.camera.fov;
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
@@ -718,7 +731,7 @@ export class World {
         initialViewportSize: { width: number; height: number },
         onSceneBuildStart?: () => void,
     ): Promise<void> {
-        this.createMainCloudParticles();
+        await this.createMainCloudParticles();
         const sceneGeometry = generateSceneGeometry(
             this.mainCloudPositions,
             this.responsiveConfig.particles,
@@ -756,6 +769,9 @@ export class World {
             ambientParticleCount: this.responsiveConfig.particles.ambient,
             getScrollProgress: () => this.sceneState.scrollProgress,
         });
+        // Yield between SceneContentSystem construction and resize so the
+        // browser can handle input before the next layout-forcing operations.
+        await yieldToMainThread();
         this.resize(initialViewportSize);
         window.addEventListener('resize', this.requestResize, {
             passive: true,
@@ -769,6 +785,9 @@ export class World {
         await this.compilePostprocessingShaders();
         await yieldToMainThread();
         this.selectiveBloomSystem.prepare(this.renderer);
+        // Yield so the bloom prepare step doesn't merge into the initial
+        // composer frame render as one long GPU task.
+        await yieldToMainThread();
         await this.prepareInitialComposerFrame();
         this.resolveReady();
     }
@@ -938,8 +957,8 @@ export class World {
             config.introParticleControl;
     }
 
-    private createMainCloudParticles(): void {
-        const geometry = createCloudParticleGeometry(this.responsiveConfig.particles.main);
+    private async createMainCloudParticles(): Promise<void> {
+        const geometry = await createCloudParticleGeometry(this.responsiveConfig.particles.main);
         const particleMaterial = createMainParticleMaterial();
         particleMaterial.uniforms.uTunnelBokehSizeScale.value =
             this.responsiveConfig.particles.tunnelBokehSizeScale;
@@ -960,7 +979,7 @@ export class World {
         this.mainCloudMorphFactor = geometry.getAttribute('morphFactor') as THREE.BufferAttribute;
 
         this.positions.add(entity, {
-            current: new Float32Array(this.mainCloudPositions),
+            current: positionAttribute.array as Float32Array,
             dirty: false,
         });
         this.renderables.add(entity, { object: points });

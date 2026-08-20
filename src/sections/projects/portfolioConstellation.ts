@@ -67,6 +67,15 @@ export class PortfolioConstellation {
 
     private readonly scene: THREE.Scene;
     private readonly camera: THREE.Camera;
+    private readonly planeGeometry = new THREE.PlaneGeometry(1, 1);
+    private readonly invisibleInteractionMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+    });
     private readonly textures: THREE.Texture[] = [];
     private readonly skills = new Map<string, SkillVisual>();
     private readonly skillVisuals: SkillVisual[] = [];
@@ -115,6 +124,7 @@ export class PortfolioConstellation {
         this.responsiveConfig = options.responsiveConfig;
         this.onProjectSelect = options.onProjectSelect;
         this.onProjectClear = options.onProjectClear;
+        this.invisibleInteractionMaterial.colorWrite = false;
         this.updateResponsiveBaseTransform();
         this.group.name = 'PortfolioConstellation';
         this.group.position.copy(this.basePosition);
@@ -180,6 +190,37 @@ export class PortfolioConstellation {
         this.scene.add(this.group);
     }
 
+    private async initializeInChunks(): Promise<void> {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+
+        const starTexture = createStarTexture();
+        this.textures.push(starTexture);
+        await yieldToMainThread();
+
+        const fogTexture = createFogTexture();
+        this.textures.push(fogTexture);
+        await yieldToMainThread();
+
+        const lineBlurTexture = createLineBlurTexture();
+        this.textures.push(lineBlurTexture);
+        await yieldToMainThread();
+
+        for (const [index, skill] of this.constellationSkills.entries()) {
+            const center = this.skillCenters.get(skill.id) ?? new THREE.Vector3();
+            this.createSkillCluster(skill, center, starTexture, fogTexture, lineBlurTexture, index);
+            await yieldToMainThread();
+        }
+
+        this.skillVisuals.push(...this.skills.values());
+        this.interaction.syncKeyboardNavigator();
+        this.interaction.setKeyboardActiveSkill(this.getActiveMobileSkillId());
+        this.applyReveal(this.reveal);
+        this.scene.add(this.group);
+    }
+
     public update(delta: number, elapsed: number): void {
         this.reveal = THREE.MathUtils.damp(this.reveal, this.revealTarget, 5.5, delta);
         this.group.visible = this.reveal > 0.001 || this.revealTarget > 0.001;
@@ -241,7 +282,7 @@ export class PortfolioConstellation {
 
     public async prepare(renderer: THREE.WebGLRenderer): Promise<void> {
         await yieldToMainThread();
-        this.initialize();
+        await this.initializeInChunks();
 
         for (const texture of this.textures) {
             renderer.initTexture(texture);
@@ -422,6 +463,8 @@ export class PortfolioConstellation {
         for (const texture of this.textures) {
             texture.dispose();
         }
+        this.planeGeometry.dispose();
+        this.invisibleInteractionMaterial.dispose();
 
         this.skills.clear();
         this.interactionObjects.length = 0;
@@ -720,14 +763,14 @@ export class PortfolioConstellation {
 
         for (let index = 0; index < projects.length; index += 1) {
             const project = projects[index];
-            const node = new THREE.Vector3(...project.constellation.position);
+            const [nodeX, nodeY, nodeZ] = project.constellation.position;
             const offset = index * 3;
-            const x = node.x * nodeScale;
-            const y = node.y * nodeScale;
+            const x = nodeX * nodeScale;
+            const y = nodeY * nodeScale;
 
             starPositions[offset] = center.x + x * Math.cos(tilt) - y * Math.sin(tilt);
             starPositions[offset + 1] = center.y + x * Math.sin(tilt) + y * Math.cos(tilt);
-            starPositions[offset + 2] = center.z + node.z;
+            starPositions[offset + 2] = center.z + nodeZ;
 
             const rand = seeded(project.id.length * 31 + index * 7);
             starSizes[index] = baseStarSize * (0.72 + rand * 0.72);
@@ -857,7 +900,7 @@ export class PortfolioConstellation {
             toneMapped: false,
             side: THREE.DoubleSide,
         });
-        const labelSprite = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), labelMaterial);
+        const labelSprite = new THREE.Mesh(this.planeGeometry, labelMaterial);
         const authoredLabelScale = this.responsiveConfig.isMobile ? 2.08 : 2.62;
         const labelScale = authoredLabelScale * this.responsiveConfig.constellation.labelScale;
         const labelRowY = 0.3 - (this.responsiveConfig.isMobile ? 3.25 : 4.25);
@@ -913,7 +956,7 @@ export class PortfolioConstellation {
                 toneMapped: false,
                 side: THREE.DoubleSide,
             });
-            const sprite = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+            const sprite = new THREE.Mesh(this.planeGeometry, material);
             const labelImage = labelTexture.image as HTMLCanvasElement;
             const labelScaleVector = new THREE.Vector2(
                 labelScale,
@@ -973,18 +1016,11 @@ export class PortfolioConstellation {
                 toneMapped: false,
                 side: THREE.DoubleSide,
             });
-            const hitTarget = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hitMaterial);
-            const touchHitMaterial = new THREE.MeshBasicMaterial({
-                transparent: true,
-                opacity: 0,
-                depthTest: false,
-                depthWrite: false,
-                toneMapped: false,
-                side: THREE.DoubleSide,
-            });
-            const touchHitTarget = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), touchHitMaterial);
-
-            touchHitMaterial.colorWrite = false;
+            const hitTarget = new THREE.Mesh(this.planeGeometry, hitMaterial);
+            const touchHitTarget = new THREE.Mesh(
+                this.planeGeometry,
+                this.invisibleInteractionMaterial,
+            );
 
             entity.name = `ProjectStarEntity:${skill.id}:${project.id}`;
             entity.position.set(
@@ -1066,13 +1102,7 @@ export class PortfolioConstellation {
             hull.map((point) => new THREE.Vector2(point.x - center.x, point.y - center.y)),
         );
         const geometry = new THREE.ShapeGeometry(shape);
-        const material = new THREE.MeshBasicMaterial({
-            transparent: true,
-            opacity: 0,
-            depthTest: false,
-            depthWrite: false,
-        });
-        const hitArea = new THREE.Mesh(geometry, material);
+        const hitArea = new THREE.Mesh(geometry, this.invisibleInteractionMaterial);
 
         hitArea.name = `SkillClusterHitArea:${skill.id}`;
         hitArea.position.set(center.x, center.y, center.z + 0.2);
@@ -1117,8 +1147,8 @@ export class PortfolioConstellation {
             toneMapped: false,
             side: THREE.DoubleSide,
         });
-        const broad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), broadMaterial);
-        const core = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), coreMaterial);
+        const broad = new THREE.Mesh(this.planeGeometry, broadMaterial);
+        const core = new THREE.Mesh(this.planeGeometry, coreMaterial);
         const authoredBroadScale = mobile ? 11.4 : 15.2;
         const authoredCoreScale = mobile ? 7.4 : 9.8;
         const broadScale = authoredBroadScale * this.responsiveConfig.constellation.fogScale;

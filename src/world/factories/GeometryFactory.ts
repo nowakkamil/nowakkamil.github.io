@@ -3,13 +3,63 @@ import type { Font } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { yieldToMainThread } from '../../utils/yieldToMainThread';
 
-export function createCloudParticleGeometry(count: number): THREE.BufferGeometry {
-    const positions = createCloudParticlePositions(count);
+const CLOUD_PARTICLE_BATCH_SIZE = 4096;
+
+export async function createCloudParticleGeometry(count: number): Promise<THREE.BufferGeometry> {
+    const positions = new Float32Array(count * 3);
     const randoms = new Float32Array(count);
+    let minX = Infinity;
+    let minY = Infinity;
+    let minZ = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let maxZ = -Infinity;
+
     for (let index = 0; index < count; index += 1) {
+        const positionOffset = index * 3;
+        const radius = 5 + Math.pow(Math.random(), 0.4) * 35;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+
+        positions[positionOffset] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[positionOffset + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[positionOffset + 2] = radius * Math.cos(phi);
+        minX = Math.min(minX, positions[positionOffset]);
+        minY = Math.min(minY, positions[positionOffset + 1]);
+        minZ = Math.min(minZ, positions[positionOffset + 2]);
+        maxX = Math.max(maxX, positions[positionOffset]);
+        maxY = Math.max(maxY, positions[positionOffset + 1]);
+        maxZ = Math.max(maxZ, positions[positionOffset + 2]);
         randoms[index] = Math.random();
+
+        if ((index + 1) % CLOUD_PARTICLE_BATCH_SIZE === 0) {
+            await yieldToMainThread();
+        }
     }
+
+    const centerX = (minX + maxX) * 0.5;
+    const centerY = (minY + maxY) * 0.5;
+    const centerZ = (minZ + maxZ) * 0.5;
+    let radiusSq = 0;
+
+    for (let index = 0; index < count; index += 1) {
+        const positionOffset = index * 3;
+        const x = positions[positionOffset] - centerX;
+        const y = positions[positionOffset + 1] - centerY;
+        const z = positions[positionOffset + 2] - centerZ;
+
+        positions[positionOffset] = x;
+        positions[positionOffset + 1] = y;
+        positions[positionOffset + 2] = z;
+        radiusSq = Math.max(radiusSq, x * x + y * y + z * z);
+
+        if ((index + 1) % CLOUD_PARTICLE_BATCH_SIZE === 0) {
+            await yieldToMainThread();
+        }
+    }
+
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute(
         'position',
@@ -20,26 +70,13 @@ export function createCloudParticleGeometry(count: number): THREE.BufferGeometry
         'morphFactor',
         new THREE.BufferAttribute(new Float32Array(count), 1).setUsage(THREE.DynamicDrawUsage),
     );
-    geometry.center();
+    geometry.boundingBox = new THREE.Box3(
+        new THREE.Vector3(minX - centerX, minY - centerY, minZ - centerZ),
+        new THREE.Vector3(maxX - centerX, maxY - centerY, maxZ - centerZ),
+    );
+    geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(radiusSq));
 
     return geometry;
-}
-
-function createCloudParticlePositions(count: number, minRadius = 5, maxRadius = 40): Float32Array {
-    const positions = new Float32Array(count * 3);
-
-    for (let i = 0; i < count; i += 1) {
-        const i3 = i * 3;
-        const r = minRadius + Math.pow(Math.random(), 0.4) * (maxRadius - minRadius);
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
-
-        positions[i3] = r * Math.sin(phi) * Math.cos(theta);
-        positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        positions[i3 + 2] = r * Math.cos(phi);
-    }
-
-    return positions;
 }
 
 export function createTopDownGalaxyParticlePositions(
