@@ -187,7 +187,7 @@ export function createFloatingTextMaterial(scrollProgress: number): THREE.Shader
             uSpeed: { value: 3 },
             uSize: { value: 0.5 },
             uRevealStartTime: { value: 0 },
-            uRevealDelay: { value: 2 },
+            uRevealDelay: { value: 0.65 },
             uRevealVisibility: { value: 0 },
             uBloomColor: { value: new THREE.Color(0x9eefff) },
             uBloomStrength: { value: 0.8 },

@@ -387,6 +387,7 @@ try {
     world.prepareForReveal();
     finishLoadingPhases();
     await completeLoadingScreen(loadingScreen);
+    const loaderDismissedAt = gsap.ticker.time;
     window.__portfolioStartup?.succeed();
 
     gsap.ticker.add(updateWorld);
@@ -396,7 +397,7 @@ try {
         navigation.setReady();
         scrollCue.setReady();
         scrollCue.reveal();
-    });
+    }, loaderDismissedAt);
 } catch (error) {
     documentElement.classList.remove(experienceLayoutClass, contactLayoutClass);
     console.error('Failed to initialize the portfolio experience', error);

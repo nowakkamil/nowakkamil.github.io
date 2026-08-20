@@ -376,9 +376,9 @@ export class World {
         this.updateOwnedCamera();
     };
 
-    public startIntroReveal(onSettled?: () => void): void {
+    public startIntroReveal(onSettled?: () => void, revealStartTime = this.elapsedTime): void {
         this.clearAfterimageHistory = onSettled !== undefined;
-        this.contentSystem.restartScrollTextReveal(this.elapsedTime);
+        this.contentSystem.restartScrollTextReveal(revealStartTime);
         this.fadeOverlaySystem.startHyperspaceZoom(onSettled);
     }
 
