@@ -291,12 +291,7 @@ try {
             recommendationWallModule,
         ]);
         initContactTabs();
-        setLoadingPhase('verification');
-        try {
-            await initContactForm();
-        } finally {
-            setLoadingPhase('finalizing');
-        }
+        initContactForm();
         initRecommendationWallEvents(responsiveConfig);
         createContactTextAnimation(contactTabs, responsiveConfig, smoother);
     });

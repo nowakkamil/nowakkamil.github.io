@@ -4,7 +4,6 @@ import { createHttpContactSubmissionService } from './httpContactSubmissionServi
 
 const TURNSTILE_SCRIPT_URL =
     'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-const TURNSTILE_STARTUP_TIMEOUT_MS = 8_000;
 const TURNSTILE_SUBMISSION_TIMEOUT_MS = 15_000;
 const TURNSTILE_TOKEN_MAX_AGE_MS = 270_000;
 
@@ -115,7 +114,10 @@ const waitWithTimeout = async <T>(
     }
 };
 
-const createTurnstileController = (container: HTMLElement) => {
+export const createTurnstileController = (
+    container: HTMLElement,
+    sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim(),
+) => {
     let token = '';
     let tokenIssuedAt = 0;
     let widget: { api: TurnstileApi; id: string } | undefined;
@@ -125,7 +127,6 @@ const createTurnstileController = (container: HTMLElement) => {
     let widgetGeneration = 0;
     let needsReset = false;
     let suspended = false;
-    const sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
     const clearToken = (): void => {
         token = '';
         tokenIssuedAt = 0;
@@ -269,20 +270,21 @@ const createTurnstileController = (container: HTMLElement) => {
     };
 
     return {
-        prepareForStartup: async (): Promise<void> => {
+        initialize: (): void => {
+            suspended = false;
+            void initializeWidget();
+        },
+        getTokenForSubmission: async (): Promise<string> => {
             suspended = false;
             const responseToken = await waitWithTimeout(
                 requestToken(),
-                TURNSTILE_STARTUP_TIMEOUT_MS,
+                TURNSTILE_SUBMISSION_TIMEOUT_MS,
                 '',
             );
             if (!responseToken) {
                 suspend();
             }
-        },
-        getTokenForSubmission: async (): Promise<string> => {
-            suspended = false;
-            return waitWithTimeout(requestToken(), TURNSTILE_SUBMISSION_TIMEOUT_MS, '');
+            return responseToken;
         },
         reset: (): void => {
             clearToken();
@@ -355,7 +357,7 @@ interface ContactFormState {
     status: ContactFormStatus;
 }
 
-export const initContactForm = async (): Promise<void> => {
+export const initContactForm = (): void => {
     const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
     const statusRegion = form?.querySelector<HTMLElement>('[data-contact-form-status]');
     const nameControl = form?.elements.namedItem('name');
@@ -418,6 +420,7 @@ export const initContactForm = async (): Promise<void> => {
         form.dataset.contactEndpoint || undefined,
     );
     const turnstile = createTurnstileController(turnstileContainer);
+    turnstile.initialize();
 
     const revealPrivacyNotice = (): void => {
         form.dataset.messageInteracted = 'true';
@@ -582,6 +585,12 @@ export const initContactForm = async (): Promise<void> => {
 
         try {
             const turnstileToken = await turnstile.getTokenForSubmission();
+            if (!turnstileToken) {
+                turnstile.reset();
+                setFormStatus('server-failure');
+                return;
+            }
+
             const result = await submissionService.submit(message, {
                 turnstileToken,
                 website: honeypotControl.value,
@@ -593,6 +602,4 @@ export const initContactForm = async (): Promise<void> => {
             setFormStatus('server-failure');
         }
     });
-
-    await turnstile.prepareForStartup();
 };
