@@ -459,6 +459,70 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     }
 }
 
+.contact-verification {
+    position: fixed;
+    inset: 0;
+    z-index: 1400;
+    padding: 1.5rem;
+    display: grid;
+    place-items: center;
+    background: rgb(1 4 8 / 72%);
+    backdrop-filter: blur(0.55rem);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+        opacity 160ms ease,
+        visibility 160ms ease;
+
+    &[aria-hidden='true'] {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    &__panel {
+        width: min(100%, 22rem);
+        padding: 1.35rem 1.5rem;
+        display: grid;
+        justify-items: center;
+        gap: 0.8rem;
+        border: 1px solid rgb(255 255 255 / 16%);
+        border-radius: 0.65rem;
+        background: rgb(4 9 15 / 94%);
+        box-shadow:
+            0 0 2.5rem rgb(0 0 0 / 55%),
+            0 0 2rem rgb(158 239 255 / 6%);
+    }
+
+    &__spinner {
+        width: 1.35rem;
+        height: 1.35rem;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-top-color: rgb(255 255 255 / 82%);
+        border-radius: 50%;
+        animation: contact-verification-spin 850ms linear infinite;
+    }
+
+    &__status {
+        margin: 0;
+        font-family: Urbanist, sans-serif;
+        font-size: 0.76rem;
+        font-weight: 450;
+        line-height: 1.4;
+        letter-spacing: 0.08em;
+        text-align: center;
+        text-transform: uppercase;
+        color: rgb(255 255 255 / 76%);
+    }
+}
+
+@keyframes contact-verification-spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
 .contact-action {
     position: relative;
     width: fit-content;
@@ -1077,6 +1141,8 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     .contact-tabs textarea,
     .contact-tabs label,
     .form-group__privacy-link,
+    .contact-verification,
+    .contact-verification__spinner,
     .contact-action,
     .contact-action::before,
     .contact-tabs__intro-emphasis,

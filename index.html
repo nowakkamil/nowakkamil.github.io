@@ -1018,7 +1018,28 @@
                         aria-hidden="true"
                         hidden
                     />
-                    <div class="contact-form__turnstile" data-turnstile></div>
+                    <div
+                        class="contact-verification"
+                        data-contact-verification
+                        aria-hidden="true"
+                        inert
+                    >
+                        <div
+                            class="contact-verification__panel"
+                            role="status"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        >
+                            <span class="contact-verification__spinner" aria-hidden="true"></span>
+                            <p
+                                class="contact-verification__status"
+                                data-contact-verification-status
+                            >
+                                Verifying your message…
+                            </p>
+                            <div class="contact-form__turnstile" data-turnstile></div>
+                        </div>
+                    </div>
 
                     <button class="contact-action" type="submit" data-contact-submit>
                         <span class="contact-action__label" data-contact-submit-label>

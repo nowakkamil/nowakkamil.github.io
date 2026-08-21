@@ -364,6 +364,10 @@ export const initContactForm = (): void => {
     const emailControl = form?.elements.namedItem('email');
     const messageControl = form?.elements.namedItem('message');
     const honeypotControl = form?.elements.namedItem('website');
+    const verificationPopup = form?.querySelector<HTMLElement>('[data-contact-verification]');
+    const verificationStatus = verificationPopup?.querySelector<HTMLElement>(
+        '[data-contact-verification-status]',
+    );
     const turnstileContainer = form?.querySelector<HTMLElement>('[data-turnstile]');
     const nameError = form?.querySelector<HTMLElement>('[data-field-error="name"]');
     const emailError = form?.querySelector<HTMLElement>('[data-field-error="email"]');
@@ -381,6 +385,8 @@ export const initContactForm = (): void => {
         !(emailControl instanceof HTMLInputElement) ||
         !(messageControl instanceof HTMLTextAreaElement) ||
         !(honeypotControl instanceof HTMLInputElement) ||
+        !verificationPopup ||
+        !verificationStatus ||
         !turnstileContainer ||
         !nameError ||
         !emailError ||
@@ -431,6 +437,21 @@ export const initContactForm = (): void => {
         revealPrivacyNotice();
     }
     messageControl.addEventListener('focus', revealPrivacyNotice, { once: true });
+
+    const openVerificationPopup = (): void => {
+        verificationStatus.textContent = 'Verifying your message…';
+        verificationPopup.inert = false;
+        verificationPopup.setAttribute('aria-hidden', 'false');
+    };
+
+    const setVerificationSending = (): void => {
+        verificationStatus.textContent = 'Sending your message…';
+    };
+
+    const closeVerificationPopup = (): void => {
+        verificationPopup.setAttribute('aria-hidden', 'true');
+        verificationPopup.inert = true;
+    };
 
     const setSubmitting = (submitting: boolean): void => {
         submitButton.disabled = submitting;
@@ -581,6 +602,7 @@ export const initContactForm = (): void => {
             return;
         }
 
+        openVerificationPopup();
         setFormStatus('submitting');
 
         try {
@@ -591,6 +613,7 @@ export const initContactForm = (): void => {
                 return;
             }
 
+            setVerificationSending();
             const result = await submissionService.submit(message, {
                 turnstileToken,
                 website: honeypotControl.value,
@@ -600,6 +623,8 @@ export const initContactForm = (): void => {
         } catch {
             turnstile.reset();
             setFormStatus('server-failure');
+        } finally {
+            closeVerificationPopup();
         }
     });
 };
