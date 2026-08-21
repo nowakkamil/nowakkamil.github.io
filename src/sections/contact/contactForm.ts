@@ -6,6 +6,7 @@ const TURNSTILE_SCRIPT_URL =
     'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const TURNSTILE_SUBMISSION_TIMEOUT_MS = 15_000;
 const TURNSTILE_TOKEN_MAX_AGE_MS = 270_000;
+const VERIFICATION_SUCCESS_DISPLAY_MS = 850;
 
 interface TurnstileApi {
     render(
@@ -439,13 +440,23 @@ export const initContactForm = (): void => {
     messageControl.addEventListener('focus', revealPrivacyNotice, { once: true });
 
     const openVerificationPopup = (): void => {
+        verificationPopup.dataset.state = 'verifying';
         verificationStatus.textContent = 'Verifying your message…';
         verificationPopup.inert = false;
         verificationPopup.setAttribute('aria-hidden', 'false');
     };
 
     const setVerificationSending = (): void => {
+        verificationPopup.dataset.state = 'sending';
         verificationStatus.textContent = 'Sending your message…';
+    };
+
+    const showVerificationSuccess = async (): Promise<void> => {
+        verificationPopup.dataset.state = 'success';
+        verificationStatus.textContent = 'Message sent';
+        await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, VERIFICATION_SUCCESS_DISPLAY_MS);
+        });
     };
 
     const closeVerificationPopup = (): void => {
@@ -619,6 +630,9 @@ export const initContactForm = (): void => {
                 website: honeypotControl.value,
             });
             turnstile.reset();
+            if (result.kind === 'success') {
+                await showVerificationSuccess();
+            }
             handleSubmissionResult(result);
         } catch {
             turnstile.reset();

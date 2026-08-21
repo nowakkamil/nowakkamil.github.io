@@ -482,11 +482,11 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     }
 
     &__panel {
-        width: min(100%, 22rem);
-        padding: 1.35rem 1.5rem;
+        width: min(100%, 23rem);
+        padding: 1.65rem 1.75rem;
         display: grid;
         justify-items: center;
-        gap: 0.8rem;
+        gap: 1rem;
         border: 1px solid rgb(255 255 255 / 16%);
         border-radius: 0.65rem;
         background: rgb(4 9 15 / 94%);
@@ -496,12 +496,28 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     }
 
     &__spinner {
-        width: 1.35rem;
-        height: 1.35rem;
-        border: 1px solid rgb(255 255 255 / 18%);
+        box-sizing: border-box;
+        position: relative;
+        width: 3rem;
+        height: 3rem;
+        border: 2px solid rgb(255 255 255 / 16%);
         border-top-color: rgb(255 255 255 / 82%);
         border-radius: 50%;
         animation: contact-verification-spin 850ms linear infinite;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0.62rem;
+            left: 1.03rem;
+            width: 0.62rem;
+            height: 1.16rem;
+            border-right: 0.16rem solid rgb(196 255 224 / 96%);
+            border-bottom: 0.16rem solid rgb(196 255 224 / 96%);
+            opacity: 0;
+            transform: rotate(45deg) scale(0.45);
+            transform-origin: 50% 65%;
+        }
     }
 
     &__status {
@@ -515,11 +531,60 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
         text-transform: uppercase;
         color: rgb(255 255 255 / 76%);
     }
+
+    &[data-state='success'] {
+        .contact-verification__panel {
+            border-color: rgb(196 255 224 / 28%);
+            box-shadow:
+                0 0 2.5rem rgb(0 0 0 / 55%),
+                0 0 2.2rem rgb(137 255 198 / 10%);
+        }
+
+        .contact-verification__spinner {
+            border-color: rgb(196 255 224 / 72%);
+            box-shadow:
+                0 0 0.8rem rgb(137 255 198 / 16%),
+                inset 0 0 0.7rem rgb(137 255 198 / 7%);
+            animation: contact-verification-success-ring 420ms ease-out both;
+
+            &::after {
+                animation: contact-verification-success-mark 320ms 150ms ease-out both;
+            }
+        }
+
+        .contact-verification__status {
+            color: rgb(220 255 236 / 88%);
+        }
+    }
 }
 
 @keyframes contact-verification-spin {
     to {
         transform: rotate(1turn);
+    }
+}
+
+@keyframes contact-verification-success-ring {
+    from {
+        opacity: 0.45;
+        transform: scale(0.72);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes contact-verification-success-mark {
+    from {
+        opacity: 0;
+        transform: rotate(45deg) scale(0.45);
+    }
+
+    to {
+        opacity: 1;
+        transform: rotate(45deg) scale(1);
     }
 }
 
@@ -1143,6 +1208,7 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     .form-group__privacy-link,
     .contact-verification,
     .contact-verification__spinner,
+    .contact-verification__spinner::after,
     .contact-action,
     .contact-action::before,
     .contact-tabs__intro-emphasis,
@@ -1153,5 +1219,10 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
 
     .contact-tabs__intro-emphasis {
         background-position: 50% 50%;
+    }
+
+    .contact-verification[data-state='success'] .contact-verification__spinner::after {
+        opacity: 1;
+        transform: rotate(45deg) scale(1);
     }
 }
