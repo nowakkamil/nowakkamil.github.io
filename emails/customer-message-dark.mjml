@@ -35,11 +35,16 @@
             }
 
             .message-copy blockquote {
+                box-sizing: border-box !important;
+                max-width: 100% !important;
                 border-left-color: #159bb0 !important;
                 background-color: #050c14 !important;
                 color: #dfe6ed !important;
                 font-style: normal !important;
                 font-weight: 400 !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                word-wrap: break-word !important;
             }
 
             .portfolio-link a,

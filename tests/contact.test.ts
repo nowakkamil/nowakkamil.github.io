@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, describe, it } from 'node:test';
 
 import { onRequestPost } from '../functions/api/contact.ts';
+import { renderCustomerConfirmationBodyHtml } from '../functions/customerConfirmation.ts';
 
 const originalFetch = globalThis.fetch;
 
@@ -41,6 +42,19 @@ const assertGenericNoStoreResponse = async (response: Response, status: number):
 
 afterEach(() => {
     globalThis.fetch = originalFetch;
+});
+
+describe('customer confirmation markup', () => {
+    it('allows a single long token to wrap inside the message block', () => {
+        const html = renderCustomerConfirmationBodyHtml(
+            'https://nowakkamil.com/https://nowakkamil.com/https://nowakkamil.com/',
+        );
+
+        assert.match(html, /max-width: 100%/);
+        assert.match(html, /overflow-wrap: anywhere/);
+        assert.match(html, /word-break: break-word/);
+        assert.match(html, /word-wrap: break-word/);
+    });
 });
 
 describe('contact Pages Function', () => {
