@@ -1,6 +1,6 @@
 import type { ContactMessage } from '../src/sections/contact/contactModel.ts';
 
-import { escapeHtml } from './customerConfirmation.ts';
+import { renderBreakableHtml } from './customerConfirmation.ts';
 
 export const internalNotificationPreview: ContactMessage = {
     name: 'Alex Morgan',
@@ -10,7 +10,7 @@ export const internalNotificationPreview: ContactMessage = {
 };
 
 export const renderInternalNotificationMessageHtml = (message: string): string =>
-    escapeHtml(message).replace(/\r\n?|\n/g, '<br />');
+    renderBreakableHtml(message);
 
 export const renderInternalNotificationText = ({ name, email, message }: ContactMessage): string =>
     `New inquiry from ${name}\n${email}\n\n${message}`;

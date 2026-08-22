@@ -54,6 +54,7 @@ describe('customer confirmation markup', () => {
         assert.match(html, /overflow-wrap: anywhere/);
         assert.match(html, /word-break: break-word/);
         assert.match(html, /word-wrap: break-word/);
+        assert.ok((html.match(/&#8203;/g) ?? []).length >= 2);
     });
 });
 

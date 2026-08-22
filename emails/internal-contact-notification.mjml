@@ -19,14 +19,19 @@
                 width: 100% !important;
                 box-sizing: border-box !important;
                 border: 1px solid #192b42 !important;
-                border-radius: 7px !important;
+                border-radius: 10px !important;
                 background-color: #030a18 !important;
+                background-clip: padding-box !important;
+                overflow: hidden !important;
             }
             .inquiry-surface > table {
                 width: 100% !important;
                 table-layout: fixed !important;
                 background-color: #030a18 !important;
-                border-radius: 7px !important;
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                border-radius: 9px !important;
+                overflow: hidden !important;
             }
             .inquiry-email a {
                 color: #53a4ff !important;
@@ -54,7 +59,13 @@
     </mj-head>
     <mj-body width="680px" background-color="#010611">
         <mj-section padding="20px 16px" background-color="#010611">
-            <mj-column css-class="inquiry-surface" background-color="#030a18" padding="0">
+            <mj-column
+                css-class="inquiry-surface"
+                background-color="#030a18"
+                border="1px solid #192b42"
+                border-radius="10px"
+                padding="0"
+            >
                 <mj-table
                     css-class="mobile-gutter"
                     cellpadding="0"

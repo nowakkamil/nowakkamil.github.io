@@ -23,10 +23,10 @@ const generatedModuleDirectory = path.join(projectRoot, 'functions', 'generated'
 const emailAssetSourceDirectory = path.join(projectRoot, 'src', 'assets', 'email');
 const publicEmailAssetDirectory = path.join(projectRoot, 'public', 'email');
 const themedSignatureAssets = [
-    { key: 'monogram', filename: 'kn-monogram.png' },
-    { key: 'globe', filename: 'globe.png' },
     { key: 'email', filename: 'email.png' },
+    { key: 'globe', filename: 'globe.png' },
     { key: 'linkedIn', filename: 'linkedin.png' },
+    { key: 'monogram', filename: 'kn-monogram.png' },
     { key: 'location', filename: 'location.png' },
 ];
 const signatureAssetPreviewReplacements = [
@@ -216,19 +216,18 @@ const createSignatureWaveSvg = () => {
 
 async function publishSignatureAssets() {
     await mkdir(publicEmailAssetDirectory, { recursive: true });
-    const encodedAssets = {};
-
-    await Promise.all(
-        themedSignatureAssets.map(async ({ key, filename }) => {
-            const buffer = await sharp(path.join(emailAssetSourceDirectory, filename))
-                .tint({ r: 83, g: 164, b: 255 })
-                .png()
-                .toBuffer();
-            encodedAssets[key] = buffer.toString('base64');
-            await writeFile(path.join(publicEmailAssetDirectory, filename), buffer);
-        }),
+    const encodedAssets = Object.fromEntries(
+        await Promise.all(
+            themedSignatureAssets.map(async ({ key, filename }) => {
+                const buffer = await sharp(path.join(emailAssetSourceDirectory, filename))
+                    .tint({ r: 83, g: 164, b: 255 })
+                    .png()
+                    .toBuffer();
+                await writeFile(path.join(publicEmailAssetDirectory, filename), buffer);
+                return [key, buffer.toString('base64')];
+            }),
+        ),
     );
-
     const waveBuffer = await sharp(Buffer.from(createSignatureWaveSvg())).png().toBuffer();
     encodedAssets.wave = waveBuffer.toString('base64');
     await writeFile(path.join(publicEmailAssetDirectory, 'signature-wave.png'), waveBuffer);

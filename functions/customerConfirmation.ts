@@ -12,10 +12,39 @@ export const escapeHtml = (value: string): string =>
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
 
+const LONG_TOKEN_MIN_LENGTH = 48;
+const LONG_TOKEN_CHUNK_LENGTH = 32;
+
+const renderBreakableToken = (token: string): string => {
+    const characters = Array.from(token);
+    if (characters.length < LONG_TOKEN_MIN_LENGTH) {
+        return escapeHtml(token);
+    }
+
+    const chunks: string[] = [];
+    for (let index = 0; index < characters.length; index += LONG_TOKEN_CHUNK_LENGTH) {
+        chunks.push(escapeHtml(characters.slice(index, index + LONG_TOKEN_CHUNK_LENGTH).join('')));
+    }
+
+    return chunks.join('&#8203;');
+};
+
+export const renderBreakableHtml = (value: string): string =>
+    value
+        .replace(/\r\n?/g, '\n')
+        .split(/(\n|[^\S\n]+)/)
+        .map((part) => {
+            if (part === '\n') {
+                return '<br />';
+            }
+
+            return /^\s+$/.test(part) ? escapeHtml(part) : renderBreakableToken(part);
+        })
+        .join('');
 export const getFirstName = (name: string): string => name.trim().split(/\s+/, 1)[0] ?? '';
 
 export const renderCustomerConfirmationBodyHtml = (message: string): string => {
-    const quotedMessage = escapeHtml(message).replace(/\r\n?|\n/g, '<br />');
+    const quotedMessage = renderBreakableHtml(message);
 
     return (
         '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
