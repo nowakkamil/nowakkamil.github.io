@@ -62,6 +62,24 @@
                 .email-signature .kn-email-signature-frame {
                     padding: 26px 24px 8px !important;
                 }
+                .message-quote-opening {
+                    display: block !important;
+                    width: auto !important;
+                    padding: 14px 14px 0 !important;
+                    font-size: 22px !important;
+                    line-height: 22px !important;
+                }
+                .message-quote-content {
+                    display: block !important;
+                    padding: 8px 14px !important;
+                }
+                .message-quote-closing {
+                    display: block !important;
+                    width: auto !important;
+                    padding: 0 14px 14px !important;
+                    font-size: 22px !important;
+                    line-height: 22px !important;
+                }
             }
         </mj-style>
         <mj-raw
