@@ -2,82 +2,76 @@
     <mj-head>
         <mj-title>New inquiry — nowakkamil.com</mj-title>
         <mj-preview>New portfolio inquiry from {{ customerName }}</mj-preview>
-
         <mj-attributes>
             <mj-all
                 font-family="'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif"
                 font-weight="400"
             />
-            <mj-text color="#d9dee5" font-size="15px" line-height="26px" />
+            <mj-text color="#dce6f2" font-size="16px" line-height="28px" />
             <mj-section padding="0" />
             <mj-column padding="0" />
         </mj-attributes>
-
         <mj-style inline="inline">
             body {
                 overflow-x: hidden !important;
             }
-
             .inquiry-surface {
                 width: 100% !important;
                 box-sizing: border-box !important;
-                background-color: #02050a !important;
+                border: 1px solid #192b42 !important;
+                border-radius: 7px !important;
+                background-color: #030a18 !important;
             }
-
             .inquiry-surface > table {
                 width: 100% !important;
                 table-layout: fixed !important;
-                background-color: #02050a !important;
+                background-color: #030a18 !important;
+                border-radius: 7px !important;
             }
-
             .inquiry-email a {
-                color: #159bb0 !important;
+                color: #53a4ff !important;
                 text-decoration: none !important;
-                -webkit-text-fill-color: #159bb0 !important;
+                -webkit-text-fill-color: #53a4ff !important;
             }
         </mj-style>
-
         <mj-style>
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
                     padding-right: 24px !important;
                 }
-
                 .inquiry-name {
-                    padding-top: 24px !important;
-                    font-size: 24px !important;
-                    line-height: 30px !important;
+                    padding-top: 30px !important;
+                    font-size: 28px !important;
+                    line-height: 35px !important;
                 }
             }
         </mj-style>
-
-        <mj-raw>
-            <meta name="color-scheme" content="dark" /> <meta name="supported-color-schemes"
-            content="dark" />
-        </mj-raw>
+        <mj-raw
+            ><meta name="color-scheme" content="dark" /> <meta name="supported-color-schemes"
+            content="dark" /></mj-raw
+        >
     </mj-head>
-
-    <mj-body width="632px" background-color="#03070d">
-        <mj-section padding="20px 16px" background-color="#03070d">
-            <mj-column css-class="inquiry-surface" background-color="#02050a" padding="0">
+    <mj-body width="680px" background-color="#010611">
+        <mj-section padding="20px 16px" background-color="#010611">
+            <mj-column css-class="inquiry-surface" background-color="#030a18" padding="0">
                 <mj-table
                     css-class="mobile-gutter"
                     cellpadding="0"
                     cellspacing="0"
-                    padding="28px 36px 0"
+                    padding="36px 42px 0"
                     width="100%"
                 >
                     <tr>
                         <td
                             width="50%"
                             style="
-                                padding: 0 18px 10px 0;
-                                color: #f2f5f8;
-                                font-size: 11px;
-                                font-weight: 400;
-                                letter-spacing: 2px;
-                                line-height: 16px;
+                                padding: 0 18px 14px 0;
+                                color: #b9dcff;
+                                font-size: 12px;
+                                font-weight: 600;
+                                letter-spacing: 3px;
+                                line-height: 18px;
                                 text-transform: uppercase;
                             "
                         >
@@ -87,12 +81,12 @@
                             align="right"
                             width="50%"
                             style="
-                                padding: 0 0 10px;
-                                color: #8f98a5;
-                                font-size: 10px;
-                                font-weight: 400;
-                                letter-spacing: 1.4px;
-                                line-height: 16px;
+                                padding: 0 0 14px;
+                                color: #eef5fd;
+                                font-size: 11px;
+                                font-weight: 500;
+                                letter-spacing: 2.2px;
+                                line-height: 18px;
                                 text-transform: uppercase;
                             "
                         >
@@ -102,10 +96,11 @@
                     <tr>
                         <td
                             colspan="2"
-                            bgcolor="#2b3541"
+                            bgcolor="#4f8fca"
                             height="1"
                             style="
                                 height: 1px;
+                                background-color: #4f8fca;
                                 font-size: 0;
                                 line-height: 0;
                                 mso-line-height-rule: exactly;
@@ -115,58 +110,51 @@
                         </td>
                     </tr>
                 </mj-table>
-
                 <mj-text
                     css-class="mobile-gutter inquiry-name"
-                    color="#f2f5f8"
-                    font-size="28px"
-                    font-weight="400"
-                    letter-spacing="-0.5px"
-                    line-height="34px"
-                    padding="32px 36px 2px"
+                    color="#f6f8fb"
+                    font-size="34px"
+                    font-weight="600"
+                    letter-spacing="-0.8px"
+                    line-height="42px"
+                    padding="38px 42px 4px"
+                    >{{ customerName }}</mj-text
                 >
-                    {{ customerName }}
-                </mj-text>
-
                 <mj-text
                     css-class="mobile-gutter inquiry-email"
-                    color="#159bb0"
-                    font-size="13px"
-                    font-weight="400"
-                    line-height="20px"
-                    padding="0 36px 26px"
+                    color="#53a4ff"
+                    font-size="14px"
+                    font-weight="500"
+                    line-height="22px"
+                    padding="0 42px 30px"
+                    ><a href="mailto:{{ customerEmail }}">{{ customerEmail }}</a></mj-text
                 >
-                    <a href="mailto:{{ customerEmail }}">{{ customerEmail }}</a>
-                </mj-text>
-
                 <mj-text
                     css-class="mobile-gutter"
-                    color="#8f98a5"
-                    font-size="10px"
-                    font-weight="400"
-                    letter-spacing="1.5px"
-                    line-height="16px"
-                    padding="0 36px 10px"
+                    color="#b9dcff"
+                    font-size="11px"
+                    font-weight="600"
+                    letter-spacing="2.4px"
+                    line-height="18px"
+                    padding="0 42px 12px"
                     text-transform="uppercase"
+                    >Message</mj-text
                 >
-                    Message
-                </mj-text>
-
                 <mj-table
                     css-class="mobile-gutter"
                     cellpadding="0"
                     cellspacing="0"
-                    padding="0 36px 34px"
+                    padding="0 42px 42px"
                     width="100%"
                 >
                     <tr>
                         <td
-                            width="2"
-                            bgcolor="#159bb0"
+                            width="3"
+                            bgcolor="#53a4ff"
                             style="
-                                width: 2px;
+                                width: 3px;
                                 padding: 0;
-                                background-color: #159bb0;
+                                background-color: #53a4ff;
                                 font-size: 0;
                                 line-height: 0;
                             "
@@ -174,14 +162,20 @@
                             &nbsp;
                         </td>
                         <td
-                            bgcolor="#050c14"
+                            bgcolor="#020a18"
                             style="
-                                padding: 14px 16px;
-                                background-color: #050c14;
-                                color: #dfe6ed;
-                                font-size: 15px;
+                                padding: 18px 20px;
+                                border-top: 1px solid #173a61;
+                                border-right: 1px solid #173a61;
+                                border-bottom: 1px solid #173a61;
+                                background-color: #020a18;
+                                color: #eef5fd;
+                                font-size: 16px;
                                 font-weight: 400;
-                                line-height: 25px;
+                                line-height: 27px;
+                                overflow-wrap: anywhere;
+                                word-break: break-word;
+                                word-wrap: break-word;
                             "
                         >
                             {{ message }}

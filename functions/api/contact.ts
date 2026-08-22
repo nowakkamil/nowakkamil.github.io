@@ -61,7 +61,8 @@ const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): stri
         .replaceAll('{{assetGlobe}}', `cid:${EMAIL_CID.globe}`)
         .replaceAll('{{assetEmail}}', `cid:${EMAIL_CID.email}`)
         .replaceAll('{{assetLinkedIn}}', `cid:${EMAIL_CID.linkedIn}`)
-        .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`);
+        .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`)
+        .replaceAll('{{assetWave}}', `cid:${EMAIL_CID.wave}`);
 
 const renderInternalNotificationHtml = ({ name, email, message }: ContactMessage): string =>
     internalContactNotificationHtml

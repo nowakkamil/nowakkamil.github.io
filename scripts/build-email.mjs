@@ -1,8 +1,9 @@
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import mjml2html from 'mjml';
+import sharp from 'sharp';
 
 import {
     customerConfirmationPreview,
@@ -21,12 +22,12 @@ const outputDirectory = path.join(projectRoot, 'emails', 'dist');
 const generatedModuleDirectory = path.join(projectRoot, 'functions', 'generated');
 const emailAssetSourceDirectory = path.join(projectRoot, 'src', 'assets', 'email');
 const publicEmailAssetDirectory = path.join(projectRoot, 'public', 'email');
-const signatureAssetNames = [
-    'email.png',
-    'globe.png',
-    'kn-monogram.png',
-    'linkedin.png',
-    'location.png',
+const themedSignatureAssets = [
+    { key: 'monogram', filename: 'kn-monogram.png' },
+    { key: 'globe', filename: 'globe.png' },
+    { key: 'email', filename: 'email.png' },
+    { key: 'linkedIn', filename: 'linkedin.png' },
+    { key: 'location', filename: 'location.png' },
 ];
 const signatureAssetPreviewReplacements = [
     ['{{assetMonogram}}', 'https://nowakkamil.com/email/kn-monogram.png'],
@@ -34,6 +35,7 @@ const signatureAssetPreviewReplacements = [
     ['{{assetEmail}}', 'https://nowakkamil.com/email/email.png'],
     ['{{assetLinkedIn}}', 'https://nowakkamil.com/email/linkedin.png'],
     ['{{assetLocation}}', 'https://nowakkamil.com/email/location.png'],
+    ['{{assetWave}}', 'https://nowakkamil.com/email/signature-wave.png'],
 ];
 
 const customerVariant = 'customer-message-dark';
@@ -169,40 +171,78 @@ async function buildSignaturePreview() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Kamil Nowak — Email signature preview</title>
     </head>
-    <body style="margin: 0; padding: 16px; background-color: #03070d">
+    <body style="margin: 0; padding: 16px; background-color: #010611">
 ${indentedSignature}
     </body>
 </html>
 `;
 
-    void preview;
-    await writeFile(
-        path.join(signatureDirectory, 'signature.preview.html'),
-        `${signature.trim()}\n`,
-    );
+    await writeFile(path.join(signatureDirectory, 'signature.preview.html'), preview);
     console.log('Built emails/signature/signature.preview.html');
 }
 
+const createSignatureWaveSvg = () => {
+    const paths = Array.from({ length: 15 }, (_, index) => {
+        const offset = index * 8;
+        const opacity = Math.max(0.12, 0.72 - index * 0.035).toFixed(2);
+        return `<path d="M -60 ${248 + offset} C 150 ${105 + offset}, 330 ${380 - offset}, 560 ${278 + offset / 2} S 930 ${236 + offset}, 1260 ${318 + offset / 3}" fill="none" stroke="url(#waveLine)" stroke-width="${index < 3 ? 2.2 : 1}" stroke-opacity="${opacity}"/>`;
+    }).join('');
+    const particles = Array.from({ length: 250 }, (_, index) => {
+        const x = ((index * 83) % 1240) - 20;
+        const baseY = 278 + Math.sin(x / 128) * 58 + Math.sin(x / 47) * 22;
+        const spread = ((index * 47) % 150) - 75;
+        const y = Math.max(90, Math.min(414, baseY + spread));
+        const radius = 0.7 + ((index * 13) % 20) / 10;
+        const opacity = 0.22 + ((index * 17) % 65) / 100;
+        return `<circle cx="${x}" cy="${y.toFixed(1)}" r="${radius.toFixed(1)}" fill="#6eb4ff" fill-opacity="${Math.min(opacity, 0.9).toFixed(2)}"/>`;
+    }).join('');
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 80 1200 340">
+        <defs>
+            <linearGradient id="waveLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#2d7fff"/>
+                <stop offset="0.42" stop-color="#7cc3ff"/>
+                <stop offset="1" stop-color="#2d7fff" stop-opacity="0.24"/>
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-80%" width="140%" height="260%">
+                <feGaussianBlur stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <g filter="url(#glow)">${paths}</g>
+        <g>${particles}</g>
+    </svg>`;
+};
+
 async function publishSignatureAssets() {
     await mkdir(publicEmailAssetDirectory, { recursive: true });
+    const encodedAssets = {};
+
     await Promise.all(
-        signatureAssetNames.map((assetName) =>
-            copyFile(
-                path.join(emailAssetSourceDirectory, assetName),
-                path.join(publicEmailAssetDirectory, assetName),
-            ),
-        ),
+        themedSignatureAssets.map(async ({ key, filename }) => {
+            const buffer = await sharp(path.join(emailAssetSourceDirectory, filename))
+                .tint({ r: 83, g: 164, b: 255 })
+                .png()
+                .toBuffer();
+            encodedAssets[key] = buffer.toString('base64');
+            await writeFile(path.join(publicEmailAssetDirectory, filename), buffer);
+        }),
     );
-    console.log('Published public/email signature assets');
+
+    const waveBuffer = await sharp(Buffer.from(createSignatureWaveSvg())).png().toBuffer();
+    encodedAssets.wave = waveBuffer.toString('base64');
+    await writeFile(path.join(publicEmailAssetDirectory, 'signature-wave.png'), waveBuffer);
+    await writeFile(
+        path.join(generatedModuleDirectory, 'email-theme-assets.ts'),
+        `// Generated by npm run email:build. Do not edit.\nexport const EMAIL_THEME_ASSET_BASE64 = ${JSON.stringify(encodedAssets)} as const;\n`,
+    );
+    console.log('Published themed public/email assets');
+    console.log('Built functions/generated/email-theme-assets.ts');
 }
 
 await Promise.all([
     mkdir(outputDirectory, { recursive: true }),
     mkdir(generatedModuleDirectory, { recursive: true }),
 ]);
-await Promise.all([
-    buildVariant(customerVariant),
-    buildInternalVariant(),
-    buildSignaturePreview(),
-    publishSignatureAssets(),
-]);
+await publishSignatureAssets();
+await Promise.all([buildVariant(customerVariant), buildInternalVariant(), buildSignaturePreview()]);

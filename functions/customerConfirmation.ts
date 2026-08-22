@@ -19,7 +19,7 @@ export const renderCustomerConfirmationBodyHtml = (message: string): string => {
 
     return (
         '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
-        `<blockquote style="box-sizing: border-box; max-width: 100%; margin: 0 0 20px 0; padding: 10px 14px; border-left: 2px solid #159bb0; background-color: #050c14; color: #dfe6ed; line-height: 25px; overflow-wrap: anywhere; word-break: break-word; word-wrap: break-word;">${quotedMessage}</blockquote>` +
+        `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; margin: 0 0 24px 0; border: 1px solid #173a61; border-left: 3px solid #53a4ff; border-radius: 5px; background-color: #020a18; table-layout: fixed;"><tr><td width="44" valign="top" style="width: 44px; padding: 14px 0 14px 18px; color: #53a4ff; font-size: 30px; font-weight: 700; line-height: 30px;">&ldquo;</td><td style="padding: 17px 8px; color: #f2f6fb; font-size: 16px; line-height: 27px; overflow-wrap: anywhere; word-break: break-word; word-wrap: break-word;">${quotedMessage}</td><td width="42" valign="bottom" align="right" style="width: 42px; padding: 14px 18px 14px 0; color: #53a4ff; font-size: 30px; font-weight: 700; line-height: 30px;">&rdquo;</td></tr></table>` +
         '<p style="margin: 0;">I’ll review it and reply as soon as possible.</p>'
     );
 };

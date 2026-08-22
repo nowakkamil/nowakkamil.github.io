@@ -50,7 +50,7 @@ describe('customer confirmation markup', () => {
             'https://nowakkamil.com/https://nowakkamil.com/https://nowakkamil.com/',
         );
 
-        assert.match(html, /max-width: 100%/);
+        assert.match(html, /table-layout: fixed/);
         assert.match(html, /overflow-wrap: anywhere/);
         assert.match(html, /word-break: break-word/);
         assert.match(html, /word-wrap: break-word/);
@@ -213,7 +213,8 @@ describe('contact Pages Function', () => {
         assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
         assert.match(String(visitorEmail.html), /src="cid:kn-monogram"/);
         assert.match(String(visitorEmail.html), /src="cid:signature-globe"/);
-        assert.equal((visitorEmail.attachments as unknown[]).length, 5);
+        assert.match(String(visitorEmail.html), /src="cid:signature-wave"/);
+        assert.equal((visitorEmail.attachments as unknown[]).length, 6);
         assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:firstName|message|asset\w+)\s*}}/);
     });
 
