@@ -28,8 +28,6 @@ dist-ssr
 .dev.vars
 .dev.vars.*
 
-/public/email/
-
 .continue
 .codeatlas
 .pnpm-store
