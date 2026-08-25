@@ -8,7 +8,8 @@
 
     @media only screen and (max-width: 480px) {
         .kn-email-signature-frame {
-            padding: 26px 24px 8px !important;
+            padding: 26px 24px 128px !important;
+            background-size: 100% auto !important;
         }
 
         .kn-email-signature-monogram-cell,
@@ -23,8 +24,8 @@
         }
 
         .kn-email-signature-monogram {
-            width: 92px !important;
-            height: 92px !important;
+            width: 104px !important;
+            height: 104px !important;
             margin: 0 auto !important;
         }
 
@@ -36,8 +37,12 @@
             text-align: center !important;
         }
 
+        .kn-email-signature-tagline {
+            padding-right: 0 !important;
+        }
+
         .kn-email-signature-contact-row td {
-            font-size: 12px !important;
+            font-size: 13px !important;
         }
     }
 </style>
@@ -48,36 +53,46 @@
     cellspacing="0"
     border="0"
     width="100%"
-    bgcolor="#030a18"
-    style="width: 100%; border-collapse: collapse; background-color: #030a18"
+    bgcolor="#01060f"
+    style="width: 100%; border-collapse: collapse; background-color: #01060f"
 >
     <tr>
-        <td class="kn-email-signature-frame" style="padding: 34px 42px 8px">
+        <td
+            class="kn-email-signature-frame"
+            style="
+                padding: 29px 44px 49px;
+                background-color: #01060f;
+                background-image: url('{{assetWave}}');
+                background-repeat: no-repeat;
+                background-position: left bottom;
+                background-size: 100% auto;
+            "
+        >
             <table
                 role="presentation"
                 cellpadding="0"
                 cellspacing="0"
                 border="0"
                 width="100%"
-                style="width: 100%; border-collapse: collapse"
+                style="width: 100%; border-collapse: collapse; table-layout: fixed"
             >
                 <tr>
                     <td
                         class="kn-email-signature-monogram-cell"
-                        width="138"
-                        valign="middle"
-                        style="width: 138px; padding: 0 12px 0 0"
+                        width="144"
+                        valign="top"
+                        style="width: 144px; padding: 24px 16px 0 20px"
                     >
                         <img
                             class="kn-email-signature-monogram"
                             src="{{assetMonogram}}"
-                            width="108"
-                            height="108"
+                            width="128"
+                            height="128"
                             alt="Kamil Nowak initials"
                             style="
                                 display: block;
-                                width: 108px;
-                                height: 108px;
+                                width: 128px;
+                                height: 128px;
                                 margin: 0 auto;
                                 border: 0;
                             "
@@ -85,8 +100,8 @@
                     </td>
                     <td
                         class="kn-email-signature-content-cell"
-                        valign="middle"
-                        style="padding: 0 0 0 24px"
+                        valign="top"
+                        style="padding: 0 0 0 20px"
                     >
                         <table
                             class="kn-email-signature-identity"
@@ -95,17 +110,17 @@
                             cellspacing="0"
                             border="0"
                             width="100%"
-                            style="width: 100%; border-collapse: collapse"
+                            style="width: 100%; border-collapse: collapse; table-layout: fixed"
                         >
                             <tr>
                                 <td
                                     style="
                                         padding: 0;
                                         color: #f6f8fb;
-                                        font-size: 26px;
-                                        font-weight: 600;
-                                        letter-spacing: -0.4px;
-                                        line-height: 32px;
+                                        font-size: 32px;
+                                        font-weight: 700;
+                                        letter-spacing: -0.5px;
+                                        line-height: 39px;
                                     "
                                 >
                                     Kamil Nowak
@@ -114,12 +129,12 @@
                             <tr>
                                 <td
                                     style="
-                                        padding: 6px 0 0;
+                                        padding: 3px 0 0;
                                         color: #53a4ff;
-                                        font-size: 12px;
+                                        font-size: 13px;
                                         font-weight: 500;
-                                        letter-spacing: 1.8px;
-                                        line-height: 19px;
+                                        letter-spacing: 1.9px;
+                                        line-height: 20px;
                                         text-transform: uppercase;
                                     "
                                 >
@@ -128,12 +143,13 @@
                             </tr>
                             <tr>
                                 <td
+                                    class="kn-email-signature-tagline"
                                     style="
-                                        padding: 10px 0 10px;
+                                        padding: 10px 70px 10px 0;
                                         color: #d7e0eb;
-                                        font-size: 13px;
+                                        font-size: 14px;
                                         font-weight: 400;
-                                        line-height: 21px;
+                                        line-height: 22px;
                                     "
                                 >
                                     Building digital experiences that are fast, reliable and
@@ -147,24 +163,24 @@
                             cellspacing="0"
                             border="0"
                             width="100%"
-                            style="width: 100%; border-collapse: collapse"
+                            style="width: 100%; border-collapse: collapse; table-layout: fixed"
                         >
                             <tr class="kn-email-signature-contact-row">
-                                <td width="32" style="width: 32px; padding: 7px 7px 7px 0">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetGlobe}}"
-                                        width="20"
-                                        height="20"
+                                        width="25"
+                                        height="25"
                                         alt="Website"
-                                        style="display: block; width: 20px; height: 20px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 12px;
-                                        line-height: 20px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -176,21 +192,21 @@
                                 </td>
                             </tr>
                             <tr class="kn-email-signature-contact-row">
-                                <td width="32" style="width: 32px; padding: 7px 7px 7px 0">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetEmail}}"
-                                        width="20"
-                                        height="16"
+                                        width="25"
+                                        height="25"
                                         alt="Email"
-                                        style="display: block; width: 20px; height: 16px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 12px;
-                                        line-height: 20px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -201,21 +217,21 @@
                                 </td>
                             </tr>
                             <tr class="kn-email-signature-contact-row">
-                                <td width="32" style="width: 32px; padding: 7px 7px 7px 0">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetLinkedIn}}"
-                                        width="18"
-                                        height="18"
+                                        width="25"
+                                        height="25"
                                         alt="LinkedIn"
-                                        style="display: block; width: 18px; height: 18px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 12px;
-                                        line-height: 20px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -227,21 +243,21 @@
                                 </td>
                             </tr>
                             <tr class="kn-email-signature-contact-row">
-                                <td width="32" style="width: 32px; padding: 7px 7px 7px 0">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetLocation}}"
-                                        width="20"
-                                        height="20"
+                                        width="25"
+                                        height="25"
                                         alt="Location"
-                                        style="display: block; width: 20px; height: 20px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 12px;
-                                        line-height: 20px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     Based in Poland, working globally
@@ -253,15 +269,17 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td style="padding: 0">
-            <img
-                src="{{assetWave}}"
-                width="680"
-                height="238"
-                alt=""
-                style="display: block; width: 100%; max-width: 680px; height: auto; border: 0"
-            />
-        </td>
-    </tr>
+    <!--[if mso]>
+        <tr>
+            <td style="padding: 0">
+                <img
+                    src="{{assetWave}}"
+                    width="680"
+                    height="231"
+                    alt=""
+                    style="display: block; width: 100%; max-width: 680px; height: auto; border: 0"
+                />
+            </td>
+        </tr>
+    <![endif]-->
 </table>

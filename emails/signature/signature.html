@@ -8,7 +8,8 @@
 
     @media only screen and (max-width: 600px) {
         .kn-signature-frame {
-            padding: 26px 22px 8px !important;
+            padding: 26px 24px 128px !important;
+            background-size: 100% auto !important;
         }
 
         .kn-signature-monogram-cell,
@@ -23,8 +24,8 @@
         }
 
         .kn-signature-monogram-image {
-            width: 92px !important;
-            height: 92px !important;
+            width: 104px !important;
+            height: 104px !important;
             margin: 0 auto !important;
         }
 
@@ -35,6 +36,14 @@
         .kn-signature-identity {
             text-align: center !important;
         }
+
+        .kn-signature-tagline {
+            padding-right: 0 !important;
+        }
+
+        .kn-signature-contact-row td {
+            font-size: 13px !important;
+        }
     }
 </style>
 <table
@@ -44,56 +53,62 @@
     cellspacing="0"
     border="0"
     width="100%"
-    bgcolor="#030a18"
+    bgcolor="#01060f"
     style="
         width: 100%;
         max-width: 760px;
-        border: 1px solid #192b42;
-        border-radius: 7px;
+        border: 1px solid #1c2331;
+        border-radius: 12px;
         border-collapse: separate;
         border-spacing: 0;
-        background-color: #030a18;
+        background-color: #01060f;
         overflow: hidden;
         font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
     "
 >
     <tr>
-        <td class="kn-signature-frame" style="padding: 34px 38px 8px">
+        <td
+            class="kn-signature-frame"
+            style="
+                padding: 29px 44px 49px;
+                background-color: #01060f;
+                background-image: url('{{assetWave}}');
+                background-repeat: no-repeat;
+                background-position: left bottom;
+                background-size: 100% auto;
+            "
+        >
             <table
                 role="presentation"
                 cellpadding="0"
                 cellspacing="0"
                 border="0"
                 width="100%"
-                style="width: 100%; border-collapse: collapse"
+                style="width: 100%; border-collapse: collapse; table-layout: fixed"
             >
                 <tr>
                     <td
                         class="kn-signature-monogram-cell"
-                        width="150"
-                        valign="middle"
-                        style="width: 150px; padding: 0 16px 0 0"
+                        width="144"
+                        valign="top"
+                        style="width: 144px; padding: 24px 16px 0 20px"
                     >
                         <img
                             class="kn-signature-monogram-image"
                             src="{{assetMonogram}}"
-                            width="118"
-                            height="118"
+                            width="128"
+                            height="128"
                             alt="Kamil Nowak initials"
                             style="
                                 display: block;
-                                width: 118px;
-                                height: 118px;
+                                width: 128px;
+                                height: 128px;
                                 margin: 0 auto;
                                 border: 0;
                             "
                         />
                     </td>
-                    <td
-                        class="kn-signature-content-cell"
-                        valign="middle"
-                        style="padding: 0 0 0 28px"
-                    >
+                    <td class="kn-signature-content-cell" valign="top" style="padding: 0 0 0 20px">
                         <table
                             class="kn-signature-identity"
                             role="presentation"
@@ -101,17 +116,17 @@
                             cellspacing="0"
                             border="0"
                             width="100%"
-                            style="width: 100%; border-collapse: collapse"
+                            style="width: 100%; border-collapse: collapse; table-layout: fixed"
                         >
                             <tr>
                                 <td
                                     style="
                                         padding: 0;
                                         color: #f6f8fb;
-                                        font-size: 28px;
-                                        font-weight: 600;
+                                        font-size: 32px;
+                                        font-weight: 700;
                                         letter-spacing: -0.5px;
-                                        line-height: 34px;
+                                        line-height: 39px;
                                     "
                                 >
                                     Kamil Nowak
@@ -120,11 +135,11 @@
                             <tr>
                                 <td
                                     style="
-                                        padding: 6px 0 0;
+                                        padding: 3px 0 0;
                                         color: #53a4ff;
                                         font-size: 13px;
                                         font-weight: 500;
-                                        letter-spacing: 2px;
+                                        letter-spacing: 1.9px;
                                         line-height: 20px;
                                         text-transform: uppercase;
                                     "
@@ -134,8 +149,9 @@
                             </tr>
                             <tr>
                                 <td
+                                    class="kn-signature-tagline"
                                     style="
-                                        padding: 10px 0 12px;
+                                        padding: 10px 70px 10px 0;
                                         color: #d7e0eb;
                                         font-size: 14px;
                                         font-weight: 400;
@@ -153,24 +169,24 @@
                             cellspacing="0"
                             border="0"
                             width="100%"
-                            style="width: 100%; border-collapse: collapse"
+                            style="width: 100%; border-collapse: collapse; table-layout: fixed"
                         >
-                            <tr>
-                                <td width="34" style="width: 34px; padding: 7px 8px 7px 0">
+                            <tr class="kn-signature-contact-row">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetGlobe}}"
-                                        width="21"
-                                        height="21"
+                                        width="25"
+                                        height="25"
                                         alt="Website"
-                                        style="display: block; width: 21px; height: 21px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 13px;
-                                        line-height: 21px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -181,22 +197,22 @@
                                     >
                                 </td>
                             </tr>
-                            <tr>
-                                <td width="34" style="width: 34px; padding: 7px 8px 7px 0">
+                            <tr class="kn-signature-contact-row">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetEmail}}"
-                                        width="21"
-                                        height="17"
+                                        width="25"
+                                        height="25"
                                         alt="Email"
-                                        style="display: block; width: 21px; height: 17px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 13px;
-                                        line-height: 21px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -206,22 +222,22 @@
                                     >
                                 </td>
                             </tr>
-                            <tr>
-                                <td width="34" style="width: 34px; padding: 7px 8px 7px 0">
+                            <tr class="kn-signature-contact-row">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetLinkedIn}}"
-                                        width="19"
-                                        height="19"
+                                        width="25"
+                                        height="25"
                                         alt="LinkedIn"
-                                        style="display: block; width: 19px; height: 19px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 13px;
-                                        line-height: 21px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     <a
@@ -232,22 +248,22 @@
                                     >
                                 </td>
                             </tr>
-                            <tr>
-                                <td width="34" style="width: 34px; padding: 7px 8px 7px 0">
+                            <tr class="kn-signature-contact-row">
+                                <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
                                     <img
                                         src="{{assetLocation}}"
-                                        width="21"
-                                        height="21"
+                                        width="25"
+                                        height="25"
                                         alt="Location"
-                                        style="display: block; width: 21px; height: 21px; border: 0"
+                                        style="display: block; width: 25px; height: 25px; border: 0"
                                     />
                                 </td>
                                 <td
                                     style="
                                         padding: 7px 0;
                                         color: #eef5fd;
-                                        font-size: 13px;
-                                        line-height: 21px;
+                                        font-size: 14px;
+                                        line-height: 25px;
                                     "
                                 >
                                     Based in Poland, working globally
@@ -259,15 +275,17 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td style="padding: 0">
-            <img
-                src="{{assetWave}}"
-                width="760"
-                height="266"
-                alt=""
-                style="display: block; width: 100%; max-width: 760px; height: auto; border: 0"
-            />
-        </td>
-    </tr>
+    <!--[if mso]>
+        <tr>
+            <td style="padding: 0">
+                <img
+                    src="{{assetWave}}"
+                    width="760"
+                    height="398"
+                    alt=""
+                    style="display: block; width: 100%; max-width: 680px; height: auto; border: 0"
+                />
+            </td>
+        </tr>
+    <![endif]-->
 </table>

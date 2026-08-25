@@ -29,6 +29,31 @@ This command validates and compiles the MJML, publishes the signature images, an
 
 Email generation is intentionally separate from the production site build and tests.
 
+The build does not generate artwork. Glyphs in `src/assets/email/` are tinted to
+the accent colour on the way out; `signature-wave.png` is published byte-for-byte.
+
+## Signature wave
+
+`src/assets/email/signature-wave.png` is the finished strip: already cropped to
+the card's bottom band and carrying its own alpha, so it composites over the card
+instead of pasting an opaque rectangle. The full-size render it was derived from
+is not kept in this repo.
+
+The strip cannot be re-derived from itself — it is cropped, downscaled and its
+alpha is baked in. To change the artwork, start from a full-size render and apply
+this recipe:
+
+| Step         | Value                                                                            |
+| ------------ | -------------------------------------------------------------------------------- |
+| Crop         | `left 82, top 198, width 1356, height 823` — places the crest as the design does |
+| Pad right to | `1574px` — so the strip spans the card's full inner width                        |
+| Alpha        | `max(r, g, b)`, minus a black level of `10` (subtracted, not clipped)            |
+| Colour       | un-premultiplied by `255 / max(r, g, b)`                                         |
+| Resize width | `900px`, PNG without palette quantisation                                        |
+
+Palette quantisation destroys the alpha, and the source's black is a pedestal
+around `8` rather than `0` — both leave a visible haze if skipped.
+
 ## Variables
 
 | Variable        | Purpose                        |

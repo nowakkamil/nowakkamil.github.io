@@ -1,7 +1,6 @@
 export const customerConfirmationPreview = {
-    name: 'John',
-    message:
-        'I would like to discuss a new digital product for our team. We need help refining the experience and building a fast, reliable first release.',
+    name: 'Kamil Nowak',
+    message: 'Have a project, opportunity, or idea in mind? Let’s talk.',
 } as const;
 
 export const escapeHtml = (value: string): string =>
@@ -47,8 +46,8 @@ export const renderCustomerConfirmationBodyHtml = (message: string): string => {
     const quotedMessage = renderBreakableHtml(message);
 
     return (
-        '<p style="margin: 0 0 16px 0;">Your message has been received. Here is a copy for your records:</p>' +
-        `<table class="message-quote" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; margin: 0 0 24px 0; border: 1px solid #173a61; border-left: 3px solid #53a4ff; border-radius: 5px; background-color: #020a18; table-layout: fixed;"><tr><td class="message-quote-opening" width="44" valign="top" style="width: 44px; padding: 14px 0 14px 18px; color: #53a4ff; font-size: 30px; font-weight: 700; line-height: 30px;">&ldquo;</td><td class="message-quote-content" style="padding: 17px 8px; color: #f2f6fb; font-size: 16px; line-height: 27px; overflow-wrap: anywhere; word-break: break-word; word-wrap: break-word;">${quotedMessage}</td><td class="message-quote-closing" width="42" valign="bottom" align="right" style="width: 42px; padding: 14px 18px 14px 0; color: #53a4ff; font-size: 30px; font-weight: 700; line-height: 30px;">&rdquo;</td></tr></table>` +
+        '<p style="margin: 0 0 22px 0;">Your message has been received. Here is a copy for your records:</p>' +
+        `<table class="message-quote" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; margin: 0 0 24px 0; border: 1px solid #14355a; border-left: 4px solid #63acf5; border-radius: 6px; background-color: #020a17; table-layout: fixed;"><tr><td class="message-quote-opening" width="44" valign="middle" style="width: 44px; padding: 14px 0 14px 18px; color: #63acf5; font-size: 42px; font-weight: 700; line-height: 42px;">&ldquo;</td><td class="message-quote-content" style="padding: 29px 10px; color: #f2f6fb; font-size: 18px; line-height: 30px; overflow-wrap: anywhere; word-break: break-word; word-wrap: break-word;">${quotedMessage}</td><td class="message-quote-closing" width="42" valign="middle" align="right" style="width: 42px; padding: 14px 18px 14px 0; color: #63acf5; font-size: 42px; font-weight: 700; line-height: 42px;">&rdquo;</td></tr></table>` +
         '<p style="margin: 0;">I’ll review it and reply as soon as possible.</p>'
     );
 };

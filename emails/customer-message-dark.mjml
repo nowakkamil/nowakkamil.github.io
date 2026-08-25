@@ -7,7 +7,7 @@
                 font-family="'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif"
                 font-weight="400"
             />
-            <mj-text color="#dce6f2" font-size="16px" line-height="28px" />
+            <mj-text color="#dce6f2" font-size="19px" line-height="32px" />
             <mj-section padding="0" />
             <mj-column padding="0" />
         </mj-attributes>
@@ -18,23 +18,26 @@
             .contact-surface {
                 width: 100% !important;
                 box-sizing: border-box !important;
-                border: 1px solid #192b42 !important;
-                border-radius: 10px !important;
-                background-color: #030a18 !important;
+                border: 1px solid #1c2331 !important;
+                border-radius: 12px !important;
+                background-color: #01060f !important;
                 background-clip: padding-box !important;
                 overflow: hidden !important;
             }
             .contact-surface > table {
                 width: 100% !important;
                 table-layout: fixed !important;
-                background-color: #030a18 !important;
+                background-color: #01060f !important;
                 border-collapse: separate !important;
                 border-spacing: 0 !important;
-                border-radius: 9px !important;
+                border-radius: 11px !important;
                 overflow: hidden !important;
             }
             .message-copy p {
                 margin-top: 0;
+            }
+            .header-rule {
+                background-image: linear-gradient(90deg, #7f9cbc 0%, #56698c 42%, #2b3652 100%);
             }
             .portfolio-link a,
             .email-signature a {
@@ -49,36 +52,74 @@
                 width: 100% !important;
                 max-width: 100% !important;
             }
+            /* This email is dark in every theme. Telling the client so stops
+               Apple Mail and Outlook from re-tinting it in either direction. */
+            :root {
+                color-scheme: dark;
+                supported-color-schemes: dark;
+            }
+            /* Outlook.com rewrites colours in dark mode and exposes these hooks
+               so the original palette can be restored. */
+            [data-ogsc] .email-canvas {
+                background-color: #00030c !important;
+            }
+            [data-ogsc] .contact-surface,
+            [data-ogsc] .contact-surface > table,
+            [data-ogsc] .email-signature > table,
+            [data-ogsc] .kn-email-signature-frame {
+                background-color: #01060f !important;
+            }
+            [data-ogsc] .email-greeting {
+                color: #f6f8fb !important;
+            }
+            [data-ogsc] .message-copy,
+            [data-ogsc] .message-copy p {
+                color: #dce6f2 !important;
+            }
+            [data-ogsc] .message-quote-content {
+                color: #f2f6fb !important;
+            }
+            [data-ogsc] .message-quote {
+                background-color: #020a17 !important;
+            }
+            [data-ogsc] .portfolio-link a,
+            [data-ogsc] .email-signature a,
+            [data-ogsc] .kn-email-signature-contact-row td {
+                color: #eef5fd !important;
+                -webkit-text-fill-color: #eef5fd !important;
+            }
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
                     padding-right: 24px !important;
                 }
                 .email-greeting {
-                    padding-top: 30px !important;
-                    font-size: 31px !important;
-                    line-height: 38px !important;
+                    padding-top: 32px !important;
+                    font-size: 36px !important;
+                    line-height: 44px !important;
                 }
                 .email-signature .kn-email-signature-frame {
-                    padding: 26px 24px 8px !important;
+                    padding: 26px 24px 128px !important;
                 }
                 .message-quote-opening {
                     display: block !important;
                     width: auto !important;
-                    padding: 14px 14px 0 !important;
-                    font-size: 22px !important;
-                    line-height: 22px !important;
+                    padding: 16px 16px 0 !important;
+                    font-size: 30px !important;
+                    line-height: 30px !important;
                 }
                 .message-quote-content {
                     display: block !important;
-                    padding: 8px 14px !important;
+                    padding: 10px 16px !important;
+                    font-size: 17px !important;
+                    line-height: 28px !important;
                 }
                 .message-quote-closing {
                     display: block !important;
                     width: auto !important;
-                    padding: 0 14px 14px !important;
-                    font-size: 22px !important;
-                    line-height: 22px !important;
+                    padding: 0 16px 16px !important;
+                    font-size: 30px !important;
+                    line-height: 30px !important;
                 }
             }
         </mj-style>
@@ -87,32 +128,37 @@
             content="dark" /></mj-raw
         >
     </mj-head>
-    <mj-body width="680px" background-color="#010611">
-        <mj-section padding="20px 16px" background-color="#010611">
+    <mj-body width="680px" background-color="#00030c">
+        <mj-section
+            css-class="email-canvas"
+            full-width="full-width"
+            padding="14px"
+            background-color="#00030c"
+        >
             <mj-column
                 css-class="contact-surface"
-                background-color="#030a18"
-                border="1px solid #192b42"
-                border-radius="10px"
+                background-color="#01060f"
+                border="1px solid #1c2331"
+                border-radius="12px"
                 padding="0"
             >
                 <mj-table
                     css-class="mobile-gutter"
                     cellpadding="0"
                     cellspacing="0"
-                    padding="36px 42px 0"
+                    padding="38px 44px 0"
                     width="100%"
                 >
                     <tr>
                         <td
                             width="50%"
                             style="
-                                padding: 0 18px 14px 0;
+                                padding: 0 18px 15px 0;
                                 color: #b9dcff;
-                                font-size: 12px;
+                                font-size: 14px;
                                 font-weight: 600;
                                 letter-spacing: 3px;
-                                line-height: 18px;
+                                line-height: 20px;
                                 text-transform: uppercase;
                             "
                         >
@@ -123,12 +169,12 @@
                             align="right"
                             width="50%"
                             style="
-                                padding: 0 0 14px;
+                                padding: 0 0 15px;
                                 color: #eef5fd;
-                                font-size: 11px;
+                                font-size: 12px;
                                 font-weight: 500;
-                                letter-spacing: 2.2px;
-                                line-height: 18px;
+                                letter-spacing: 2.4px;
+                                line-height: 20px;
                                 text-transform: uppercase;
                             "
                         >
@@ -137,12 +183,13 @@
                     </tr>
                     <tr>
                         <td
+                            class="header-rule"
                             colspan="2"
-                            bgcolor="#4f8fca"
+                            bgcolor="#4f6787"
                             height="1"
                             style="
                                 height: 1px;
-                                background-color: #4f8fca;
+                                background-color: #4f6787;
                                 font-size: 0;
                                 line-height: 0;
                                 mso-line-height-rule: exactly;
@@ -155,36 +202,36 @@
                 <mj-text
                     css-class="mobile-gutter email-greeting"
                     color="#f6f8fb"
-                    font-size="38px"
-                    font-weight="600"
+                    font-size="46px"
+                    font-weight="700"
                     letter-spacing="-1px"
-                    line-height="46px"
-                    padding="40px 42px 10px"
+                    line-height="54px"
+                    padding="40px 44px 12px"
                     >Hi {{ firstName }},</mj-text
                 >
                 <mj-text
                     css-class="mobile-gutter message-copy"
                     color="#dce6f2"
-                    font-size="17px"
+                    font-size="19px"
                     font-weight="400"
-                    line-height="29px"
-                    padding="10px 42px 36px"
+                    line-height="32px"
+                    padding="0 44px 21px"
                     >{{ message }}</mj-text
                 >
                 <mj-table
                     css-class="mobile-gutter"
                     cellpadding="0"
                     cellspacing="0"
-                    padding="0 42px"
+                    padding="0 44px"
                     width="100%"
                 >
                     <tr>
                         <td
-                            bgcolor="#263d5a"
+                            bgcolor="#1a2238"
                             height="1"
                             style="
                                 height: 1px;
-                                background-color: #263d5a;
+                                background-color: #1a2238;
                                 font-size: 0;
                                 line-height: 0;
                                 mso-line-height-rule: exactly;
