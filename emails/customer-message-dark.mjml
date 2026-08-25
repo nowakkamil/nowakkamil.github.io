@@ -80,7 +80,13 @@
                 color: #f2f6fb !important;
             }
             [data-ogsc] .message-quote {
+                background-color: #14355a !important;
+            }
+            [data-ogsc] .message-quote-panel {
                 background-color: #020a17 !important;
+            }
+            [data-ogsc] .message-quote-accent {
+                background-color: #63acf5 !important;
             }
             [data-ogsc] .portfolio-link a,
             [data-ogsc] .email-signature a,
@@ -100,6 +106,11 @@
                 }
                 .email-signature .kn-email-signature-frame {
                     padding: 26px 24px 128px !important;
+                }
+                .message-quote-accent {
+                    display: block !important;
+                    width: 100% !important;
+                    height: 2px !important;
                 }
                 .message-quote-opening {
                     display: block !important;
@@ -138,7 +149,7 @@
             <mj-column
                 css-class="contact-surface"
                 background-color="#00040e"
-                border="1px solid #1c2331"
+                border="none"
                 border-radius="12px"
                 padding="0"
             >
