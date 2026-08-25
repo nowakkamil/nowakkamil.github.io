@@ -22,6 +22,7 @@ const TURNSTILE_TOKEN_MAX_LENGTH = 2_048;
 const TURNSTILE_TIMEOUT_MS = 5_000;
 const TURNSTILE_SITEVERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' } as const;
+const PUBLIC_SIGNATURE_WAVE_URL = 'https://nowakkamil.com/email/signature-wave.png';
 
 const contactRequestSchema = contactSchema.extend({
     turnstileToken: z.string().trim().min(1).max(TURNSTILE_TOKEN_MAX_LENGTH),
@@ -62,7 +63,7 @@ const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): stri
         .replaceAll('{{assetEmail}}', `cid:${EMAIL_CID.email}`)
         .replaceAll('{{assetLinkedIn}}', `cid:${EMAIL_CID.linkedIn}`)
         .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`)
-        .replaceAll('{{assetWave}}', `cid:${EMAIL_CID.wave}`);
+        .replaceAll('{{assetWave}}', PUBLIC_SIGNATURE_WAVE_URL);
 
 const renderInternalNotificationHtml = ({ name, email, message }: ContactMessage): string =>
     internalContactNotificationHtml

@@ -18,7 +18,7 @@
             .inquiry-surface {
                 width: 100% !important;
                 box-sizing: border-box !important;
-                border: 1px solid #1c2331 !important;
+                border: 0 !important;
                 border-radius: 12px !important;
                 background-color: #00040e !important;
                 background-clip: padding-box !important;
@@ -202,7 +202,7 @@
                             style="
                                 padding: 29px;
                                 border: 1px solid #14355a;
-                                border-left: 4px solid #63acf5;
+                                border-left: 2px solid #63acf5;
                                 border-radius: 6px;
                                 background-color: #020a17;
                                 color: #f2f6fb;

@@ -12,7 +12,6 @@ export const EMAIL_CID = {
     email: 'signature-email',
     linkedIn: 'signature-linkedin',
     location: 'signature-location',
-    wave: 'signature-wave',
 } as const;
 
 export const EMAIL_ASSETS = {
@@ -40,11 +39,6 @@ export const EMAIL_ASSETS = {
         filename: 'location.png',
         contentId: EMAIL_CID.location,
         content: EMAIL_THEME_ASSET_BASE64.location,
-    },
-    wave: {
-        filename: 'signature-wave.png',
-        contentId: EMAIL_CID.wave,
-        content: EMAIL_THEME_ASSET_BASE64.wave,
     },
 } as const satisfies Record<string, EmailAttachment>;
 

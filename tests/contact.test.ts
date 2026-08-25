@@ -214,8 +214,11 @@ describe('contact Pages Function', () => {
         assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
         assert.match(String(visitorEmail.html), /src="cid:kn-monogram"/);
         assert.match(String(visitorEmail.html), /src="cid:signature-globe"/);
-        assert.match(String(visitorEmail.html), /src="cid:signature-wave"/);
-        assert.equal((visitorEmail.attachments as unknown[]).length, 6);
+        assert.match(
+            String(visitorEmail.html),
+            /https:\/\/nowakkamil\.com\/email\/signature-wave\.png/,
+        );
+        assert.equal((visitorEmail.attachments as unknown[]).length, 5);
         assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:firstName|message|asset\w+)\s*}}/);
     });
 
