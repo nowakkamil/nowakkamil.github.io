@@ -20,14 +20,14 @@
                 box-sizing: border-box !important;
                 border: 1px solid #1c2331 !important;
                 border-radius: 12px !important;
-                background-color: #01060f !important;
+                background-color: #00040e !important;
                 background-clip: padding-box !important;
                 overflow: hidden !important;
             }
             .inquiry-surface > table {
                 width: 100% !important;
                 table-layout: fixed !important;
-                background-color: #01060f !important;
+                background-color: #00040e !important;
                 border-collapse: separate !important;
                 border-spacing: 0 !important;
                 border-radius: 11px !important;
@@ -56,7 +56,7 @@
             }
             [data-ogsc] .inquiry-surface,
             [data-ogsc] .inquiry-surface > table {
-                background-color: #01060f !important;
+                background-color: #00040e !important;
             }
             [data-ogsc] .inquiry-quote {
                 background-color: #020a17 !important;
@@ -97,7 +97,7 @@
         >
             <mj-column
                 css-class="inquiry-surface"
-                background-color="#01060f"
+                background-color="#00040e"
                 border="1px solid #1c2331"
                 border-radius="12px"
                 padding="0"
