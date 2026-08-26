@@ -16,6 +16,8 @@ export function initContactTabs(): void {
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
 
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+    const switchEl = root.querySelector<HTMLElement>('.contact-tabs__switch');
+    const indicator = root.querySelector<HTMLElement>('.contact-tabs__glow');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let activeTarget =
         tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.tab ?? 'contact';
@@ -50,6 +52,41 @@ export function initContactTabs(): void {
         return true;
     };
 
+    const UNDERLINE_SQUASH = '0.68';
+    const UNDERLINE_SQUASH_DURATION = 180;
+    let squashTimeout = 0;
+
+    const syncIndicator = (squash = false): void => {
+        if (!switchEl || !indicator) {
+            return;
+        }
+
+        const activeTab = tabs.find((tab) => tab.dataset.tab === activeTarget);
+
+        if (!activeTab || activeTab.offsetWidth === 0) {
+            return;
+        }
+
+        switchEl.style.setProperty('--tab-underline-x', `${activeTab.offsetLeft}px`);
+        switchEl.style.setProperty(
+            '--tab-underline-y',
+            `${activeTab.offsetTop + activeTab.offsetHeight}px`,
+        );
+        switchEl.style.setProperty('--tab-underline-width', `${activeTab.offsetWidth}px`);
+
+        window.clearTimeout(squashTimeout);
+
+        if (!squash || reduceMotion) {
+            switchEl.style.setProperty('--tab-underline-squash', '1');
+            return;
+        }
+
+        switchEl.style.setProperty('--tab-underline-squash', UNDERLINE_SQUASH);
+        squashTimeout = window.setTimeout(() => {
+            switchEl.style.setProperty('--tab-underline-squash', '1');
+        }, UNDERLINE_SQUASH_DURATION);
+    };
+
     const setActiveTab = (target: string): void => {
         tabs.forEach((tab) => {
             const isActive = tab.dataset.tab === target;
@@ -66,7 +103,10 @@ export function initContactTabs(): void {
             panel.hidden = !isActive;
         });
 
+        const didMove = activeTarget !== target;
+
         activeTarget = target;
+        syncIndicator(didMove);
     };
 
     const activateTab = (target: string): void => {
@@ -136,6 +176,14 @@ export function initContactTabs(): void {
     };
 
     setActiveTab(activeTarget);
+
+    if (switchEl && indicator) {
+        switchEl.classList.add('is-measured');
+
+        document.fonts?.ready.then(() => syncIndicator());
+
+        new ResizeObserver(() => syncIndicator()).observe(switchEl);
+    }
 
     tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {

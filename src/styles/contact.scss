@@ -5,6 +5,9 @@ $contact-content-mobile-max-width: 32rem;
 $contact-panel-height: min(65svh, 32rem);
 $contact-content-scrollbar-gutter: 15px;
 $contact-content-end-inset: calc(0.75rem + $contact-content-scrollbar-gutter);
+$contact-tab-underline-thickness: 2px;
+$contact-tab-underline-travel: 560ms;
+$contact-tab-underline-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
 .nav__link-wrapper-container {
     isolation: isolate;
@@ -107,10 +110,41 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
         box-shadow: none;
         overflow: visible;
         pointer-events: auto;
+
+        --tab-underline-x: 0px;
+        --tab-underline-y: 0px;
+        --tab-underline-width: 0px;
+        --tab-underline-squash: 1;
     }
 
     &__glow {
-        display: none;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: var(--tab-underline-width);
+        height: $contact-tab-underline-thickness;
+        border-radius: $contact-tab-underline-thickness;
+        background: rgb(255 255 255 / 92%);
+        box-shadow:
+            0 0 0.5rem rgb(255 255 255 / 30%),
+            0 0 1.25rem rgb(255 255 255 / 18%),
+            0 0 2.4rem rgb(158 239 255 / 10%);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate3d(var(--tab-underline-x), var(--tab-underline-y), 0)
+            scaleY(var(--tab-underline-squash));
+        transform-origin: center bottom;
+        will-change: transform, width;
+
+        .contact-tabs__switch.is-measured & {
+            opacity: 1;
+            transition:
+                transform $contact-tab-underline-travel $contact-tab-underline-ease,
+                width $contact-tab-underline-travel $contact-tab-underline-ease,
+                opacity 220ms ease;
+        }
     }
 
     &__tab {
@@ -129,54 +163,54 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
         color: rgb(255 255 255 / 50%);
         cursor: pointer;
         transition:
-            color 180ms ease,
-            text-shadow 180ms ease,
-            transform 180ms ease;
+            color 260ms ease,
+            text-shadow 260ms ease,
+            transform 180ms $contact-tab-underline-ease;
 
         &::after {
             content: '';
             position: absolute;
             right: 0;
-            bottom: -1px;
+            bottom: -#{$contact-tab-underline-thickness};
             left: 0;
-            height: 1px;
-            background: rgb(255 255 255 / 34%);
+            height: $contact-tab-underline-thickness;
+            border-radius: $contact-tab-underline-thickness;
+            background: rgb(255 255 255 / 42%);
             opacity: 0;
-            transform: scaleX(0.68);
-            transform-origin: center;
+            transform: scale3d(0.4, 0.5, 1);
+            transform-origin: center bottom;
+            will-change: transform, opacity;
             transition:
-                background 180ms ease,
-                box-shadow 180ms ease,
-                height 180ms ease,
-                opacity 180ms ease,
-                transform 180ms ease;
+                opacity 260ms ease,
+                transform 260ms $contact-tab-underline-ease;
         }
 
         &.is-active {
-            color: rgb(255 255 255 / 90%);
+            color: rgb(255 255 255 / 92%);
             text-shadow:
                 0 0 0.85rem rgb(255 255 255 / 30%),
                 0 0 1.8rem rgb(158 239 255 / 14%);
 
             &::after {
-                opacity: 1;
-                transform: scaleX(1);
-                height: 2px;
-                background: rgb(255 255 255 / 90%);
-                box-shadow:
-                    0 0 0.55rem rgb(255 255 255 / 28%),
-                    0 0 1.35rem rgb(255 255 255 / 16%),
-                    0 0 2.4rem rgb(255 255 255 / 8%);
+                opacity: 0;
+                transform: scale3d(1, 0.5, 1);
+                transition-duration: 160ms;
             }
         }
 
-        &:hover {
-            color: rgb(255 255 255 / 70%);
+        &:hover:not(.is-active),
+        &:focus-visible:not(.is-active) {
+            color: rgb(255 255 255 / 78%);
 
             &::after {
                 opacity: 1;
-                transform: scaleX(1);
+                transform: scale3d(1, 0.5, 1);
             }
+        }
+
+        &:active:not(.is-active) {
+            transform: translate3d(0, 1px, 0);
+            transition-duration: 90ms;
         }
 
         &:focus-visible {
@@ -448,7 +482,7 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
 .contact-form {
     &__status {
         min-height: 1rem;
-        margin-top: 0.4rem;
+        margin-top: 0.6rem;
         text-align: center;
         color: rgb(255 255 255 / 72%);
     }
@@ -1214,6 +1248,11 @@ body:has(.contact-tabs:not([aria-hidden='true'])) .nav__link-wrapper-container::
     .contact-tabs__intro-emphasis,
     .recommendation-card__details summary {
         animation: none;
+        transition: none;
+    }
+
+    .contact-tabs__switch.is-measured .contact-tabs__glow,
+    .contact-tabs__tab::after {
         transition: none;
     }
 
