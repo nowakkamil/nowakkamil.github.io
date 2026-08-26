@@ -247,7 +247,7 @@ const fullStackProjects: PortfolioProject[] = [
         description:
             'A research-driven groupware application exploring real-time synchronization across distributed clients. The project focused on conflict handling, data consistency, and the architectural trade-offs required for reliable collaborative editing.',
 
-        period: 'February 2020 – July 2021',
+        period: 'March 2021 – July 2021',
         role: 'Master of Engineering Student',
 
         skills: [
@@ -271,8 +271,8 @@ const fullStackProjects: PortfolioProject[] = [
 
         constellation: {
             id: 'full-stack',
-            position: [0.153, 0.3, 0.12],
-            links: ['shareowner-online'],
+            position: [0.95, 1.4, -0.06],
+            links: [],
         },
     },
     {
@@ -283,7 +283,7 @@ const fullStackProjects: PortfolioProject[] = [
         description:
             'A web-based knowledge-management platform designed to help project teams organize and share information. Led a student development team while shaping the architecture, data model, and full-stack implementation.',
 
-        period: 'October 2016 – January 2020',
+        period: 'October 2019 – January 2020',
         role: 'BE Student / .NET Students Scientific Association Leader',
 
         skills: [
@@ -304,9 +304,8 @@ const fullStackProjects: PortfolioProject[] = [
 
         constellation: {
             id: 'full-stack',
-            position: [0.814, 1.292, -0.06],
-            links: ['help-and-support'],
-            labelOffset: [0, -0.18],
+            position: [0.485, 0.95, 0.14],
+            links: ['masters-thesis'],
         },
     },
     {
@@ -338,7 +337,7 @@ const fullStackProjects: PortfolioProject[] = [
 
         constellation: {
             id: 'full-stack',
-            position: [0.383, -0.714, -0.08],
+            position: [0.38, -0.714, -0.08],
             links: ['equiniti-website'],
             labelOffset: [0, 0.12],
         },
@@ -373,7 +372,7 @@ const fullStackProjects: PortfolioProject[] = [
         constellation: {
             id: 'full-stack',
             position: [-1.009, 0.088, 0.1],
-            links: ['masters-thesis'],
+            links: ['help-and-support'],
         },
     },
     {
@@ -435,8 +434,9 @@ const fullStackProjects: PortfolioProject[] = [
 
         constellation: {
             id: 'full-stack',
-            position: [0.45, 0.8, 0.14],
-            links: ['masters-thesis'],
+            position: [0.153, 0.4, 0.12],
+            links: ['bachelors-thesis', 'shareowner-online'],
+            labelOffset: [0, -0.18],
         },
     },
 ];
