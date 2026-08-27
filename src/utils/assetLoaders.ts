@@ -32,6 +32,7 @@ export interface ResponsiveImageSource {
 }
 
 const pendingImages = new Map<string, Promise<void>>();
+const decodedImages = new Set<string>();
 
 const getResponsiveImageRequestKey = (source: ResponsiveImageSource, sizes: string): string =>
     `${source.src}\n${source.srcset ?? ''}\n${sizes}\n${window.innerWidth}x${window.innerHeight}@${window.devicePixelRatio}`;
@@ -93,14 +94,21 @@ export const preloadImage = (source: ResponsiveImageSource, sizes: string): Prom
             image.srcset = source.srcset;
         }
         image.src = source.src;
-    }).catch((error: unknown) => {
-        pendingImages.delete(requestKey);
-        throw error;
-    });
+    })
+        .then(() => {
+            decodedImages.add(requestKey);
+        })
+        .catch((error: unknown) => {
+            pendingImages.delete(requestKey);
+            throw error;
+        });
 
     pendingImages.set(requestKey, pending);
     return pending;
 };
+
+export const isImageDecoded = (source: ResponsiveImageSource, sizes: string): boolean =>
+    decodedImages.has(getResponsiveImageRequestKey(source, sizes));
 
 export const loadJsonAsset = async <T>(source: string, assetName: string): Promise<T> => {
     try {

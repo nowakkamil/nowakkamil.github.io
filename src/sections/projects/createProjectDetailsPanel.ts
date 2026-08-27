@@ -5,6 +5,7 @@ import type { World } from '../../world/World';
 import {
     applyResponsiveImageSource,
     clearResponsiveImageSource,
+    isImageDecoded,
     preloadImage,
     type ResponsiveImageSource,
 } from '../../utils/assetLoaders';
@@ -20,12 +21,31 @@ import { constellations, getConstellationColorRgb } from './constellations';
 import { PROJECT_DETAILS_IMAGE_SIZES } from './projectImageAssets';
 import { preloadAdjacentProjectDetails } from './portfolioProjects';
 
-const DETAILS_CONTENT_DURATION = 0.22;
-const DETAILS_CONTENT_STAGGER = 0.02;
-const DETAILS_CLOSE_DURATION = 0.12;
-const DETAILS_CLOSE_STAGGER = 0.008;
-const DETAILS_RAPID_DURATION = 0.16;
-const DETAILS_RAPID_STAGGER = 0.012;
+const DETAILS_OPEN_DURATION = 0.3;
+const DETAILS_OPEN_STAGGER = 0.03;
+const DETAILS_SWITCH_OUT_DURATION = 0.16;
+const DETAILS_SWITCH_OUT_STAGGER = 0.016;
+const DETAILS_SWITCH_IN_DURATION = 0.26;
+const DETAILS_SWITCH_IN_STAGGER = 0.026;
+const DETAILS_CLOSE_DURATION = 0.14;
+const DETAILS_CLOSE_STAGGER = 0.01;
+const DETAILS_RAPID_DURATION = 0.2;
+const DETAILS_RAPID_STAGGER = 0.014;
+const DETAILS_SHELL_OUT_DURATION = 0.28;
+const DETAILS_CONTENT_SHIFT = 12;
+
+const getSwitchOffsets = (direction: number): { enter: number; exit: number } => {
+    if (direction > 0) {
+        return { enter: DETAILS_CONTENT_SHIFT, exit: -DETAILS_CONTENT_SHIFT };
+    }
+
+    if (direction < 0) {
+        return { enter: -DETAILS_CONTENT_SHIFT, exit: DETAILS_CONTENT_SHIFT };
+    }
+
+    return { enter: DETAILS_CONTENT_SHIFT, exit: DETAILS_CONTENT_SHIFT };
+};
+
 const MOBILE_SWIPE_CLOSE_DISTANCE = 72;
 const MOBILE_SWIPE_DIRECTION_RATIO = 1.15;
 
@@ -235,10 +255,12 @@ const createProjectDetailsPanel = (
     panel.append(controls, content);
     document.body.append(panel);
 
-    const animatedContent = [eyebrow, title, summary, meta, tagList];
+    const animatedContent = [screenshotFrame, eyebrow, title, summary, meta, tagList];
 
     let currentProjectId: string | undefined;
     let detailsSwapTimeline: gsap.core.Timeline | undefined;
+    let shellHideCall: gsap.core.Tween | undefined;
+    let switchDirection = 0;
 
     const applyScreenshotSource = (
         requestId: number,
@@ -256,23 +278,32 @@ const createProjectDetailsPanel = (
             screenshotFrame.classList.contains('is-loaded');
 
         screenshot.dataset.expectedSrc = nextScreenshot.src;
+        screenshotFrame.hidden = false;
 
         if (isCurrentScreenshotLoaded) {
-            screenshotFrame.hidden = false;
             screenshotFrame.classList.add('is-loaded');
             return;
         }
 
-        const hasVisibleScreenshot =
-            screenshot.complete &&
-            screenshot.naturalWidth > 0 &&
-            screenshotFrame.classList.contains('is-loaded');
+        if (isImageDecoded(nextScreenshot, PROJECT_DETAILS_IMAGE_SIZES)) {
+            applyResponsiveImageSource(screenshot, nextScreenshot, PROJECT_DETAILS_IMAGE_SIZES);
 
-        if (!hasVisibleScreenshot) {
-            screenshotFrame.classList.remove('is-loaded');
+            if (screenshot.complete && screenshot.naturalWidth > 0) {
+                screenshotFrame.classList.add('is-loaded');
+                return;
+            }
         }
-        screenshotFrame.hidden = false;
+
+        screenshotFrame.classList.remove('is-loaded');
         prepareScreenshotSwap(requestId, nextScreenshot);
+    };
+
+    const primeScreenshot = (project: PortfolioProject): void => {
+        if (project.detailsScreenshot) {
+            void preloadImage(project.detailsScreenshot, PROJECT_DETAILS_IMAGE_SIZES).catch(
+                () => undefined,
+            );
+        }
     };
 
     const showScreenshot = (project: PortfolioProject): void => {
@@ -328,25 +359,41 @@ const createProjectDetailsPanel = (
 
     const clearContentAnimation = (): void => {
         gsap.killTweensOf(animatedContent);
+        content.classList.remove('is-swapping');
         clearStaggeredContent(animatedContent);
     };
 
-    const animateContentIn = (rapid = false): gsap.core.Timeline => {
-        prepareStaggeredContent(animatedContent);
-        const timeline = gsap.timeline({
+    const createSwapTimeline = (settleOnComplete: boolean): gsap.core.Timeline => {
+        content.classList.add('is-swapping');
+
+        const timeline: gsap.core.Timeline = gsap.timeline({
             onComplete: () => {
-                if (detailsSwapTimeline !== timeline) {
+                if (!settleOnComplete || detailsSwapTimeline !== timeline) {
                     return;
                 }
 
-                clearStaggeredContent(animatedContent);
+                clearContentAnimation();
                 detailsSwapTimeline = undefined;
             },
         });
 
+        return timeline;
+    };
+
+    const animateContentIn = (
+        duration: number,
+        stagger: number,
+        fromY?: number,
+    ): gsap.core.Timeline => {
+        if (fromY !== undefined) {
+            prepareStaggeredContent(animatedContent, fromY);
+        }
+
+        const timeline = createSwapTimeline(true);
+
         addStaggeredContentIn(timeline, animatedContent, {
-            duration: rapid ? DETAILS_RAPID_DURATION : DETAILS_CONTENT_DURATION,
-            stagger: rapid ? DETAILS_RAPID_STAGGER : DETAILS_CONTENT_STAGGER,
+            duration,
+            stagger,
             ease: 'power3.out',
         });
         return timeline;
@@ -379,12 +426,19 @@ const createProjectDetailsPanel = (
             return;
         }
 
-        const wasHidden = panel.hidden || panel.getAttribute('aria-hidden') === 'true';
+        const direction = switchDirection;
+        const wasUnmounted = panel.hidden;
+        const wasClosing = !wasUnmounted && panel.getAttribute('aria-hidden') === 'true';
+        const wasHidden = wasUnmounted || wasClosing;
         const isSameProject = currentProjectId === project.id;
-        const wasTransitioning = detailsSwapTimeline?.isActive() ?? false;
-        const renderedWhileHidden = wasHidden;
+        const wasSwapping = detailsSwapTimeline?.isActive() ?? false;
+        const needsInitialRender = wasUnmounted || !currentProjectId;
 
-        if (renderedWhileHidden) {
+        switchDirection = 0;
+        shellHideCall?.kill();
+        shellHideCall = undefined;
+
+        if (wasHidden) {
             const activeElement = document.activeElement;
 
             returnFocusTarget =
@@ -393,6 +447,11 @@ const createProjectDetailsPanel = (
                 !panel.contains(activeElement)
                     ? activeElement
                     : undefined;
+        }
+
+        primeScreenshot(project);
+
+        if (needsInitialRender) {
             renderProject(project);
         }
 
@@ -407,72 +466,72 @@ const createProjectDetailsPanel = (
         }
 
         detailsSwapTimeline?.kill();
-        clearContentAnimation();
+        detailsSwapTimeline = undefined;
 
         if (reduceMotion) {
-            if (!renderedWhileHidden) {
+            clearContentAnimation();
+            if (!needsInitialRender) {
                 renderProject(project);
             }
             return;
         }
 
-        if (wasHidden || !currentProjectId) {
-            if (!renderedWhileHidden) {
+        if (needsInitialRender) {
+            detailsSwapTimeline = animateContentIn(
+                DETAILS_OPEN_DURATION,
+                DETAILS_OPEN_STAGGER,
+                DETAILS_CONTENT_SHIFT,
+            );
+            return;
+        }
+
+        if (wasClosing || wasSwapping) {
+            if (!isSameProject) {
                 renderProject(project);
             }
-            detailsSwapTimeline = animateContentIn();
+
+            detailsSwapTimeline = animateContentIn(DETAILS_RAPID_DURATION, DETAILS_RAPID_STAGGER);
             return;
         }
 
         if (isSameProject) {
+            clearContentAnimation();
             renderProject(project);
             return;
         }
 
-        if (wasTransitioning) {
-            renderProject(project);
-            detailsSwapTimeline = animateContentIn(true);
-            return;
-        }
-
-        const switchTimeline = gsap.timeline({
-            onComplete: () => {
-                if (detailsSwapTimeline !== switchTimeline) {
-                    return;
-                }
-
-                clearStaggeredContent(animatedContent);
-                detailsSwapTimeline = undefined;
-            },
-        });
+        const offsets = getSwitchOffsets(direction);
+        const switchTimeline = createSwapTimeline(true);
 
         addStaggeredContentOut(switchTimeline, animatedContent, {
-            duration: DETAILS_CONTENT_DURATION,
-            ease: 'power3.in',
-            y: 10,
+            duration: DETAILS_SWITCH_OUT_DURATION,
+            ease: 'power2.in',
+            y: offsets.exit,
             stagger: {
-                each: DETAILS_CONTENT_STAGGER,
+                each: DETAILS_SWITCH_OUT_STAGGER,
                 from: 'end',
             },
         });
         switchTimeline.call(() => {
             renderProject(project);
-            prepareStaggeredContent(animatedContent);
+            prepareStaggeredContent(animatedContent, offsets.enter);
         });
         addStaggeredContentIn(switchTimeline, animatedContent, {
-            duration: DETAILS_CONTENT_DURATION,
-            stagger: DETAILS_CONTENT_STAGGER,
+            duration: DETAILS_SWITCH_IN_DURATION,
+            stagger: DETAILS_SWITCH_IN_STAGGER,
             ease: 'power3.out',
         });
         detailsSwapTimeline = switchTimeline;
     };
 
     const finishHide = (): void => {
+        shellHideCall = undefined;
+        detailsSwapTimeline = undefined;
         resetSwipe();
         panel.classList.remove('is-visible');
         panel.hidden = true;
         controls.hidden = true;
-        clearStaggeredContent(animatedContent);
+        clearContentAnimation();
     };
 
     const hide = (immediate = false): void => {
@@ -480,10 +539,15 @@ const createProjectDetailsPanel = (
             return;
         }
 
+        switchDirection = 0;
         detailsSwapTimeline?.kill();
+        detailsSwapTimeline = undefined;
+        shellHideCall?.kill();
+        shellHideCall = undefined;
         gsap.killTweensOf(animatedContent);
         gsap.ticker.remove(commitPanelVisible);
 
+        panel.classList.remove('is-visible');
         controls.classList.remove('is-visible');
 
         panel.setAttribute('aria-hidden', 'true');
@@ -495,32 +559,27 @@ const createProjectDetailsPanel = (
             return;
         }
 
-        const closeTimeline = gsap.timeline({
-            onComplete: () => {
-                if (detailsSwapTimeline !== closeTimeline) {
-                    return;
-                }
+        const closeTimeline = createSwapTimeline(false);
 
-                detailsSwapTimeline = undefined;
-                finishHide();
-            },
-        });
         addStaggeredContentOut(closeTimeline, animatedContent, {
             duration: DETAILS_CLOSE_DURATION,
-            ease: 'power3.in',
-            y: 10,
+            ease: 'power2.in',
+            y: 8,
             stagger: {
                 each: DETAILS_CLOSE_STAGGER,
                 from: 'end',
             },
         });
         detailsSwapTimeline = closeTimeline;
+        shellHideCall = gsap.delayedCall(DETAILS_SHELL_OUT_DURATION, finishHide);
     };
 
     const showPreviousProject = (): void => {
+        switchDirection = -1;
         world.selectAdjacentPortfolioProject(-1);
     };
     const showNextProject = (): void => {
+        switchDirection = 1;
         world.selectAdjacentPortfolioProject(1);
     };
     const close = (): void => {
@@ -693,6 +752,7 @@ const createProjectDetailsPanel = (
 
     const destroy = (): void => {
         detailsSwapTimeline?.kill();
+        shellHideCall?.kill();
         screenshotRequestId += 1;
         gsap.ticker.remove(commitPanelVisible);
         gsap.ticker.remove(commitScreenshotLoaded);

@@ -248,13 +248,11 @@
     overscroll-behavior-y: auto;
     pointer-events: none;
     text-align: left;
-    transform: translate3d(0.8rem, -50%, 0) scale(0.985);
+    transform: translate3d(1.35rem, -50%, 0) scale(0.982);
     transition:
-        opacity 220ms ease,
-        transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        filter 320ms ease;
+        opacity 200ms cubic-bezier(0.4, 0, 1, 1),
+        transform 260ms cubic-bezier(0.4, 0, 1, 1);
     mask-image: linear-gradient(to bottom, black 0, black calc(100% - 1.1rem), transparent 100%);
-    filter: blur(8px);
 
     @include component.hidden-mounted;
 
@@ -262,7 +260,9 @@
         opacity: 1;
         pointer-events: auto;
         transform: translate3d(0, -50%, 0) scale(1);
-        filter: blur(0);
+        transition:
+            opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+            transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     &::-webkit-scrollbar {
@@ -299,26 +299,30 @@
         gap: 0.6rem;
         opacity: 0;
         pointer-events: none;
-        transform: translate3d(0.8rem, 0.25rem, 0) scale(0.985);
+        transform: scale(0.94);
+        transform-origin: 100% 50%;
         transition:
-            opacity 220ms ease,
-            transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-            filter 320ms ease;
-        filter: blur(8px);
+            opacity 160ms cubic-bezier(0.4, 0, 1, 1),
+            transform 220ms cubic-bezier(0.4, 0, 1, 1);
 
         @include component.hidden-mounted(flex);
 
         &.is-visible {
             opacity: 1;
             pointer-events: auto;
-            transform: translate3d(0, 0, 0) scale(1);
-            filter: blur(0);
+            transform: scale(1);
+            transition:
+                opacity 240ms cubic-bezier(0.22, 1, 0.36, 1) 70ms,
+                transform 380ms cubic-bezier(0.22, 1, 0.36, 1) 70ms;
         }
     }
 
     &__content {
         padding-bottom: 1rem;
-        will-change: opacity, transform, filter;
+
+        &.is-swapping > * {
+            will-change: opacity, transform;
+        }
     }
 
     &__control,
@@ -428,16 +432,19 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            transform: scale(1.008);
-            will-change: opacity, transform;
+            transform: scale(1.022);
             transition:
-                opacity 220ms ease,
-                transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+                opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         &.is-loaded &-image {
             opacity: 1;
             transform: scale(1);
+        }
+
+        &:not(.is-loaded) &-image {
+            will-change: opacity, transform;
         }
     }
 
@@ -512,11 +519,19 @@
     @include responsive.reduced-motion {
         transition: none;
 
+        &.is-visible,
+        &__controls,
+        &__controls.is-visible,
         &__screenshot,
         &__screenshot-image,
         &__control,
         &__close {
             transition: none;
+        }
+
+        &__content.is-swapping > *,
+        &__screenshot:not(.is-loaded) &__screenshot-image {
+            will-change: auto;
         }
     }
 
@@ -529,7 +544,7 @@
             calc(104svh - 5.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom))
         );
         padding-right: 0.5rem;
-        transform: translate3d(0, 0.75rem, 0) scale(0.985);
+        transform: translate3d(0, 1.1rem, 0) scale(0.982);
         overscroll-behavior: contain;
         touch-action: pan-y;
         -webkit-overflow-scrolling: touch;
@@ -539,12 +554,7 @@
         }
 
         &__controls {
-            transform: translate3d(0, 0.75rem, 0) scale(0.985);
             padding: 0.45rem 0.4rem 0.65rem;
-
-            &.is-visible {
-                transform: translate3d(0, 0, 0) scale(1);
-            }
         }
 
         &__content {

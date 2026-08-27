@@ -6,7 +6,10 @@ const coreDisciplineSkills: PortfolioSkill[] = [
     { id: 'motion-3d', label: 'Motion 3D' },
 ];
 
+const fullstackSkills: PortfolioSkill[] = [{ id: 'full-stack', label: 'Full-Stack Development' }];
+
 const frontendSkills: PortfolioSkill[] = [
+    { id: 'front-end', label: 'Front-End Development' },
     { id: 'react', label: 'React' },
     { id: 'angular', label: 'Angular' },
     { id: 'javascript', label: 'JavaScript' },
@@ -15,6 +18,7 @@ const frontendSkills: PortfolioSkill[] = [
     { id: 'css', label: 'CSS' },
     { id: 'scss', label: 'SCSS' },
     { id: 'yjs', label: 'Yjs' },
+    { id: 'barbajs', label: 'Barba.js' },
     { id: 'material-ui', label: 'Material UI' },
     { id: 'responsive-web-design', label: 'Responsive Web Design' },
     { id: 'eq-design-system', label: 'EQ Design System' },
@@ -22,6 +26,7 @@ const frontendSkills: PortfolioSkill[] = [
 ];
 
 const backendAndDataSkills: PortfolioSkill[] = [
+    { id: 'back-end', label: 'Back-End Development' },
     { id: 'csharp-dotnet', label: 'C# / .NET' },
     { id: 'csharp', label: 'C#' },
     { id: 'aspnet-core', label: 'ASP.NET Core' },
@@ -59,6 +64,7 @@ const architectureAndResearchSkills: PortfolioSkill[] = [
     { id: 'computer-science-research', label: 'Computer Science Research' },
     { id: 'knowledge-management', label: 'Knowledge Management' },
     { id: 'web-architecture', label: 'Web Architecture' },
+    { id: 'spa-architecture', label: 'SPA Architecture' },
     { id: 'team-leadership', label: 'Team Leadership' },
 ];
 
@@ -90,6 +96,10 @@ const motionAndRealTimeGraphicsSkills: PortfolioSkill[] = [
     { id: 'three-js', label: 'Three.js' },
     { id: 'webgl', label: 'WebGL' },
     { id: 'glsl', label: 'GLSL' },
+    { id: 'split-text', label: 'GSAP SplitText' },
+    { id: 'scroll-trigger', label: 'GSAP ScrollTrigger' },
+    { id: 'scroll-smoother', label: 'GSAP ScrollSmoother' },
+    { id: '3d-interaction', label: '3D Interaction' },
     { id: 'particle-systems', label: 'Particle Systems' },
     { id: 'shader-programming', label: 'Shader Programming' },
     { id: 'camera-animation', label: 'Camera Animation' },
@@ -101,6 +111,7 @@ const aiSkills: PortfolioSkill[] = [{ id: 'llm', label: 'LLM' }];
 
 export const portfolioSkills: PortfolioSkill[] = [
     ...coreDisciplineSkills,
+    ...fullstackSkills,
     ...frontendSkills,
     ...backendAndDataSkills,
     ...cloudCmsTestingAndDeliverySkills,

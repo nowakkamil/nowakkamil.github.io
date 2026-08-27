@@ -261,7 +261,7 @@ export class PortfolioConstellation {
         }
 
         const motionScale = this.responsiveConfig.constellation.motionScale;
-        this.group.rotation.y = Math.sin(elapsed * 0.035) * 0.05 * motionScale;
+        this.group.rotation.y = Math.sin(elapsed * 0.07 + 2.9) * 0.05 * motionScale;
         this.group.rotation.x = Math.sin(elapsed * 0.045 + 1.3) * 0.03 * motionScale;
         this.group.rotation.z = Math.sin(elapsed * 0.025 + 0.5) * 0.015 * motionScale;
     }

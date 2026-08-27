@@ -114,7 +114,16 @@ const frontEndProjects: PortfolioProject[] = [
         period: 'April 2019 – June 2019',
         role: 'Developer',
 
-        skills: ['front-end', 'html', 'css', 'javascript', 'responsive-design', 'github-pages'],
+        skills: [
+            'front-end',
+            'html',
+            'css',
+            'javascript',
+            'barbajs',
+            'gsap',
+            'responsive-design',
+            'github-pages',
+        ],
 
         domain: 'IT Services / Web Portals',
         owner: 'Cracow University of Technology',
@@ -337,8 +346,8 @@ const fullStackProjects: PortfolioProject[] = [
 
         constellation: {
             id: 'full-stack',
-            position: [0.38, -0.714, -0.08],
-            links: ['equiniti-website'],
+            position: [-0.773, -0.9, 0],
+            links: ['equiniti-website', 'abb-cynk-portal'],
             labelOffset: [0, 0.12],
         },
     },
@@ -399,11 +408,10 @@ const fullStackProjects: PortfolioProject[] = [
 
         domain: 'Corporate Services / Financial Ecosystem',
         owner: 'Endava (Client: Equiniti)',
-
         constellation: {
             id: 'full-stack',
-            position: [-0.773, -0.9, 0],
-            links: ['abb-cynk-portal'],
+            position: [0.38, -0.714, -0.08],
+            links: ['help-and-support'],
             labelOffset: [0, 0.12],
         },
     },
@@ -435,7 +443,7 @@ const fullStackProjects: PortfolioProject[] = [
         constellation: {
             id: 'full-stack',
             position: [0.153, 0.4, 0.12],
-            links: ['bachelors-thesis', 'shareowner-online'],
+            links: ['bachelors-thesis'],
             labelOffset: [0, -0.18],
         },
     },
@@ -518,7 +526,7 @@ const backEndProjects: PortfolioProject[] = [
             'back-end',
             'csharp',
             'aspnet-core',
-            'tsql',
+            't-sql',
             'activemq',
             'specflow',
             'teamcity',

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import wakeFragmentShader from '../shaders/cursorWake/fragment.glsl';
 import wakeVertexShader from '../shaders/cursorWake/vertex.glsl';
+import { smoothstep } from '../../utils/animation';
 
 const INTERACTIVE_SELECTOR = 'a, button, [data-scroll], [data-cursor], [data-magnetic]';
 const WAKE_POINT_COUNT = 14;
@@ -10,6 +11,10 @@ const WAKE_FADE_SECONDS = 0.6;
 const PAN_DEAD_ZONE = 18;
 const PAN_MAX_SPEED = 12800;
 const SCROLL_CUE_REVEAL_OFFSET = 16;
+// Startup frames are long enough that exponential damping can resolve in a
+// single step, which would pop the cues in instead of fading them.
+const CUE_FADE_MAX_DELTA = 1 / 30;
+const SOUND_CUE_INTRO_DURATION = 1.1;
 const CORE_IDLE_COLOR = new THREE.Color(0xffffff);
 const CORE_HOVER_COLOR = new THREE.Color(0.72, 0.52, 1);
 
@@ -78,6 +83,8 @@ export class CursorSystem {
     private soundCueRequestedVisibility = 0;
     private projectCueTargetOpacity = 0;
     private soundCueTargetOpacity = 0;
+    private soundCueIntroProgress = 0;
+    private soundCueIntroComplete = false;
     private scrollCueVisibility = 0;
     private scrollCueTargetVisibility = 0;
     private scrollCueBaseY = 0;
@@ -265,7 +272,7 @@ export class CursorSystem {
         this.updateCueFades(delta);
 
         if (this.htmlCursorHandoffPending) {
-            this.setCursorLabelActive(true);
+            this.setCursorLabelActive(this.active);
         }
 
         this.updateCuePosition(this.projectCueSprite);
@@ -318,11 +325,38 @@ export class CursorSystem {
     }
 
     private updateCueFades(delta: number): void {
-        const projectDamping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * 10);
-        const soundOpacity = this.soundCueSprite?.material.opacity ?? 0;
-        const soundFadeRate = this.soundCueTargetOpacity > soundOpacity ? 2.5 : 10;
-        const soundDamping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * soundFadeRate);
+        const fadeDelta = Math.min(delta, CUE_FADE_MAX_DELTA);
+        const projectDamping = this.reducedMotion ? 1 : 1 - Math.exp(-fadeDelta * 10);
         this.updateCueFade(this.projectCueSprite, this.projectCueTargetOpacity, projectDamping);
+        this.updateSoundCueFade(fadeDelta);
+    }
+
+    private updateSoundCueFade(delta: number): void {
+        if (!this.soundCueSprite) {
+            return;
+        }
+
+        const material = this.soundCueSprite.material;
+        if (!this.soundCueIntroComplete) {
+            if (this.soundCueTargetOpacity > 0) {
+                this.soundCueIntroProgress = this.reducedMotion
+                    ? 1
+                    : Math.min(1, this.soundCueIntroProgress + delta / SOUND_CUE_INTRO_DURATION);
+                material.opacity =
+                    smoothstep(this.soundCueIntroProgress) * this.soundCueTargetOpacity;
+                this.soundCueIntroComplete = this.soundCueIntroProgress >= 1;
+                return;
+            }
+
+            if (material.opacity <= 0) {
+                return;
+            }
+
+            this.soundCueIntroComplete = true;
+        }
+
+        const soundFadeRate = this.soundCueTargetOpacity > material.opacity ? 2.5 : 10;
+        const soundDamping = this.reducedMotion ? 1 : 1 - Math.exp(-delta * soundFadeRate);
         this.updateCueFade(this.soundCueSprite, this.soundCueTargetOpacity, soundDamping);
     }
 
