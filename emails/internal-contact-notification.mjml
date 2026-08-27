@@ -71,6 +71,26 @@
                 color: #53a4ff !important;
                 -webkit-text-fill-color: #53a4ff !important;
             }
+            @media only screen and (max-width: 600px) {
+                .inquiry-eyebrow {
+                    font-size: 12px !important;
+                }
+                .inquiry-domain {
+                    font-size: 11px !important;
+                    letter-spacing: 2px !important;
+                }
+                .inquiry-name div {
+                    font-size: 38px !important;
+                    line-height: 46px !important;
+                }
+                .inquiry-email div {
+                    font-size: 14px !important;
+                    line-height: 24px !important;
+                }
+                .inquiry-message-label div {
+                    font-size: 12px !important;
+                }
+            }
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
@@ -83,6 +103,8 @@
                 }
                 .inquiry-name {
                     padding-top: 30px !important;
+                }
+                .inquiry-name div {
                     font-size: 33px !important;
                     line-height: 40px !important;
                 }
@@ -116,6 +138,7 @@
                 >
                     <tr>
                         <td
+                            class="inquiry-eyebrow"
                             width="50%"
                             style="
                                 padding: 0 18px 15px 0;
@@ -130,6 +153,7 @@
                             New inquiry
                         </td>
                         <td
+                            class="inquiry-domain"
                             align="right"
                             width="50%"
                             style="
@@ -183,7 +207,7 @@
                     ><a href="mailto:{{ customerEmail }}">{{ customerEmail }}</a></mj-text
                 >
                 <mj-text
-                    css-class="mobile-gutter"
+                    css-class="mobile-gutter inquiry-message-label"
                     color="#b9dcff"
                     font-size="13px"
                     font-weight="600"

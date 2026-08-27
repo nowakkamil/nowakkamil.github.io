@@ -94,6 +94,23 @@
                 color: #eef5fd !important;
                 -webkit-text-fill-color: #eef5fd !important;
             }
+            @media only screen and (max-width: 600px) {
+                .email-eyebrow {
+                    font-size: 12px !important;
+                }
+                .portfolio-link {
+                    font-size: 11px !important;
+                    letter-spacing: 2px !important;
+                }
+                .email-greeting div {
+                    font-size: 40px !important;
+                    line-height: 48px !important;
+                }
+                .message-copy p {
+                    font-size: 17px !important;
+                    line-height: 28px !important;
+                }
+            }
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
@@ -101,6 +118,8 @@
                 }
                 .email-greeting {
                     padding-top: 32px !important;
+                }
+                .email-greeting div {
                     font-size: 36px !important;
                     line-height: 44px !important;
                 }
@@ -166,6 +185,7 @@
                 >
                     <tr>
                         <td
+                            class="email-eyebrow"
                             width="50%"
                             style="
                                 padding: 0 18px 15px 0;
