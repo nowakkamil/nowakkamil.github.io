@@ -10,19 +10,17 @@ import {
 } from '../customerConfirmation.ts';
 import { customerMessageDarkHtml } from '../generated/customer-message-dark.ts';
 import { internalContactNotificationHtml } from '../generated/internal-contact-notification.ts';
+import { EMAIL_ASSET_URLS } from '../generated/email-asset-urls.ts';
 import {
     renderInternalNotificationMessageHtml,
     renderInternalNotificationText,
 } from '../internalNotification.ts';
-
-import { EMAIL_ATTACHMENTS, EMAIL_CID, type EmailAttachment } from '../emailAssets.ts';
 
 const MAX_BODY_BYTES = 16_384;
 const TURNSTILE_TOKEN_MAX_LENGTH = 2_048;
 const TURNSTILE_TIMEOUT_MS = 5_000;
 const TURNSTILE_SITEVERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' } as const;
-const PUBLIC_SIGNATURE_WAVE_URL = 'https://nowakkamil.com/email/signature-wave.png';
 
 const contactRequestSchema = contactSchema.extend({
     turnstileToken: z.string().trim().min(1).max(TURNSTILE_TOKEN_MAX_LENGTH),
@@ -51,19 +49,18 @@ interface ResendEmail {
     text: string;
     html?: string;
     replyTo?: string;
-    attachments?: EmailAttachment[];
 }
 
 const renderCustomerConfirmationHtml = ({ name, message }: ContactMessage): string =>
     customerMessageDarkHtml
         .replace(/{{\s*firstName\s*}}/g, escapeHtml(getFirstName(name)))
         .replace(/{{\s*message\s*}}/g, renderCustomerConfirmationBodyHtml(message))
-        .replaceAll('{{assetMonogram}}', `cid:${EMAIL_CID.monogram}`)
-        .replaceAll('{{assetGlobe}}', `cid:${EMAIL_CID.globe}`)
-        .replaceAll('{{assetEmail}}', `cid:${EMAIL_CID.email}`)
-        .replaceAll('{{assetLinkedIn}}', `cid:${EMAIL_CID.linkedIn}`)
-        .replaceAll('{{assetLocation}}', `cid:${EMAIL_CID.location}`)
-        .replaceAll('{{assetWave}}', PUBLIC_SIGNATURE_WAVE_URL);
+        .replaceAll('{{assetMonogram}}', EMAIL_ASSET_URLS.monogram)
+        .replaceAll('{{assetGlobe}}', EMAIL_ASSET_URLS.globe)
+        .replaceAll('{{assetEmail}}', EMAIL_ASSET_URLS.email)
+        .replaceAll('{{assetLinkedIn}}', EMAIL_ASSET_URLS.linkedIn)
+        .replaceAll('{{assetLocation}}', EMAIL_ASSET_URLS.location)
+        .replaceAll('{{assetWave}}', EMAIL_ASSET_URLS.wave);
 
 const renderInternalNotificationHtml = ({ name, email, message }: ContactMessage): string =>
     internalContactNotificationHtml
@@ -180,7 +177,6 @@ const createEmails = (
               subject: 'nowakkamil.com — Your message has been received',
               text: renderCustomerConfirmationText(message.message),
               html: renderCustomerConfirmationHtml(message),
-              attachments: [...EMAIL_ATTACHMENTS],
           }
         : null;
 

@@ -18,6 +18,10 @@
   <img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 8" />
 </p>
 
+<p align="center">
+  <img src="docs/assets/showcase.gif" alt="Animated showcase of the interactive 3D portfolio: cinematic WebGL environment, scroll-directed transitions and the project constellation" />
+</p>
+
 ## About the project
 
 This is not a template-based portfolio or a static collection of cards. It is an exploration of how software engineering, interface design, animation and real-time rendering can work together without sacrificing clarity, accessibility or maintainability.

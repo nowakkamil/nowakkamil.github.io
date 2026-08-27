@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,14 +31,8 @@ const themedSignatureAssets = [
     { key: 'location', filename: 'location.png' },
 ];
 const staticSignatureAssets = [{ key: 'wave', filename: 'signature-wave.png' }];
-const signatureAssetPreviewReplacements = [
-    ['{{assetMonogram}}', 'https://nowakkamil.com/email/kn-monogram.png'],
-    ['{{assetGlobe}}', 'https://nowakkamil.com/email/globe.png'],
-    ['{{assetEmail}}', 'https://nowakkamil.com/email/email.png'],
-    ['{{assetLinkedIn}}', 'https://nowakkamil.com/email/linkedin.png'],
-    ['{{assetLocation}}', 'https://nowakkamil.com/email/location.png'],
-    ['{{assetWave}}', 'https://nowakkamil.com/email/signature-wave.png'],
-];
+const publicEmailAssetBaseUrl = 'https://nowakkamil.com/email';
+const assetVersionManifestPath = path.join(projectRoot, 'emails', 'asset-versions.json');
 
 const customerVariant = 'customer-message-dark';
 const internalVariant = 'internal-contact-notification';
@@ -56,10 +51,36 @@ const internalPreviewReplacements = [
     ],
 ];
 
-const resolveSignaturePreviewAssets = (html) => {
+const signatureAssetTokens = {
+    monogram: '{{assetMonogram}}',
+    globe: '{{assetGlobe}}',
+    email: '{{assetEmail}}',
+    linkedIn: '{{assetLinkedIn}}',
+    location: '{{assetLocation}}',
+    wave: '{{assetWave}}',
+};
+
+async function loadSignatureAssetBuffers() {
+    const entries = await Promise.all([
+        ...themedSignatureAssets.map(async ({ key, filename }) => {
+            const buffer = await sharp(path.join(emailAssetSourceDirectory, filename))
+                .tint({ r: 83, g: 164, b: 255 })
+                .png()
+                .toBuffer();
+            return [key, { filename, buffer }];
+        }),
+        ...staticSignatureAssets.map(async ({ key, filename }) => {
+            const buffer = await readFile(path.join(emailAssetSourceDirectory, filename));
+            return [key, { filename, buffer }];
+        }),
+    ]);
+    return Object.fromEntries(entries);
+}
+
+const resolveSignatureUrlAssets = (html, assetUrls) => {
     let resolvedHtml = html;
-    for (const [token, url] of signatureAssetPreviewReplacements) {
-        resolvedHtml = resolvedHtml.replaceAll(token, url);
+    for (const [key, token] of Object.entries(signatureAssetTokens)) {
+        resolvedHtml = resolvedHtml.replaceAll(token, assetUrls[key]);
     }
     return resolvedHtml;
 };
@@ -81,7 +102,7 @@ async function compile(mjml, sourcePath, outputName) {
     return html;
 }
 
-async function buildVariant(variant) {
+async function buildVariant(variant, assetUrls) {
     const sourcePath = path.join(projectRoot, 'emails', `${variant}.mjml`);
     const signaturePath = path.join(projectRoot, 'emails', 'signature', 'signature.automated.html');
     const [sourceTemplate, signature] = await Promise.all([
@@ -107,7 +128,7 @@ async function buildVariant(variant) {
     for (const [pattern, value] of previewReplacements) {
         previewSource = previewSource.replace(pattern, value);
     }
-    previewSource = resolveSignaturePreviewAssets(previewSource);
+    previewSource = resolveSignatureUrlAssets(previewSource, assetUrls);
 
     const [productionHtml, previewHtml] = await Promise.all([
         compile(source, sourcePath, `${variant}.html`),
@@ -156,10 +177,10 @@ async function buildInternalVariant() {
     console.log(`Built functions/generated/${internalVariant}.ts`);
 }
 
-async function buildSignaturePreview() {
+async function buildSignaturePreview(assetUrls) {
     const signatureDirectory = path.join(projectRoot, 'emails', 'signature');
     const signaturePath = path.join(signatureDirectory, 'signature.html');
-    const signature = resolveSignaturePreviewAssets(await readFile(signaturePath, 'utf8'));
+    const signature = resolveSignatureUrlAssets(await readFile(signaturePath, 'utf8'), assetUrls);
     const indentedSignature = signature
         .trimEnd()
         .split('\n')
@@ -182,36 +203,93 @@ ${indentedSignature}
     console.log('Built emails/signature/signature.preview.html');
 }
 
-async function publishSignatureAssets() {
-    await mkdir(publicEmailAssetDirectory, { recursive: true });
-    const encodedAssets = Object.fromEntries(
-        await Promise.all([
-            ...themedSignatureAssets.map(async ({ key, filename }) => {
-                const buffer = await sharp(path.join(emailAssetSourceDirectory, filename))
-                    .tint({ r: 83, g: 164, b: 255 })
-                    .png()
-                    .toBuffer();
-                await writeFile(path.join(publicEmailAssetDirectory, filename), buffer);
-                return [key, buffer.toString('base64')];
+const computeAssetSetHash = (assetBuffers) => {
+    const hash = createHash('sha256');
+    for (const [key, { buffer }] of Object.entries(assetBuffers).sort(([a], [b]) =>
+        a.localeCompare(b),
+    )) {
+        hash.update(key);
+        hash.update(buffer);
+    }
+    return hash.digest('hex');
+};
+
+async function readAssetVersionManifest() {
+    let raw;
+    try {
+        raw = await readFile(assetVersionManifestPath, 'utf8');
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return [];
+        }
+        throw error;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed?.versions)) {
+        throw new Error('emails/asset-versions.json must contain a "versions" array.');
+    }
+    return parsed.versions;
+}
+
+// The directory name is allocated once, the first time a given set of asset
+// bytes is published, and recorded in the manifest. Later builds look the name
+// up by hash rather than deriving it from the clock: a rebuild that changes no
+// asset therefore reuses the same directory instead of minting a new one for
+// identical bytes, and changed assets can never land back on a directory an
+// already-sent email points at.
+async function resolveAssetVersion(assetBuffers) {
+    const hash = computeAssetSetHash(assetBuffers);
+    const versions = await readAssetVersionManifest();
+    const published = versions.find((entry) => entry.hash === hash);
+    if (published) {
+        return published;
+    }
+
+    const version = versions.reduce((highest, entry) => Math.max(highest, entry.version), 0) + 1;
+    const date = new Date().toISOString().slice(0, 10);
+    const allocated = { version, date, directory: `v${version}-${date}`, hash };
+    await writeFile(
+        assetVersionManifestPath,
+        `${JSON.stringify({ versions: [...versions, allocated] }, null, 4)}\n`,
+    );
+    console.log(`Allocated email asset version ${allocated.directory}`);
+    return allocated;
+}
+
+// A version directory that has been referenced by a sent email must keep
+// serving those exact bytes forever, so publishing only ever adds a new
+// directory — earlier ones are left in place.
+async function publishSignatureAssets(assetBuffers) {
+    const { directory } = await resolveAssetVersion(assetBuffers);
+    const versionDirectory = path.join(publicEmailAssetDirectory, directory);
+    await mkdir(versionDirectory, { recursive: true });
+
+    const assetUrls = Object.fromEntries(
+        await Promise.all(
+            Object.entries(assetBuffers).map(async ([key, { filename, buffer }]) => {
+                await writeFile(path.join(versionDirectory, filename), buffer);
+                return [key, `${publicEmailAssetBaseUrl}/${directory}/${filename}`];
             }),
-            ...staticSignatureAssets.map(async ({ key, filename }) => {
-                const buffer = await readFile(path.join(emailAssetSourceDirectory, filename));
-                await writeFile(path.join(publicEmailAssetDirectory, filename), buffer);
-                return [key, buffer.toString('base64')];
-            }),
-        ]),
+        ),
     );
     await writeFile(
-        path.join(generatedModuleDirectory, 'email-theme-assets.ts'),
-        `// Generated by npm run email:build. Do not edit.\nexport const EMAIL_THEME_ASSET_BASE64 = ${JSON.stringify(encodedAssets)} as const;\n`,
+        path.join(generatedModuleDirectory, 'email-asset-urls.ts'),
+        `// Generated by npm run email:build. Do not edit.\nexport const EMAIL_ASSET_URLS = ${JSON.stringify(assetUrls, null, 4)} as const;\n`,
     );
-    console.log('Published themed public/email assets');
-    console.log('Built functions/generated/email-theme-assets.ts');
+    console.log(`Published public/email/${directory} asset directory`);
+    console.log('Built functions/generated/email-asset-urls.ts');
+    return assetUrls;
 }
 
 await Promise.all([
     mkdir(outputDirectory, { recursive: true }),
     mkdir(generatedModuleDirectory, { recursive: true }),
 ]);
-await publishSignatureAssets();
-await Promise.all([buildVariant(customerVariant), buildInternalVariant(), buildSignaturePreview()]);
+const signatureAssetBuffers = await loadSignatureAssetBuffers();
+const signatureAssetUrls = await publishSignatureAssets(signatureAssetBuffers);
+await Promise.all([
+    buildVariant(customerVariant, signatureAssetUrls),
+    buildInternalVariant(),
+    buildSignaturePreview(signatureAssetUrls),
+]);

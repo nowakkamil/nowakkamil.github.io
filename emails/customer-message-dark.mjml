@@ -97,7 +97,7 @@
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
-                    padding-right: 92px !important;
+                    padding-right: 24px !important;
                 }
                 .email-greeting {
                     padding-top: 32px !important;
@@ -108,9 +108,8 @@
                    percentage that keeps the wave below the last contact row. */
                 .email-signature .kn-email-signature-frame {
                     padding-top: 26px !important;
-                    padding-left: 92px !important;
-                    padding-right: 92px !important;
-                    padding-bottom: 20% !important;
+                    padding-left: 24px !important;
+                    padding-right: 24px !important;
                 }
                 .message-quote-accent {
                     display: block !important;

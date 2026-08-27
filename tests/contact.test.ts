@@ -212,13 +212,19 @@ describe('contact Pages Function', () => {
         assert.match(String(visitorEmail.html), /This is a valid contact message\./);
         assert.match(String(visitorEmail.text), /This is a valid contact message\./);
         assert.match(String(visitorEmail.html), /https:\/\/nowakkamil\.com/);
-        assert.match(String(visitorEmail.html), /src="cid:kn-monogram"/);
-        assert.match(String(visitorEmail.html), /src="cid:signature-globe"/);
         assert.match(
             String(visitorEmail.html),
-            /https:\/\/nowakkamil\.com\/email\/signature-wave\.png/,
+            /https:\/\/nowakkamil\.com\/email\/v\d+-\d{4}-\d{2}-\d{2}\/kn-monogram\.png/,
         );
-        assert.equal((visitorEmail.attachments as unknown[]).length, 5);
+        assert.match(
+            String(visitorEmail.html),
+            /https:\/\/nowakkamil\.com\/email\/v\d+-\d{4}-\d{2}-\d{2}\/globe\.png/,
+        );
+        assert.match(
+            String(visitorEmail.html),
+            /https:\/\/nowakkamil\.com\/email\/v\d+-\d{4}-\d{2}-\d{2}\/signature-wave\.png/,
+        );
+        assert.equal(visitorEmail.attachments, undefined);
         assert.doesNotMatch(String(visitorEmail.html), /{{\s*(?:firstName|message|asset\w+)\s*}}/);
     });
 

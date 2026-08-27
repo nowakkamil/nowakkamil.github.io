@@ -6,11 +6,17 @@
         font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif !important;
     }
 
+    @media only screen and (min-width: 789px) {
+        .kn-signature-frame {
+            padding-bottom: 49px !important;
+            background-size: 100% auto !important;
+        }
+    }
+
     @media only screen and (max-width: 788px) {
         .kn-signature-frame {
             padding-left: 108px !important;
             padding-right: 108px !important;
-            padding-bottom: 20% !important;
         }
 
         .kn-signature-column {
@@ -40,7 +46,6 @@
             padding-top: 26px !important;
             padding-left: 92px !important;
             padding-right: 92px !important;
-            padding-bottom: 20% !important;
         }
 
         .kn-signature-monogram-column {
@@ -52,12 +57,15 @@
             height: 104px !important;
         }
 
-        .kn-signature-tagline {
-            padding-right: 0 !important;
-        }
-
         .kn-signature-contact-row td {
             font-size: 13px !important;
+        }
+    }
+
+    @media only screen and (max-width: 480px) {
+        .kn-signature-frame {
+            padding-left: 24px !important;
+            padding-right: 24px !important;
         }
     }
 </style>
@@ -86,12 +94,12 @@
             class="kn-signature-frame"
             background="{{assetWave}}"
             style="
-                padding: 29px 44px 49px;
+                padding: 29px 44px 106px;
                 background-color: #00040e;
                 background-image: url('{{assetWave}}');
                 background-repeat: no-repeat;
                 background-position: left bottom;
-                background-size: 100% auto;
+                background-size: auto 300px;
             "
         >
             <div class="kn-signature-columns" style="font-size: 0; line-height: 0">
@@ -122,13 +130,22 @@
                                     src="{{assetMonogram}}"
                                     width="128"
                                     height="128"
-                                    alt="Kamil Nowak initials"
+                                    alt="KN"
                                     style="
                                         display: block;
                                         width: 128px;
                                         height: 128px;
                                         margin: 0 auto;
                                         border: 0;
+                                        color: #53a4ff;
+                                        font-family:
+                                            'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                        font-size: 44px;
+                                        font-weight: 600;
+                                        letter-spacing: 2px;
+                                        line-height: 128px;
+                                        text-align: center;
+                                        text-decoration: none;
                                     "
                                 />
                             </td>
@@ -189,7 +206,7 @@
                             <td
                                 class="kn-signature-tagline"
                                 style="
-                                    padding: 6px 20px 6px 0;
+                                    padding: 8px 0 12px 0;
                                     color: #d7e0eb;
                                     font-size: 14px;
                                     font-weight: 400;
@@ -215,8 +232,21 @@
                                     src="{{assetGlobe}}"
                                     width="25"
                                     height="25"
-                                    alt="Website"
-                                    style="display: block; width: 25px; height: 25px; border: 0"
+                                    alt="www"
+                                    style="
+                                        display: block;
+                                        width: 25px;
+                                        height: 25px;
+                                        border: 0;
+                                        color: #53a4ff;
+                                        font-family:
+                                            'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                        font-size: 10px;
+                                        font-weight: 600;
+                                        line-height: 25px;
+                                        text-align: center;
+                                        text-decoration: none;
+                                    "
                                 />
                             </td>
                             <td
@@ -242,8 +272,21 @@
                                     src="{{assetEmail}}"
                                     width="25"
                                     height="25"
-                                    alt="Email"
-                                    style="display: block; width: 25px; height: 25px; border: 0"
+                                    alt="@"
+                                    style="
+                                        display: block;
+                                        width: 25px;
+                                        height: 25px;
+                                        border: 0;
+                                        color: #53a4ff;
+                                        font-family:
+                                            'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                        font-size: 17px;
+                                        font-weight: 600;
+                                        line-height: 25px;
+                                        text-align: center;
+                                        text-decoration: none;
+                                    "
                                 />
                             </td>
                             <td
@@ -268,8 +311,21 @@
                                     src="{{assetLinkedIn}}"
                                     width="25"
                                     height="25"
-                                    alt="LinkedIn"
-                                    style="display: block; width: 25px; height: 25px; border: 0"
+                                    alt="in"
+                                    style="
+                                        display: block;
+                                        width: 25px;
+                                        height: 25px;
+                                        border: 0;
+                                        color: #53a4ff;
+                                        font-family:
+                                            'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: 600;
+                                        line-height: 25px;
+                                        text-align: center;
+                                        text-decoration: none;
+                                    "
                                 />
                             </td>
                             <td
@@ -295,8 +351,21 @@
                                     src="{{assetLocation}}"
                                     width="25"
                                     height="25"
-                                    alt="Location"
-                                    style="display: block; width: 25px; height: 25px; border: 0"
+                                    alt="PL"
+                                    style="
+                                        display: block;
+                                        width: 25px;
+                                        height: 25px;
+                                        border: 0;
+                                        color: #53a4ff;
+                                        font-family:
+                                            'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif;
+                                        font-size: 13px;
+                                        font-weight: 600;
+                                        line-height: 25px;
+                                        text-align: center;
+                                        text-decoration: none;
+                                    "
                                 />
                             </td>
                             <td

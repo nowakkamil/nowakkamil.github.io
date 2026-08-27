@@ -74,7 +74,7 @@
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
-                    padding-right: 92px !important;
+                    padding-right: 24px !important;
                 }
                 .inquiry-quote {
                     padding: 18px 16px !important;
