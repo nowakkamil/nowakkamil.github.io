@@ -97,15 +97,20 @@
             @media only screen and (max-width: 480px) {
                 .mobile-gutter {
                     padding-left: 24px !important;
-                    padding-right: 24px !important;
+                    padding-right: 92px !important;
                 }
                 .email-greeting {
                     padding-top: 32px !important;
                     font-size: 36px !important;
                     line-height: 44px !important;
                 }
+                /* Outranks the signature's own rule, so it has to restate the
+                   percentage that keeps the wave below the last contact row. */
                 .email-signature .kn-email-signature-frame {
-                    padding: 26px 24px 128px !important;
+                    padding-top: 26px !important;
+                    padding-left: 92px !important;
+                    padding-right: 92px !important;
+                    padding-bottom: 20% !important;
                 }
                 .message-quote-accent {
                     display: block !important;

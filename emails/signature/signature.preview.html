@@ -14,35 +14,50 @@
                 font-family: 'Avenir Next', Avenir, 'Segoe UI', Helvetica, sans-serif !important;
             }
 
-            @media only screen and (max-width: 600px) {
+            @media only screen and (max-width: 788px) {
                 .kn-signature-frame {
-                    padding: 26px 24px 128px !important;
-                    background-size: 100% auto !important;
+                    padding-left: 108px !important;
+                    padding-right: 108px !important;
+                    padding-bottom: 20% !important;
                 }
 
-                .kn-signature-monogram-cell,
-                .kn-signature-content-cell {
-                    display: block !important;
-                    width: 100% !important;
+                .kn-signature-column {
+                    max-width: 100% !important;
+                }
+
+                .kn-signature-monogram-column {
+                    padding: 0 0 22px !important;
                 }
 
                 .kn-signature-monogram-cell {
-                    padding: 0 0 18px !important;
+                    padding: 0 !important;
                     text-align: center !important;
+                }
+
+                .kn-signature-monogram-image {
+                    margin: 0 auto !important;
+                }
+
+                .kn-signature-identity {
+                    text-align: center !important;
+                }
+            }
+
+            @media only screen and (max-width: 600px) {
+                .kn-signature-frame {
+                    padding-top: 26px !important;
+                    padding-left: 92px !important;
+                    padding-right: 92px !important;
+                    padding-bottom: 20% !important;
+                }
+
+                .kn-signature-monogram-column {
+                    padding: 0 0 18px !important;
                 }
 
                 .kn-signature-monogram-image {
                     width: 104px !important;
                     height: 104px !important;
-                    margin: 0 auto !important;
-                }
-
-                .kn-signature-content-cell {
-                    padding-left: 0 !important;
-                }
-
-                .kn-signature-identity {
-                    text-align: center !important;
                 }
 
                 .kn-signature-tagline {
@@ -65,7 +80,7 @@
             style="
                 width: 100%;
                 max-width: 760px;
-                border: 1px solid #1c2331;
+                border: 0;
                 border-radius: 12px;
                 border-collapse: separate;
                 border-spacing: 0;
@@ -87,201 +102,227 @@
                         background-size: 100% auto;
                     "
                 >
-                    <table
-                        role="presentation"
-                        cellpadding="0"
-                        cellspacing="0"
-                        border="0"
-                        width="100%"
-                        style="width: 100%; border-collapse: collapse; table-layout: fixed"
-                    >
-                        <tr>
-                            <td
-                                class="kn-signature-monogram-cell"
-                                width="188"
-                                valign="top"
-                                style="width: 188px; padding: 0 0 0 44px"
+                    <div class="kn-signature-columns" style="font-size: 0; line-height: 0">
+                        <!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse"><tr><td width="230" valign="top" style="width:230px;padding:0"><![endif]-->
+                        <div
+                            class="kn-signature-column kn-signature-monogram-column"
+                            style="
+                                display: inline-block;
+                                width: 100%;
+                                max-width: 230px;
+                                vertical-align: top;
+                                font-size: 14px;
+                                line-height: 22px;
+                            "
+                        >
+                            <table
+                                role="presentation"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                                width="100%"
+                                style="width: 100%; border-collapse: collapse"
                             >
-                                <img
-                                    class="kn-signature-monogram-image"
-                                    src="https://nowakkamil.com/email/kn-monogram.png"
-                                    width="128"
-                                    height="128"
-                                    alt="Kamil Nowak initials"
-                                    style="
-                                        display: block;
-                                        width: 128px;
-                                        height: 128px;
-                                        margin: 0 auto;
-                                        border: 0;
-                                    "
-                                />
-                            </td>
-                            <td class="kn-signature-content-cell" valign="top" style="padding: 0">
-                                <table
-                                    class="kn-signature-identity"
-                                    role="presentation"
-                                    cellpadding="0"
-                                    cellspacing="0"
-                                    border="0"
-                                    width="100%"
-                                    style="width: 100%; border-collapse: collapse; table-layout: fixed"
-                                >
-                                    <tr>
-                                        <td
+                                <tr>
+                                    <td class="kn-signature-monogram-cell" style="padding: 0 0 0 44px">
+                                        <img
+                                            class="kn-signature-monogram-image"
+                                            src="https://nowakkamil.com/email/kn-monogram.png"
+                                            width="128"
+                                            height="128"
+                                            alt="Kamil Nowak initials"
                                             style="
-                                                padding: 0;
-                                                color: #f6f8fb;
-                                                font-size: 32px;
-                                                font-weight: 600;
-                                                letter-spacing: -0.5px;
-                                                line-height: 39px;
+                                                display: block;
+                                                width: 128px;
+                                                height: 128px;
+                                                margin: 0 auto;
+                                                border: 0;
                                             "
+                                        />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!--[if mso]></td><td valign="top" style="padding:0"><![endif]-->
+                        <div
+                            class="kn-signature-column kn-signature-content-column"
+                            style="
+                                display: inline-block;
+                                width: 100%;
+                                max-width: 330px;
+                                vertical-align: top;
+                                font-size: 14px;
+                                line-height: 22px;
+                            "
+                        >
+                            <table
+                                class="kn-signature-identity"
+                                role="presentation"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                                width="100%"
+                                style="width: 100%; border-collapse: collapse; table-layout: fixed"
+                            >
+                                <tr>
+                                    <td
+                                        style="
+                                            padding: 0;
+                                            color: #f6f8fb;
+                                            font-size: 32px;
+                                            font-weight: 600;
+                                            letter-spacing: -0.5px;
+                                            line-height: 39px;
+                                        "
+                                    >
+                                        Kamil Nowak
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        style="
+                                            padding: 4px 0 0;
+                                            color: #53a4ff;
+                                            font-size: 13px;
+                                            font-weight: 500;
+                                            letter-spacing: 1.9px;
+                                            line-height: 20px;
+                                            text-transform: uppercase;
+                                        "
+                                    >
+                                        Senior Full-stack Developer
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        class="kn-signature-tagline"
+                                        style="
+                                            padding: 6px 20px 6px 0;
+                                            color: #d7e0eb;
+                                            font-size: 14px;
+                                            font-weight: 400;
+                                            line-height: 22px;
+                                        "
+                                    >
+                                        Building digital experiences that are fast, reliable and
+                                        thoughtfully crafted.
+                                    </td>
+                                </tr>
+                            </table>
+                            <table
+                                role="presentation"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                                width="100%"
+                                style="width: 100%; border-collapse: collapse; table-layout: fixed"
+                            >
+                                <tr class="kn-signature-contact-row">
+                                    <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
+                                        <img
+                                            src="https://nowakkamil.com/email/globe.png"
+                                            width="25"
+                                            height="25"
+                                            alt="Website"
+                                            style="display: block; width: 25px; height: 25px; border: 0"
+                                        />
+                                    </td>
+                                    <td
+                                        style="
+                                            padding: 6px 0;
+                                            color: #eef5fd;
+                                            font-size: 14px;
+                                            line-height: 25px;
+                                            word-break: break-word;
+                                        "
+                                    >
+                                        <a
+                                            href="https://nowakkamil.com"
+                                            target="_blank"
+                                            style="color: #eef5fd; text-decoration: none"
+                                            >nowakkamil.com</a
                                         >
-                                            Kamil Nowak
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            style="
-                                                padding: 4px 0 0;
-                                                color: #53a4ff;
-                                                font-size: 13px;
-                                                font-weight: 500;
-                                                letter-spacing: 1.9px;
-                                                line-height: 20px;
-                                                text-transform: uppercase;
-                                            "
+                                    </td>
+                                </tr>
+                                <tr class="kn-signature-contact-row">
+                                    <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
+                                        <img
+                                            src="https://nowakkamil.com/email/email.png"
+                                            width="25"
+                                            height="25"
+                                            alt="Email"
+                                            style="display: block; width: 25px; height: 25px; border: 0"
+                                        />
+                                    </td>
+                                    <td
+                                        style="
+                                            padding: 6px 0;
+                                            color: #eef5fd;
+                                            font-size: 14px;
+                                            line-height: 25px;
+                                            word-break: break-word;
+                                        "
+                                    >
+                                        <a
+                                            href="mailto:hello@nowakkamil.com"
+                                            style="color: #eef5fd; text-decoration: none"
+                                            >hello@nowakkamil.com</a
                                         >
-                                            Senior Full-stack Developer
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="kn-signature-tagline"
-                                            style="
-                                                padding: 10px 20px 10px 0;
-                                                color: #d7e0eb;
-                                                font-size: 14px;
-                                                font-weight: 400;
-                                                line-height: 22px;
-                                            "
+                                    </td>
+                                </tr>
+                                <tr class="kn-signature-contact-row">
+                                    <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
+                                        <img
+                                            src="https://nowakkamil.com/email/linkedin.png"
+                                            width="25"
+                                            height="25"
+                                            alt="LinkedIn"
+                                            style="display: block; width: 25px; height: 25px; border: 0"
+                                        />
+                                    </td>
+                                    <td
+                                        style="
+                                            padding: 6px 0;
+                                            color: #eef5fd;
+                                            font-size: 14px;
+                                            line-height: 25px;
+                                            word-break: break-word;
+                                        "
+                                    >
+                                        <a
+                                            href="https://www.linkedin.com/in/nowakkamil"
+                                            target="_blank"
+                                            style="color: #eef5fd; text-decoration: none"
+                                            >linkedin.com/in/nowakkamil</a
                                         >
-                                            Building digital experiences that are fast, reliable and
-                                            thoughtfully crafted.
-                                        </td>
-                                    </tr>
-                                </table>
-                                <table
-                                    role="presentation"
-                                    cellpadding="0"
-                                    cellspacing="0"
-                                    border="0"
-                                    width="100%"
-                                    style="width: 100%; border-collapse: collapse; table-layout: fixed"
-                                >
-                                    <tr class="kn-signature-contact-row">
-                                        <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
-                                            <img
-                                                src="https://nowakkamil.com/email/globe.png"
-                                                width="25"
-                                                height="25"
-                                                alt="Website"
-                                                style="display: block; width: 25px; height: 25px; border: 0"
-                                            />
-                                        </td>
-                                        <td
-                                            style="
-                                                padding: 6px 0;
-                                                color: #eef5fd;
-                                                font-size: 14px;
-                                                line-height: 25px;
-                                            "
-                                        >
-                                            <a
-                                                href="https://nowakkamil.com"
-                                                target="_blank"
-                                                style="color: #eef5fd; text-decoration: none"
-                                                >nowakkamil.com</a
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr class="kn-signature-contact-row">
-                                        <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
-                                            <img
-                                                src="https://nowakkamil.com/email/email.png"
-                                                width="25"
-                                                height="25"
-                                                alt="Email"
-                                                style="display: block; width: 25px; height: 25px; border: 0"
-                                            />
-                                        </td>
-                                        <td
-                                            style="
-                                                padding: 6px 0;
-                                                color: #eef5fd;
-                                                font-size: 14px;
-                                                line-height: 25px;
-                                            "
-                                        >
-                                            <a
-                                                href="mailto:hello@nowakkamil.com"
-                                                style="color: #eef5fd; text-decoration: none"
-                                                >hello@nowakkamil.com</a
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr class="kn-signature-contact-row">
-                                        <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
-                                            <img
-                                                src="https://nowakkamil.com/email/linkedin.png"
-                                                width="25"
-                                                height="25"
-                                                alt="LinkedIn"
-                                                style="display: block; width: 25px; height: 25px; border: 0"
-                                            />
-                                        </td>
-                                        <td
-                                            style="
-                                                padding: 6px 0;
-                                                color: #eef5fd;
-                                                font-size: 14px;
-                                                line-height: 25px;
-                                            "
-                                        >
-                                            <a
-                                                href="https://www.linkedin.com/in/nowakkamil"
-                                                target="_blank"
-                                                style="color: #eef5fd; text-decoration: none"
-                                                >linkedin.com/in/nowakkamil</a
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr class="kn-signature-contact-row">
-                                        <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
-                                            <img
-                                                src="https://nowakkamil.com/email/location.png"
-                                                width="25"
-                                                height="25"
-                                                alt="Location"
-                                                style="display: block; width: 25px; height: 25px; border: 0"
-                                            />
-                                        </td>
-                                        <td
-                                            style="
-                                                padding: 6px 0;
-                                                color: #eef5fd;
-                                                font-size: 14px;
-                                                line-height: 25px;
-                                            "
-                                        >
-                                            Based in Poland, working globally
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                                    </td>
+                                </tr>
+                                <tr class="kn-signature-contact-row">
+                                    <td width="25" style="width: 25px; padding: 7px 14px 7px 0">
+                                        <img
+                                            src="https://nowakkamil.com/email/location.png"
+                                            width="25"
+                                            height="25"
+                                            alt="Location"
+                                            style="display: block; width: 25px; height: 25px; border: 0"
+                                        />
+                                    </td>
+                                    <td
+                                        style="
+                                            padding: 6px 0;
+                                            color: #eef5fd;
+                                            font-size: 14px;
+                                            line-height: 25px;
+                                            word-break: break-word;
+                                        "
+                                    >
+                                        Based in Poland, working globally
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!--[if mso]></td></tr></table><![endif]-->
+                    </div>
                 </td>
             </tr>
         </table>
