@@ -16,6 +16,41 @@
         .kn-email-signature-contact-text {
             font-size: 14px !important;
         }
+
+        .kn-email-signature-contact-table {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .kn-email-signature-columns {
+            text-align: left !important;
+        }
+
+        .kn-email-signature-monogram-column {
+            max-width: 230px !important;
+            padding-bottom: 0 !important;
+        }
+
+        .kn-email-signature-content-column {
+            max-width: 330px !important;
+        }
+
+        .kn-email-signature-monogram-column {
+            padding-bottom: 0 !important;
+        }
+        .kn-email-signature-monogram-cell {
+            padding-left: 44px !important;
+        }
+
+        .kn-email-signature-name,
+        .kn-email-signature-eyebrow,
+        .kn-email-signature-tagline {
+            text-align: left !important;
+        }
+
+        .kn-email-signature-tagline {
+            padding-right: 10px !important;
+        }
     }
 
     @media only screen and (max-width: 788px) {
@@ -24,25 +59,12 @@
             padding-right: 108px !important;
         }
 
-        .kn-email-signature-column {
-            max-width: 100% !important;
-        }
-
         .kn-email-signature-monogram-column {
             padding: 0 0 28px !important;
         }
 
-        .kn-email-signature-monogram-cell {
-            padding: 0 !important;
-            text-align: center !important;
-        }
-
         .kn-email-signature-monogram {
             margin: 0 auto !important;
-        }
-
-        .kn-email-signature-identity {
-            text-align: center !important;
         }
 
         .kn-email-signature-contact-text {
@@ -93,6 +115,24 @@
         }
     }
 </style>
+<!--[if mso]>
+    <style type="text/css">
+        .kn-email-signature-columns {
+            text-align: left !important;
+        }
+        .kn-email-signature-monogram-cell {
+            padding-left: 44px !important;
+        }
+        .kn-email-signature-name,
+        .kn-email-signature-eyebrow,
+        .kn-email-signature-tagline {
+            text-align: left !important;
+        }
+        .kn-email-signature-tagline {
+            padding-right: 10px !important;
+        }
+    </style>
+<![endif]-->
 <table
     class="kn-email-signature"
     role="presentation"
@@ -116,14 +156,17 @@
                 background-size: auto 300px;
             "
         >
-            <div class="kn-email-signature-columns" style="font-size: 0; line-height: 0">
+            <div
+                class="kn-email-signature-columns"
+                style="font-size: 0; line-height: 0; text-align: center"
+            >
                 <!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse"><tr><td width="230" valign="top" style="width:230px;padding:0"><![endif]-->
                 <div
                     class="kn-email-signature-column kn-email-signature-monogram-column"
                     style="
                         display: inline-block;
+                        padding: 0 0 32px;
                         width: 100%;
-                        max-width: 230px;
                         vertical-align: top;
                         font-size: 14px;
                         line-height: 22px;
@@ -138,10 +181,7 @@
                         style="width: 100%; border-collapse: collapse"
                     >
                         <tr>
-                            <td
-                                class="kn-email-signature-monogram-cell"
-                                style="padding: 0 0 0 44px"
-                            >
+                            <td class="kn-email-signature-monogram-cell" style="padding: 0">
                                 <img
                                     class="kn-email-signature-monogram"
                                     src="{{assetMonogram}}"
@@ -175,7 +215,6 @@
                     style="
                         display: inline-block;
                         width: 100%;
-                        max-width: 330px;
                         vertical-align: top;
                         font-size: 14px;
                         line-height: 22px;
@@ -200,6 +239,7 @@
                                     font-weight: 600;
                                     letter-spacing: -0.5px;
                                     line-height: 39px;
+                                    text-align: center;
                                 "
                             >
                                 Kamil Nowak
@@ -216,6 +256,7 @@
                                     letter-spacing: 1.9px;
                                     line-height: 20px;
                                     text-transform: uppercase;
+                                    text-align: center;
                                 "
                             >
                                 Senior Full-stack Developer
@@ -225,11 +266,12 @@
                             <td
                                 class="kn-email-signature-tagline"
                                 style="
-                                    padding: 8px 10px 12px 0;
+                                    padding: 8px 0 12px;
                                     color: #d7e0eb;
                                     font-size: 14px;
                                     font-weight: 400;
                                     line-height: 22px;
+                                    text-align: center;
                                 "
                             >
                                 Building digital experiences that are fast, reliable and
@@ -238,12 +280,17 @@
                         </tr>
                     </table>
                     <table
+                        class="kn-email-signature-contact-table"
                         role="presentation"
                         cellpadding="0"
                         cellspacing="0"
                         border="0"
-                        width="100%"
-                        style="width: 100%; border-collapse: collapse; table-layout: fixed"
+                        style="
+                            max-width: 100%;
+                            margin: 0 auto;
+                            border-collapse: collapse;
+                            text-align: left;
+                        "
                     >
                         <tr class="kn-email-signature-contact-row">
                             <td width="25" style="width: 25px; padding: 7px 10px 7px 0">

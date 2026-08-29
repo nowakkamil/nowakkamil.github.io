@@ -46,117 +46,42 @@
                 -webkit-text-fill-color: #eef5fd !important;
             }
         </mj-style>
-        <mj-style>
-            /* SIGNATURE_STYLES */
-            .email-signature > table {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            /* This email is dark in every theme. Telling the client so stops
-               Apple Mail and Outlook from re-tinting it in either direction. */
-            :root {
-                color-scheme: dark;
-                supported-color-schemes: dark;
-            }
-            /* Outlook.com rewrites colours in dark mode and exposes these hooks
-               so the original palette can be restored. */
-            [data-ogsc] .email-canvas {
-                background-color: #00030c !important;
-            }
-            [data-ogsc] .contact-surface,
-            [data-ogsc] .contact-surface > table,
-            [data-ogsc] .email-signature > table,
-            [data-ogsc] .kn-email-signature-frame {
-                background-color: #00040e !important;
-            }
-            [data-ogsc] .email-greeting {
-                color: #f6f8fb !important;
-            }
-            [data-ogsc] .message-copy,
-            [data-ogsc] .message-copy p {
-                color: #dce6f2 !important;
-            }
-            [data-ogsc] .message-quote-content {
-                color: #f2f6fb !important;
-            }
-            [data-ogsc] .message-quote {
-                background-color: #14355a !important;
-            }
-            [data-ogsc] .message-quote-panel {
-                background-color: #020a17 !important;
-            }
-            [data-ogsc] .message-quote-accent {
-                background-color: #63acf5 !important;
-            }
-            [data-ogsc] .portfolio-link a,
-            [data-ogsc] .email-signature a,
-            [data-ogsc] .kn-email-signature-contact-row td {
-                color: #eef5fd !important;
-                -webkit-text-fill-color: #eef5fd !important;
-            }
-            @media only screen and (max-width: 600px) {
-                .email-eyebrow {
-                    font-size: 12px !important;
-                }
-                .portfolio-link {
-                    font-size: 11px !important;
-                    letter-spacing: 2px !important;
-                }
-                .email-greeting div {
-                    font-size: 40px !important;
-                    line-height: 48px !important;
-                }
-                .message-copy p {
-                    font-size: 17px !important;
-                    line-height: 28px !important;
-                }
-            }
-            @media only screen and (max-width: 480px) {
-                .mobile-gutter {
-                    padding-left: 24px !important;
-                    padding-right: 24px !important;
-                }
-                .email-greeting {
-                    padding-top: 32px !important;
-                }
-                .email-greeting div {
-                    font-size: 36px !important;
-                    line-height: 44px !important;
-                }
-                /* Outranks the signature's own rule, so it has to restate the
-                   percentage that keeps the wave below the last contact row. */
-                .email-signature .kn-email-signature-frame {
-                    padding-top: 26px !important;
-                    padding-left: 24px !important;
-                    padding-right: 24px !important;
-                }
-                .message-quote-accent {
-                    display: block !important;
-                    width: 100% !important;
-                    height: 2px !important;
-                }
-                .message-quote-opening {
-                    display: block !important;
-                    width: auto !important;
-                    padding: 16px 16px 0 !important;
-                    font-size: 38px !important;
-                    line-height: 34px !important;
-                }
-                .message-quote-content {
-                    display: block !important;
-                    padding: 10px 16px !important;
-                    font-size: 17px !important;
-                    line-height: 28px !important;
-                }
-                .message-quote-closing {
-                    display: block !important;
-                    width: auto !important;
-                    padding: 0 16px 16px !important;
-                    font-size: 38px !important;
-                    line-height: 34px !important;
-                }
-            }
-        </mj-style>
+        <mj-raw>
+            <style type="text/css"> /* SIGNATURE_STYLES */ </style> <style type="text/css">
+            .email-signature > table { width: 100% !important; max-width: 100% !important; } @media
+            only screen and (max-width: 600px) { .email-eyebrow { font-size: 12px !important; }
+            .portfolio-link { font-size: 11px !important; letter-spacing: 2px !important; }
+            .email-greeting div { font-size: 40px !important; line-height: 48px !important; }
+            .message-copy p { font-size: 17px !important; line-height: 28px !important; } } @media
+            only screen and (max-width: 480px) { .mobile-gutter { padding-left: 24px !important;
+            padding-right: 24px !important; } .email-greeting { padding-top: 32px !important; }
+            .email-greeting div { font-size: 36px !important; line-height: 44px !important; } /*
+            Outranks the signature's own rule, so it has to restate the percentage that keeps the
+            wave below the last contact row. */ .email-signature .kn-email-signature-frame {
+            padding-top: 26px !important; padding-left: 24px !important; padding-right: 24px
+            !important; } .message-quote-accent { display: block !important; width: 100% !important;
+            height: 2px !important; } .message-quote-opening { display: block !important; width:
+            auto !important; padding: 24px 0 14px 18px !important; font-size: 38px !important;
+            line-height: 34px !important; } .message-quote-content { display: block !important;
+            padding: 10px 16px !important; font-size: 17px !important; line-height: 28px !important;
+            } .message-quote-closing { display: block !important; width: auto !important; padding:
+            14px 18px 24px 0 !important; font-size: 38px !important; line-height: 34px !important; }
+            } </style> <style type="text/css"> /* This email is dark in every theme. Telling the
+            client so stops Apple Mail and Outlook from re-tinting it in either direction. */ :root
+            { color-scheme: dark; supported-color-schemes: dark; } /* Outlook.com rewrites colours
+            in dark mode and exposes these hooks so the original palette can be restored. */
+            [data-ogsc] .email-canvas { background-color: #00030c !important; } [data-ogsc]
+            .contact-surface, [data-ogsc] .contact-surface > table, [data-ogsc] .email-signature >
+            table, [data-ogsc] .kn-email-signature-frame { background-color: #00040e !important; }
+            [data-ogsc] .email-greeting { color: #f6f8fb !important; } [data-ogsc] .message-copy,
+            [data-ogsc] .message-copy p { color: #dce6f2 !important; } [data-ogsc]
+            .message-quote-content { color: #f2f6fb !important; } [data-ogsc] .message-quote {
+            background-color: #14355a !important; } [data-ogsc] .message-quote-panel {
+            background-color: #020a17 !important; } [data-ogsc] .message-quote-accent {
+            background-color: #63acf5 !important; } [data-ogsc] .portfolio-link a, [data-ogsc]
+            .email-signature a, [data-ogsc] .kn-email-signature-contact-row td { color: #eef5fd
+            !important; -webkit-text-fill-color: #eef5fd !important; } </style>
+        </mj-raw>
         <mj-raw
             ><meta name="color-scheme" content="dark" /> <meta name="supported-color-schemes"
             content="dark" /></mj-raw
